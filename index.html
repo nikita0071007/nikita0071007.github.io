@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Никита Гусев — игры, сайты и Telegram-боты</title>
+<meta name="description" content="Портфолио и цены: мини-игры на HTML5, сайты на Тильде, Telegram-боты для бизнеса. Никита Гусев.">
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d1f24; --muted:#5d6370; --line:#e4e0d6;
+  --accent:#2f7d4f; --accent-soft:#e3f1e8; --warm:#f2b134;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14161a; --card:#1d2026; --ink:#eef0f3; --muted:#a3a9b5; --line:#2c3038;
+    --accent:#5cc88a; --accent-soft:#1f3328; --warm:#f2b134; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+header{padding:56px 0 32px}
+.tag{display:inline-block;background:var(--accent-soft);color:var(--accent);font-weight:600;
+  font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:14px}
+h1{font-size:clamp(30px,6vw,46px);line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+.lead{font-size:18px;color:var(--muted);max-width:620px;margin:0}
+h2{font-size:24px;margin:48px 0 16px;letter-spacing:-.01em}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h3{margin:0 0 6px;font-size:18px}
+.card p{margin:0 0 12px;color:var(--muted)}
+.card .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;
+  padding:10px 16px;border-radius:10px;font-size:15px}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.price-group{margin-bottom:8px}
+.price-group h3{display:flex;align-items:center;gap:10px;font-size:18px;margin:0 0 10px}
+.icon{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-size:18px}
+.row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:none}
+.row .what{font-weight:600}
+.row .what small{display:block;font-weight:400;color:var(--muted);font-size:14px;margin-top:2px}
+.row .cost{white-space:nowrap;font-weight:700;color:var(--accent)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.steps li{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;counter-increment:s}
+.steps li::before{content:counter(s);display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;
+  background:var(--warm);color:#1d1f24;font-weight:700;margin-bottom:8px}
+.note{font-size:14px;color:var(--muted);margin-top:12px}
+footer{padding:48px 0 40px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="tag">Игры · Сайты · Telegram-боты</span>
+  <h1>Никита Гусев</h1>
+  <p class="lead">Делаю мини-игры на HTML5, сайты на Тильде и Telegram-ботов для бизнеса. Работаю удалённо, от идеи до публикации.</p>
+</header>
+
+<section>
+  <h2>Работы</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>«Бабушкина дача — три в ряд»</h3>
+      <div class="meta">Игра на HTML5 · браузер и Telegram</div>
+      <p>Своя игра от начала до конца: уровни, персонаж бабушка Марина, обустройство дачи, музыка. Работает в браузере и в Telegram.</p>
+      <a class="btn" href="https://nikita0071007.github.io/dacha/" target="_blank" rel="noopener">Играть</a>
+    </div>
+    <div class="card">
+      <h3>«Алтай-рыбалка.рф»</h3>
+      <div class="meta">Сайт-магазин на Тильде</div>
+      <p>Магазин рыболовных снастей ручной работы: каталог, корзина, заказы приходят продавцу. Дизайн и разработка — мои.</p>
+      <a class="btn" href="https://xn----7sbabae8cldf6cu5j.xn--p1ai/" target="_blank" rel="noopener">Открыть сайт</a>
+    </div>
+    <div class="card">
+      <h3>Код на GitHub</h3>
+      <div class="meta">Открытые проекты</div>
+      <p>Исходники игр и сайтов, над которыми работаю.</p>
+      <a class="btn ghost" href="https://github.com/nikita0071007" target="_blank" rel="noopener">Мой GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Цены</h2>
+  <div class="grid">
+    <div class="card price-group">
+      <h3><span class="icon">🌐</span>Сайты на Тильде</h3>
+      <div class="row"><div class="what">Лендинг под ключ<small>одна страница, адаптив под телефон, форма заявок</small></div><div class="cost">от 7 000 ₽</div></div>
+      <div class="row"><div class="what">Многостраничный сайт или магазин<small>каталог, корзина, приём заказов</small></div><div class="cost">от 15 000 ₽</div></div>
+      <div class="row"><div class="what">Правки и доработка<small>блоки, тексты, адаптив</small></div><div class="cost">от 1 000 ₽</div></div>
+    </div>
+    <div class="card price-group">
+      <h3><span class="icon">🤖</span>Telegram-боты</h3>
+      <div class="row"><div class="what">Бот-визитка с заявками<small>меню, ответы на вопросы, заявки вам в личку</small></div><div class="cost">от 3 000 ₽</div></div>
+      <div class="row"><div class="what">Бот с записью и оплатой<small>запись клиентов, оплата, уведомления</small></div><div class="cost">от 8 000 ₽</div></div>
+    </div>
+    <div class="card price-group">
+      <h3><span class="icon">🎮</span>Мини-игры</h3>
+      <div class="row"><div class="what">Мини-игра на HTML5<small>для сайта, браузера или Telegram</small></div><div class="cost">от 8 000 ₽</div></div>
+      <div class="row"><div class="what">Подготовка под Яндекс Игры<small>подключение SDK, реклама, сохранения</small></div><div class="cost">входит в цену</div></div>
+    </div>
+  </div>
+  <p class="note">Точная цена зависит от задачи — оценю бесплатно после короткого описания.</p>
+</section>
+
+<section>
+  <h2>Как работаю</h2>
+  <ol class="steps">
+    <li>Обсуждаем задачу и сроки</li>
+    <li>Называю точную цену</li>
+    <li>Делаю и показываю промежуточный результат</li>
+    <li>Вношу правки и сдаю готовую работу</li>
+  </ol>
+</section>
+
+<footer>© 2026 Никита Гусев</footer>
+</div>
+</body>
+</html>
