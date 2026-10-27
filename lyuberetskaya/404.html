@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Страница не найдена · Анжелика Люберецкая</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 60V30a24 24 0 0 1 48 0v30z' fill='%236B2E5F'/%3E%3Ctext x='32' y='48' text-anchor='middle' font-family='Arial' font-size='22' fill='white'%3EАЛ%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600&display=swap">
+<style>
+:root{--bg:#0D0A0F;--ink:#F6F0F5;--muted:#B9AEBD;--accent:#E7A6CF;--ease:cubic-bezier(.22,1,.36,1);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,sans-serif;display:grid;place-items:center;text-align:center;overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+canvas{position:fixed;inset:0;z-index:-1}
+main{max-width:520px;display:grid;justify-items:center;gap:16px}
+svg.strand{width:220px;height:200px;overflow:visible}
+.strand path{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2s var(--ease) .2s forwards}
+.strand g{transform-origin:110px 100px;animation:drift 6s ease-in-out infinite alternate}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes drift{from{transform:translate(-10px,6px) rotate(-8deg)}to{transform:translate(10px,-8px) rotate(10deg)}}
+.code{font-size:clamp(72px,18vw,128px);font-weight:300;line-height:1;letter-spacing:-.04em}
+h1{font-size:24px;font-weight:400;margin:0}
+p{color:var(--muted);margin:0;line-height:1.6}
+a{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 24px;border-radius:999px;background:var(--ink);color:var(--bg);font-weight:600;text-decoration:none;margin-top:8px;transition:transform .5s var(--ease)}
+a:hover{transform:translateY(-2px)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.strand path{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<main>
+  <svg class="strand" viewBox="0 0 220 200" aria-hidden="true"><g><path pathLength="1" d="M20 170 C60 150 50 90 100 80 S170 60 160 20 C156 8 168 4 176 10"/></g></svg>
+  <div class="code">404</div>
+  <h1>Волосок потерялся</h1>
+  <p>Такой страницы нет. Вернитесь на главную, там всё на месте.</p>
+  <a href="./">← На главную</a>
+</main>
+<script>
+(function(){
+  const cv=document.getElementById('c'), ctx=cv.getContext('2d'); let W,H,st=[];
+  function size(){const d=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);
+    st=Array.from({length:Math.round(W*H/5000)},()=>({x:Math.random()*W,y:Math.random()*H,s:Math.random()*1.4+.3,p:Math.random()*6.28,v:Math.random()*.15+.05}));}
+  size(); addEventListener('resize',size);
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function f(t){ctx.clearRect(0,0,W,H);for(const s of st){ if(!reduce){s.y-=s.v;if(s.y<0)s.y=H;} ctx.globalAlpha=.25+.3*Math.sin(t/900+s.p);ctx.fillStyle=s.p<.6?'#E7A6CF':'#fff';ctx.fillRect(s.x,s.y,s.s,s.s);} if(!reduce)requestAnimationFrame(f);}
+  requestAnimationFrame(f);
+})();
+</script>
+</body>
+</html>
