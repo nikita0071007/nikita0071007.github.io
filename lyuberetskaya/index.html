@@ -335,6 +335,27 @@ dialog::backdrop{background:rgba(20,12,22,.55);backdrop-filter:blur(4px)}
 /* искры за курсором */
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40}
 
+/* кнопки мессенджеров на первом экране */
+.msgr{display:grid;gap:10px;justify-items:start}
+.msgr > span{font-size:13px;color:var(--st-muted)}
+.msgr-btns{display:flex;gap:8px;flex-wrap:wrap}
+.mbtn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 18px 0 6px;border-radius:999px;
+  color:var(--st-ink);text-decoration:none;font-weight:600;font-size:15px;border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.06);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:transform .5s var(--ease),border-color .3s var(--ease),background .3s var(--ease),box-shadow .5s var(--ease)}
+.mbtn:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 10px 30px -10px rgba(231,166,207,.55)}
+.mbtn:active{transform:scale(.97)}
+.mbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%);transform:translateX(-120%);animation:shine 5s var(--ease) 2.5s infinite}
+.mbtn + .mbtn::after{animation-delay:3.1s}
+@keyframes shine{0%{transform:translateX(-120%)}25%,100%{transform:translateX(120%)}}
+.mi{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;flex:none;transition:transform .5s var(--ease)}
+.mbtn:hover .mi{transform:rotate(-12deg) scale(1.08)}
+.mi svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round}
+.mi.tg{background:#2AABEE}
+.mi.mx{background:linear-gradient(135deg,#7B5CFA,#C26BB0)}
+.contact.pulse{animation:pulse 1.6s var(--ease) .5s 2}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent);border-color:var(--accent)}100%{box-shadow:0 0 0 14px transparent}}
+
 @media (max-width:860px){
   .hero,.split,.book{grid-template-columns:1fr;gap:40px}
   .arch{max-width:340px;width:100%;margin-inline:auto}
@@ -394,7 +415,7 @@ dialog::backdrop{background:rgba(20,12,22,.55);backdrop-filter:blur(4px)}
       <div class="stage-proof in" style="--i:7">
         <div><b>3 зоны</b>лица за одну процедуру</div>
         <div><b>Кожа и волосы</b>у одного врача</div>
-        <div><b>Telegram и Max</b>запись в пару сообщений</div>
+        <div class="msgr"><span>Запись в пару сообщений</span><div class="msgr-btns"><a class="mbtn" href="#booking" data-ch="Telegram"><i class="mi tg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z"/><path d="m9 13 8-6"/></svg></i>Telegram</a><a class="mbtn" href="#booking" data-ch="Max"><i class="mi mx"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V12a8 8 0 1 1 8 8z"/><path d="M9 12h6M9 15h4"/></svg></i>Max</a></div></div>
       </div>
     </section>
     <div class="wrap">
@@ -614,11 +635,11 @@ dialog::backdrop{background:rgba(20,12,22,.55);backdrop-filter:blur(4px)}
           <h2>Оставьте заявку</h2>
           <p class="muted">Заполните форму или напишите напрямую. Ответим в течение дня и подберём время.</p>
           <div class="contacts">
-            <a class="contact" href="https://t.me/your_username" target="_blank" rel="noopener">
+            <a class="contact" data-ch="Telegram" href="https://t.me/your_username" target="_blank" rel="noopener">
               <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z"/><path d="m9 13 8-6"/></svg></span>
               <span><small>Telegram</small><b>@your_username</b></span>
             </a>
-            <a class="contact" href="https://max.ru/your_username" target="_blank" rel="noopener">
+            <a class="contact" data-ch="Max" href="https://max.ru/your_username" target="_blank" rel="noopener">
               <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 20V12a8 8 0 1 1 8 8z"/><path d="M9 12h6M9 15h4"/></svg></span>
               <span><small>Max</small><b>+7 (___) ___-__-__</b></span>
             </a>
@@ -1121,6 +1142,13 @@ dialog::backdrop{background:rgba(20,12,22,.55);backdrop-filter:blur(4px)}
   if(io){ const so=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) navLinks.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)); }),{rootMargin:'-45% 0px -50% 0px'});
     $$('main section[id]').forEach(s=>so.observe(s)); }
 
+
+  // Кнопки Telegram / Max на первом экране: ведут к записи и выбирают мессенджер
+  $$('.mbtn').forEach(a=>a.addEventListener('click',()=>{
+    const ch=a.dataset.ch; $('#f-msg-ch').value=ch;
+    const card=document.querySelector('.contact[data-ch="'+ch+'"]');
+    if(card){ card.classList.remove('pulse'); void card.offsetWidth; card.classList.add('pulse'); }
+  }));
   // Выбор услуги из карточки
   $$('[data-pick]').forEach(a=>a.addEventListener('click',()=>{ $('#f-svc').value=a.dataset.pick; }));
 
