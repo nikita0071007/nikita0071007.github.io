@@ -261,14 +261,20 @@ footer{padding:40px 0;color:var(--muted);font-size:13px;display:flex;justify-con
 .scene.off *{animation-play-state:paused!important}
 .scene .gl{width:3.6%;aspect-ratio:1;margin:-1.8% 0 0 -1.8%;background:linear-gradient(#fff,#fff) center/12% 100% no-repeat,linear-gradient(#fff,#fff) center/100% 12% no-repeat;filter:drop-shadow(0 0 3px #fff);opacity:0;transform:scale(0) rotate(0);animation:glint calc(var(--T)/2) ease-in-out infinite;animation-delay:var(--d,0s)}
 @keyframes glint{0%,55%,100%{opacity:0;transform:scale(0) rotate(0)}75%{opacity:1;transform:scale(1) rotate(45deg)}}
-.scene .eagle{inset:0;transform-origin:65% 24%;animation:glide var(--T) ease-in-out infinite;transform:translate(calc(var(--ex,0)*1%),calc(var(--ey,0)*1%))}
+.scene .eagle{inset:0;transform-origin:64.00% 24.27%;animation:glide var(--T) ease-in-out infinite;transform:translate(calc(var(--ex,0)*1%),calc(var(--ey,0)*1%))}
+.scene .eagle>*,.scene .hL,.scene .hR{position:absolute;inset:0}
 .scene .eagle img{position:absolute;display:block}
-.scene .wl{left:36.688%;top:16.505%;width:28.875%;height:22.977%;transform-origin:91.6% 23.2%;animation:flapL calc(var(--T)/2) ease-in-out infinite}
-.scene .wr{left:65.000%;top:13.754%;width:25.875%;height:25.971%;transform-origin:9.7% 31.2%;animation:flapR calc(var(--T)/2) ease-in-out infinite}
-.scene .wb{left:61.500%;top:16.505%;width:7.688%;height:23.220%;animation:bodyb calc(var(--T)/2) ease-in-out infinite}
+.scene .aL{transform-origin:62.25% 22.98%;animation:armL calc(var(--T)/2) ease-in-out infinite}
+.scene .aR{transform-origin:65.75% 22.98%;animation:armR calc(var(--T)/2) ease-in-out infinite}
+.scene .hL{transform-origin:52.25% 22.65%;animation:handL calc(var(--T)/2) ease-in-out infinite .35s}
+.scene .hR{transform-origin:75.75% 22.65%;animation:handR calc(var(--T)/2) ease-in-out infinite .35s}
+.scene .e-armL{left:51.188%;top:18.932%;width:12.500%;height:14.239%}.scene .e-armR{left:64.375%;top:18.932%;width:12.312%;height:13.835%}.scene .e-handL{left:37.625%;top:15.777%;width:16.562%;height:14.806%}.scene .e-handR{left:73.750%;top:15.210%;width:16.375%;height:15.129%}.scene .e-body{left:59.375%;top:12.945%;width:9.000%;height:25.890%}
+.scene .wb{animation:bodyb calc(var(--T)/2) ease-in-out infinite}
 @keyframes glide{0%,100%{translate:0 0;rotate:0deg}25%{translate:.9% -1.1%;rotate:-1.1deg}50%{translate:1.5% .2%;rotate:.2deg}75%{translate:.5% 1%;rotate:1.2deg}}
-@keyframes flapL{0%,100%{transform:rotate(-2.6deg) scaleY(1.02)}50%{transform:rotate(3.8deg) scaleY(.965)}}
-@keyframes flapR{0%,100%{transform:rotate(2.6deg) scaleY(1.02)}50%{transform:rotate(-3.8deg) scaleY(.965)}}
+@keyframes armL{0%,100%{transform:rotate(3.5deg)}50%{transform:rotate(-4deg)}}
+@keyframes armR{0%,100%{transform:rotate(-3.5deg)}50%{transform:rotate(4deg)}}
+@keyframes handL{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-5deg)}}
+@keyframes handR{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
 @keyframes bodyb{0%,100%{transform:translateY(.25%)}50%{transform:translateY(-.35%)}}
 .scene .coin{left:38.188%;top:68.851%;width:23.500%;height:30.421%;border-radius:50%;overflow:hidden;animation:bob calc(var(--T)/2) ease-in-out infinite;transform:translate(calc(var(--cx,0)*1%),calc(var(--cy,0)*1%))}
 .scene .coin img{width:100%;height:100%;display:block}
@@ -492,7 +498,7 @@ footer{padding:40px 0;color:var(--muted);font-size:13px;display:flex;justify-con
 <i class="mist"></i><i class="water"></i>
 <i class="halo"></i>
 <div class="coin"><img src="img/coin.webp" alt=""></div>
-<div class="eagle"><img class="wl" src="img/eagle-l.webp" alt=""><img class="wr" src="img/eagle-r.webp" alt=""><img class="wb" src="img/eagle-b.webp" alt=""></div>
+<div class="eagle"><div class="aL"><div class="hL"><img class="e-handL" src="img/e-handL.webp" alt=""></div><img class="e-armL" src="img/e-armL.webp" alt=""></div><div class="aR"><div class="hR"><img class="e-handR" src="img/e-handR.webp" alt=""></div><img class="e-armR" src="img/e-armR.webp" alt=""></div><div class="wb"><img class="e-body" src="img/e-body.webp" alt=""></div></div>
 </div></div>
     <div class="vstory">
       <div><b>5 лет</b><span>курьером в Питере, около 20 заказов в день</span></div>
