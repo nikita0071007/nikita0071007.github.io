@@ -315,6 +315,38 @@ footer{padding:40px 0;color:var(--muted);font-size:13px;display:flex;justify-con
 #fx-burst{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
 .chat,.phone{transition:transform .25s ease-out;will-change:transform}
 @media(prefers-reduced-motion:reduce){.hero::before,.hero::after,.hero h1 .hl,.mark::after{animation:none}}
+/* ===== ЭФФЕКТЫ 2: мягкая подача (как на сайте Анжелики, в моих цветах) ===== */
+:root{--ease:cubic-bezier(.22,1,.36,1);interpolate-size:allow-keywords}
+.fx .rv{filter:blur(7px);transform:translateY(30px) scale(.985);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease);transition-delay:var(--d,0s)}
+.fx .rv.in{filter:none;transform:none}
+section h2::after{content:"";display:block;height:3px;width:64px;margin-top:12px;border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--warm));transition:width 1.1s var(--ease) .2s}
+.cta h2::after{background:var(--acc-ink)}
+.fx section h2:not(.ul)::after{width:0}
+.mf{padding:90px 0}
+.mf p{font-size:clamp(24px,4.2vw,46px);line-height:1.22;font-weight:700;letter-spacing:-.01em;max-width:920px}
+.fx .mf .w{color:#34474d;transition:color .55s var(--ease)}
+.fx .mf .w.on{color:var(--text)}
+.fx .mf .w.g.on{color:var(--acc)}
+.mf .w.g{color:var(--acc)}
+.steps{position:relative}
+.fx .steps::before,.fx .steps::after{content:"";position:absolute;left:0;right:0;top:-16px;height:2px;border-radius:2px;background:var(--line)}
+.fx .steps::after{background:linear-gradient(90deg,var(--acc),var(--warm));transform-origin:0 50%;transform:scaleX(var(--p,0));box-shadow:0 0 12px rgba(245,197,66,.5)}
+.card,.plat{position:relative}
+.card.tilt,.plat.tilt{transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-4px);transition:transform .12s linear,border-color .25s}
+.card::after,.plat::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(220px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.13),transparent 60%)}
+.tilt::after{opacity:1}
+.chat-top small::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%;background:var(--acc);vertical-align:1px;animation:ping 2.2s var(--ease) infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(245,197,66,.65)}75%,100%{box-shadow:0 0 0 9px rgba(245,197,66,0)}}
+details::details-content{block-size:0;overflow:clip;transition:block-size .45s var(--ease),content-visibility .45s allow-discrete}
+details[open]::details-content{block-size:auto}
+details summary::after{display:inline-block;transition:transform .4s var(--ease)}
+details[open] summary::after{transform:rotate(180deg)}
+.btn{position:relative;overflow:hidden}
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .7s var(--ease) forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.fx .scene.unv{clip-path:inset(0 0 100% 0 round 22px);transition:clip-path 1.4s var(--ease)}
+.fx .scene.unv.in{clip-path:inset(0 0 0 0 round 22px)}
+@media(prefers-reduced-motion:reduce){.chat-top small::before{animation:none}}
 </style>
 </head>
 <body>
@@ -548,6 +580,8 @@ footer{padding:40px 0;color:var(--muted);font-size:13px;display:flex;justify-con
 </div></section>
 
 <!-- STEPS -->
+<section class="mf"><div class="wrap"><p id="mf">Я не обещаю «чудо-бота». Я делаю так, чтобы клиенты получали <span class="g">ответ за секунду</span>, а вы — <span class="g">заявки</span>, пока спите.</p></div></section>
+
 <section><div class="wrap">
   <span class="tag">как работаю</span>
   <h2>Четыре шага</h2>
@@ -793,6 +827,39 @@ var snd=document.getElementById('send');if(snd)snd.addEventListener('click',func
    st.style.setProperty('--bx',(-x*1.6)+'%');st.style.setProperty('--by',(-y*1.6)+'%');
    eg.style.setProperty('--ex',(x*1.6));eg.style.setProperty('--ey',(y*1.2));cn.style.setProperty('--cx',(-x*.8));cn.style.setProperty('--cy',(-y*.6))});
   sc.addEventListener('mouseleave',function(){[st,eg,cn].forEach(function(n){['--bx','--by','--ex','--ey','--cx','--cy'].forEach(function(v){n.style.removeProperty(v)})})})}
+}catch(e){}})();
+</script>
+<script>
+/* ===== ЭФФЕКТЫ 2 ===== */
+(function(){try{
+if(matchMedia('(prefers-reduced-motion:reduce)').matches||!document.documentElement.classList.contains('fx'))return;
+var $$=function(q,r){return Array.prototype.slice.call((r||document).querySelectorAll(q))};
+var FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
+/* подчёркивание заголовков рисуется при появлении */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add(e.target.matches('.scene')?'in':'ul');io.unobserve(e.target)}})},{threshold:.3});
+$$('section h2').forEach(function(h){io.observe(h)});
+var sc=document.getElementById('scene');if(sc){sc.classList.add('unv');io.observe(sc)}
+/* манифест по словам */
+var mf=document.getElementById('mf');
+if(mf){var words=[];(function wrap(n,g){Array.prototype.slice.call(n.childNodes).forEach(function(c){
+ if(c.nodeType===3){var f=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(function(t){if(!t)return;if(/^\s+$/.test(t)){f.appendChild(document.createTextNode(t));return}
+  var w=document.createElement('span');w.className='w'+(g?' g':'');w.textContent=t;f.appendChild(w);words.push(w)});n.replaceChild(f,c)}
+ else if(c.nodeType===1){wrap(c,c.classList.contains('g'))}})})(mf,false)}
+var steps=document.querySelector('.steps'),tick=false;
+function upd(){tick=false;
+ if(mf){var r=mf.getBoundingClientRect(),p=(innerHeight*.82-r.top)/(r.height+innerHeight*.3);p=Math.max(0,Math.min(1,p));
+  var k=Math.round(p*words.length);words.forEach(function(w,i){w.classList.toggle('on',i<k)})}
+ if(steps){var q=steps.getBoundingClientRect(),pp=(innerHeight*.85-q.top)/(q.height+innerHeight*.25);steps.style.setProperty('--p',Math.max(0,Math.min(1,pp)).toFixed(3))}}
+addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});addEventListener('resize',upd);upd();
+/* наклон и блик карточек */
+if(FINE)$$('.card,.plat').forEach(function(c){
+ c.addEventListener('pointermove',function(e){var b=c.getBoundingClientRect(),x=(e.clientX-b.left)/b.width,y=(e.clientY-b.top)/b.height;
+  c.classList.add('tilt');c.style.setProperty('--ry',((x-.5)*8).toFixed(2)+'deg');c.style.setProperty('--rx',((.5-y)*6).toFixed(2)+'deg');
+  c.style.setProperty('--gx',(x*100)+'%');c.style.setProperty('--gy',(y*100)+'%')});
+ c.addEventListener('pointerleave',function(){c.classList.remove('tilt');c.style.removeProperty('--rx');c.style.removeProperty('--ry')})});
+/* волна на кнопках */
+document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.btn');if(!b)return;var r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2.2,i=document.createElement('i');
+ i.className='rip';i.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';b.appendChild(i);setTimeout(function(){i.remove()},750)});
 }catch(e){}})();
 </script>
 </body>
