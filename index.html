@@ -348,6 +348,32 @@ details[open] summary::after{transform:rotate(180deg)}
 .fx .scene.unv.in{clip-path:inset(0 0 0 0 round 22px)}
 @media(prefers-reduced-motion:reduce){.chat-top small::before{animation:none}}
 </style>
+<style id="unslop">
+/* unslop · polish pass: убраны признаки «сделано нейросетью», бренд и структура сохранены */
+/* 1 Цвет: без плавающих свечений и искр на фоне героя */
+.hero::before,.hero::after{display:none}
+#fx-sparks{display:none!important}
+/* 2 Заголовок: сплошной цвет вместо градиента-шимера, вес легче */
+.hero h1 .hl{background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:var(--acc);color:var(--acc);animation:none}
+h1{font-weight:500}
+h2,h3{font-weight:500;letter-spacing:0}
+/* 3 Подписи разделов: тихий текст вместо плашек-пилюль */
+.tag{border:0;background:none;padding:0;margin-bottom:14px;color:var(--muted);font-size:13px;border-radius:0}
+/* 4 Логотип: плоская монета без блика и объёма */
+.mark{background:var(--acc);box-shadow:inset 0 0 0 2px #b97f12}
+.mark::after{display:none}
+/* 5 Движение: статус «онлайн» не пульсирует, полоса шагов без свечения, появление без размытия */
+.chat-top small::before{animation:none}
+.fx .steps::after{background:var(--acc);box-shadow:none}
+.fx .rv,.fx .rv.in{filter:none}
+/* 6 Цифры: одинаковая ширина */
+.hero .stats b,.hero .stats strong{font-variant-numeric:tabular-nums}
+</style>
+<style id="eagle-real">
+/* орёл: одно фото вместо собранных слоёв; плавное парение и лёгкий крен */
+.scene .eagle>.e-real{inset:auto;left:35%;top:12%;width:58%;height:auto;transform-origin:50% 42%;animation:bank calc(var(--T)*1.5) ease-in-out infinite;filter:drop-shadow(0 10px 14px rgba(15,35,55,.28))}
+@keyframes bank{0%,100%{transform:perspective(1100px) rotateY(-5deg)}50%{transform:perspective(1100px) rotateY(5deg)}}
+</style>
 </head>
 <body>
 
@@ -530,7 +556,7 @@ details[open] summary::after{transform:rotate(180deg)}
 <i class="mist"></i><i class="water"></i>
 <i class="halo"></i>
 <div class="coin"><img src="img/coin.webp" alt=""></div>
-<div class="eagle"><div class="aL"><div class="hL"><img class="e-handL" src="img/e-handL.webp" alt=""></div><img class="e-armL" src="img/e-armL.webp" alt=""></div><div class="aR"><div class="hR"><img class="e-handR" src="img/e-handR.webp" alt=""></div><img class="e-armR" src="img/e-armR.webp" alt=""></div><div class="wb"><img class="e-body" src="img/e-body.webp" alt=""></div></div>
+<div class="eagle"><img class="e-real" src="img/eagle-real.webp" alt="" width="1100" height="392" loading="lazy" decoding="async"></div>
 </div></div>
     <div class="vstory">
       <div><b>5 лет</b><span>курьером в Питере, около 20 заказов в день</span></div>
@@ -681,7 +707,7 @@ function ask(t){
    .then(r=>r.json()).then(d=>{clearTimeout(timer);if(!d||!d.reply)throw 0;show(esc(d.reply),d.reply)})
    .catch(()=>{clearTimeout(timer);local()});
 }
-setTimeout(()=>add('Здравствуйте! Я Марина, менеджер заказов у Никиты 👵\nДнём гуляю по его игре «Бабушкина дача», а здесь помогаю с заказами. Спросите, сколько стоит бот, сайт, игра или ИИ-агент — отвечу сразу.','bot'),400);
+setTimeout(()=>add('Здравствуйте! Я Марина, менеджер заказов у Никиты.\nДнём гуляю по его игре «Бабушкина дача», а здесь помогаю с заказами. Спросите, сколько стоит бот, сайт, игра или ИИ-агент — отвечу сразу.','bot'),400);
 $('#f').addEventListener('submit',e=>{e.preventDefault();ask($('#q').value);$('#q').value=''});
 $('#chips').addEventListener('click',e=>{if(e.target.tagName==='BUTTON')ask(e.target.textContent)});
 
