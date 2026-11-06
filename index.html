@@ -373,6 +373,41 @@ h2,h3{font-weight:500;letter-spacing:0}
 /* орёл: одно фото вместо собранных слоёв; плавное парение и лёгкий крен */
 .scene .eagle>.e-real{inset:auto;left:35%;top:12%;width:58%;height:auto;transform-origin:50% 42%;animation:bank calc(var(--T)*1.5) ease-in-out infinite;filter:drop-shadow(0 10px 14px rgba(15,35,55,.28))}
 @keyframes bank{0%,100%{transform:perspective(1100px) rotateY(-5deg)}50%{transform:perspective(1100px) rotateY(5deg)}}
+/* GUSEVMADE 2026 — авторская витрина, золотая монета остаётся фирменным знаком */
+:root{--bg:#090e13;--bg2:#101820;--card:#152129;--line:#30404a;--text:#f7f6ee;--muted:#a5b5bd;--acc:#f6c94d;--radius:22px}
+body{background:radial-gradient(ellipse 900px 600px at 75% 0%,rgba(246,201,77,.085),transparent 70%),radial-gradient(ellipse 650px 480px at 0% 23%,rgba(124,198,232,.06),transparent 72%),var(--bg)}
+.wrap{max-width:1240px;padding-inline:clamp(18px,4vw,44px)}
+header{background:rgba(9,14,19,.86);border-bottom:1px solid rgba(246,201,77,.15)}
+nav{height:78px}
+.logo{letter-spacing:-.04em}
+.mark{box-shadow:inset 0 0 0 2px #b97f12,0 0 0 4px rgba(246,201,77,.08),0 8px 26px rgba(246,201,77,.24)}
+.menu a{transition:color .2s}
+.btn{border-radius:15px;transition:transform .22s,border-color .22s,background .22s,box-shadow .22s}
+.btn:hover{transform:translateY(-2px)}
+.btn.acc{box-shadow:0 10px 28px rgba(246,201,77,.16)}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #f6c94d;outline-offset:3px}
+.hero{position:relative;padding:clamp(68px,8vw,122px) 0 105px;overflow:hidden}
+.hero::before{content:"G";position:absolute;right:-.05em;top:-.25em;font:900 clamp(300px,45vw,680px)/1 Unbounded,sans-serif;color:rgba(246,201,77,.035);pointer-events:none}
+.hero-grid{position:relative;grid-template-columns:1.06fr .94fr;gap:clamp(28px,5vw,76px)}
+.hero h1{font-size:clamp(38px,5.2vw,76px);line-height:1.06;letter-spacing:-.055em;max-width:760px;text-wrap:balance}
+.hero h1 .hl{color:var(--acc);background:linear-gradient(120deg,#ffe8a0 5%,#f6c94d 50%,#db9b25);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero .lead{color:#c4d0d3;font-size:clamp(16px,1.5vw,19px);line-height:1.8}
+.hero .tag{margin-bottom:24px}
+.tag{padding:8px 14px;letter-spacing:.08em;text-transform:uppercase;background:rgba(246,201,77,.07);border-color:rgba(246,201,77,.36)}
+.facts{gap:12px;margin-top:46px}
+.facts div{padding:17px 18px;border:1px solid rgba(246,201,77,.14);border-radius:17px;background:rgba(255,255,255,.025);min-width:145px}
+.facts div b{font-size:clamp(16px,1.65vw,21px);color:#ffe08a}
+.facts div span{display:block;margin-top:5px}
+.chat{border:1px solid rgba(246,201,77,.25);border-radius:26px;box-shadow:0 40px 110px -45px rgba(0,0,0,.85),0 0 55px rgba(246,201,77,.055);transform:rotate(1deg);transition:transform .4s}
+.chat:hover,.chat:focus-within{transform:rotate(0)}
+section{scroll-margin-top:85px}
+section:not(.hero){position:relative}
+section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
+.panel,.tab,.prow,.cta{transition:border-color .2s,box-shadow .2s}
+.panel:hover,.tab:hover{border-color:rgba(246,201,77,.35)}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero h1{max-width:720px}.chat{transform:none;max-width:650px;width:100%;margin-inline:auto}.hero::before{top:0;opacity:.5}}
+@media(max-width:600px){nav{height:68px}.hero{padding:55px 0 70px}.hero h1{font-size:clamp(34px,9.3vw,52px)}.hero .lead{line-height:1.65}.facts{gap:8px;margin-top:28px}.facts div{min-width:calc(50% - 8px);padding:13px}.chat{height:490px}.actions .btn{justify-content:center}.hero::before{font-size:300px;right:-90px;top:20px}}
+@media(prefers-reduced-motion:reduce){.btn,.chat{transition:none!important}.btn:hover{transform:none}.chat:hover,.chat:focus-within{transform:none}}
 </style>
 </head>
 <body>
@@ -391,7 +426,7 @@ h2,h3{font-weight:500;letter-spacing:0}
 <section class="hero"><div class="wrap hero-grid">
   <div>
     <span class="tag">GUSEVMADE · сделано Гусевым</span>
-    <h1>Делаю то, что <span class="hl">работает у меня самого</span></h1>
+    <h1>Идеи превращаю <span class="hl">в работающие цифровые продукты.</span></h1>
     <p class="lead">Telegram-боты для записи и заявок, сайты, HTML5-игры и веб-приложения для ВКонтакте, Одноклассников, Яндекс Игр и MAX. Каждую вещь, которую предлагаю, я сначала сделал и запустил для себя. Цены в рублях, код остаётся у вас.</p>
     <div class="actions">
       <a class="btn acc" href="#calc">Посчитать свой проект</a>
