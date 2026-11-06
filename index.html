@@ -541,6 +541,21 @@ header nav{height:72px}header .logo{font-size:17px}header nav>.btn{font-size:11p
 }
 @keyframes cover-eagle-arrive{0%{opacity:0;transform:translate3d(35vw,-24vh,0) scale(.5) rotate(-16deg)}20%{opacity:1}50%{transform:translate3d(6vw,-7vh,0) scale(1.08) rotate(-8deg)}76%,100%{opacity:1;transform:translate3d(0,0,0) scale(1) rotate(-6deg)}}
 @keyframes cover-coin-arrive{0%{opacity:0;transform:translate3d(30vw,-23vh,0) scale(.4)}28%{opacity:1}66%{transform:translate3d(0,-10px,0) scale(1.06)}78%,100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+</style><style id="altai-cover-polish">
+/* final composition and functional replay */
+.hero-cover .altai-art{z-index:-1}
+.hero-cover .altai-copy{isolation:isolate}
+.hero-cover .altai-bg{object-position:50% 46%}
+.hero-cover .cover-benefits{border-top:1px solid rgba(230,197,135,.22)}
+.hero-cover .cover-benefits>div{padding:8px 4px}
+.hero-cover .cover-benefit-icon{text-shadow:0 0 16px rgba(231,173,72,.28)}
+.hero-cover .altai-energy,.hero-cover .altai-flash{z-index:4}
+.replay-intro{position:absolute;right:clamp(18px,4vw,48px);bottom:clamp(190px,17vw,240px);z-index:9;border:1px solid rgba(235,194,113,.55);border-radius:999px;padding:9px 15px;background:rgba(9,17,25,.65);color:#f6d38e;cursor:pointer;font:500 12px Manrope,sans-serif;backdrop-filter:blur(8px);transition:background .2s}
+.replay-intro:hover,.replay-intro:focus-visible{background:rgba(124,85,29,.5)}
+.hero-cover .altai-art::after{pointer-events:none}
+@media(max-width:900px){.replay-intro{right:22px;bottom:230px}}
+@media(max-width:600px){.replay-intro{bottom:203px;right:15px;padding:9px 12px}.replay-intro span{display:none}.hero-cover .cover-benefits{border-top-color:rgba(230,197,135,.3)}}
+@media(prefers-reduced-motion:reduce){.replay-intro{display:none}}
 </style></head>
 <body>
 
@@ -569,6 +584,7 @@ header nav{height:72px}header .logo{font-size:17px}header nav>.btn{font-size:11p
     <p class="lead">Лендинги, сайты для бизнеса, Telegram-боты и цифровые сервисы.<br>От идеи и дизайна до запуска и поддержки.</p>
     <div class="actions"><a class="btn acc" data-contact href="https://t.me/daspasibog" target="_blank" rel="noopener noreferrer">Заказать проект <span aria-hidden="true">→</span></a><a class="btn" href="#work">◉ &nbsp; Смотреть работы</a></div>
   </div></div>
+  <button class="replay-intro" type="button" aria-label="Повторить полёт орла" title="Повторить анимацию">↻ <span>Повторить полёт</span></button>
   <div class="wrap cover-benefits">
     <div><span class="cover-benefit-icon" aria-hidden="true">ϟ</span><b>Быстрый запуск</b><small>Сроки обсуждаем до старта</small></div>
     <div><span class="cover-benefit-icon" aria-hidden="true">◎</span><b>Понятные цены</b><small>Без скрытых доплат</small></div>
@@ -1072,11 +1088,21 @@ document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.ta
   var hero=document.querySelector('.hero-altai');
   if(!hero||!window.matchMedia||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   try{
-    if(sessionStorage.getItem('gusevmade-altai-intro-v1'))return;
-    sessionStorage.setItem('gusevmade-altai-intro-v1','1');
+    var seen=sessionStorage.getItem('gusevmade-altai-intro-v2');
+    sessionStorage.setItem('gusevmade-altai-intro-v2','1');
+    if(seen){var replay=document.querySelector('.replay-intro');if(replay)replay.addEventListener('click',function(){hero.classList.remove('intro-play');void hero.offsetWidth;hero.classList.add('intro-play');window.setTimeout(function(){hero.classList.remove('intro-play')},5400)});return;}
   }catch(e){}
-  hero.classList.add('intro-play');
-  window.setTimeout(function(){hero.classList.remove('intro-play')},5400);
+  var timeout;
+  function play(){
+    hero.classList.remove('intro-play');
+    void hero.offsetWidth;
+    hero.classList.add('intro-play');
+    window.clearTimeout(timeout);
+    timeout=window.setTimeout(function(){hero.classList.remove('intro-play')},5400);
+  }
+  var replay=document.querySelector('.replay-intro');
+  if(replay)replay.addEventListener('click',play);
+  play();
 })();
 </script></body>
 </html>
