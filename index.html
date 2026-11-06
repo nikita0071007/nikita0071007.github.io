@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>gusevmade — боты, сайты, игры и веб-приложения</title>
+<title>GUSEVMADE — сделано Гусевым | сайты и цифровые продукты</title>
 <meta name="description" content="Никита Гусев: Telegram-боты, сайты, HTML5-игры и веб-приложения для ВКонтакте, Одноклассников, Яндекс Игр и MAX. Всё, что предлагаю, сначала сделал и запустил сам. Цены в рублях.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f5c542' stroke='%23b97f12' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23a06a00' stroke-width='2'/%3E%3Ctext x='32' y='43' font-family='Arial' font-weight='900' font-size='30' text-anchor='middle' fill='%232a1d00'%3EG%3C/text%3E%3C/svg%3E">
 <link rel="canonical" href="https://gusevmade.ru/">
 <meta property="og:url" content="https://gusevmade.ru/">
-<meta property="og:title" content="GUSEVMADE — боты, сайты, игры и ИИ-агенты">
+<meta property="og:title" content="GUSEVMADE — сделано Гусевым | сайты и цифровые продукты">
 <meta property="og:description" content="Делаю то, что работает у меня самого. Цены в рублях, код остаётся у вас.">
 <meta property="og:image" content="https://gusevmade.ru/og-cover.jpg">
 <meta property="og:image:width" content="1200">
@@ -373,6 +373,41 @@ h2,h3{font-weight:500;letter-spacing:0}
 /* орёл: одно фото вместо собранных слоёв; плавное парение и лёгкий крен */
 .scene .eagle>.e-real{inset:auto;left:35%;top:12%;width:58%;height:auto;transform-origin:50% 42%;animation:bank calc(var(--T)*1.5) ease-in-out infinite;filter:drop-shadow(0 10px 14px rgba(15,35,55,.28))}
 @keyframes bank{0%,100%{transform:perspective(1100px) rotateY(-5deg)}50%{transform:perspective(1100px) rotateY(5deg)}}
+/* GUSEVMADE 2026 — авторская витрина, золотая монета остаётся фирменным знаком */
+:root{--bg:#090e13;--bg2:#101820;--card:#152129;--line:#30404a;--text:#f7f6ee;--muted:#a5b5bd;--acc:#f6c94d;--radius:22px}
+body{background:radial-gradient(ellipse 900px 600px at 75% 0%,rgba(246,201,77,.085),transparent 70%),radial-gradient(ellipse 650px 480px at 0% 23%,rgba(124,198,232,.06),transparent 72%),var(--bg)}
+.wrap{max-width:1240px;padding-inline:clamp(18px,4vw,44px)}
+header{background:rgba(9,14,19,.86);border-bottom:1px solid rgba(246,201,77,.15)}
+nav{height:78px}
+.logo{letter-spacing:-.04em}
+.mark{box-shadow:inset 0 0 0 2px #b97f12,0 0 0 4px rgba(246,201,77,.08),0 8px 26px rgba(246,201,77,.24)}
+.menu a{transition:color .2s}
+.btn{border-radius:15px;transition:transform .22s,border-color .22s,background .22s,box-shadow .22s}
+.btn:hover{transform:translateY(-2px)}
+.btn.acc{box-shadow:0 10px 28px rgba(246,201,77,.16)}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #f6c94d;outline-offset:3px}
+.hero{position:relative;padding:clamp(68px,8vw,122px) 0 105px;overflow:hidden}
+.hero::before{content:"G";position:absolute;right:-.05em;top:-.25em;font:900 clamp(300px,45vw,680px)/1 Unbounded,sans-serif;color:rgba(246,201,77,.035);pointer-events:none}
+.hero-grid{position:relative;grid-template-columns:1.06fr .94fr;gap:clamp(28px,5vw,76px)}
+.hero h1{font-size:clamp(38px,5.2vw,76px);line-height:1.06;letter-spacing:-.055em;max-width:760px;text-wrap:balance}
+.hero h1 .hl{color:var(--acc);background:linear-gradient(120deg,#ffe8a0 5%,#f6c94d 50%,#db9b25);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero .lead{color:#c4d0d3;font-size:clamp(16px,1.5vw,19px);line-height:1.8}
+.hero .tag{margin-bottom:24px}
+.tag{padding:8px 14px;letter-spacing:.08em;text-transform:uppercase;background:rgba(246,201,77,.07);border-color:rgba(246,201,77,.36)}
+.facts{gap:12px;margin-top:46px}
+.facts div{padding:17px 18px;border:1px solid rgba(246,201,77,.14);border-radius:17px;background:rgba(255,255,255,.025);min-width:145px}
+.facts div b{font-size:clamp(16px,1.65vw,21px);color:#ffe08a}
+.facts div span{display:block;margin-top:5px}
+.chat{border:1px solid rgba(246,201,77,.25);border-radius:26px;box-shadow:0 40px 110px -45px rgba(0,0,0,.85),0 0 55px rgba(246,201,77,.055);transform:rotate(1deg);transition:transform .4s}
+.chat:hover,.chat:focus-within{transform:rotate(0)}
+section{scroll-margin-top:85px}
+section:not(.hero){position:relative}
+section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
+.panel,.tab,.prow,.cta{transition:border-color .2s,box-shadow .2s}
+.panel:hover,.tab:hover{border-color:rgba(246,201,77,.35)}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero h1{max-width:720px}.chat{transform:none;max-width:650px;width:100%;margin-inline:auto}.hero::before{top:0;opacity:.5}}
+@media(max-width:600px){nav{height:68px}.hero{padding:55px 0 70px}.hero h1{font-size:clamp(34px,9.3vw,52px)}.hero .lead{line-height:1.65}.facts{gap:8px;margin-top:28px}.facts div{min-width:calc(50% - 8px);padding:13px}.chat{height:490px}.actions .btn{justify-content:center}.hero::before{font-size:300px;right:-90px;top:20px}}
+@media(prefers-reduced-motion:reduce){.btn,.chat{transition:none!important}.btn:hover{transform:none}.chat:hover,.chat:focus-within{transform:none}}
 </style>
 </head>
 <body>
@@ -390,8 +425,8 @@ h2,h3{font-weight:500;letter-spacing:0}
 <!-- HERO -->
 <section class="hero"><div class="wrap hero-grid">
   <div>
-    <span class="tag">боты · сайты · игры · веб-приложения</span>
-    <h1>Делаю то, что <span class="hl">работает у меня самого</span></h1>
+    <span class="tag">GUSEVMADE · сделано Гусевым</span>
+    <h1>Идеи превращаю <span class="hl">в работающие цифровые продукты.</span></h1>
     <p class="lead">Telegram-боты для записи и заявок, сайты, HTML5-игры и веб-приложения для ВКонтакте, Одноклассников, Яндекс Игр и MAX. Каждую вещь, которую предлагаю, я сначала сделал и запустил для себя. Цены в рублях, код остаётся у вас.</p>
     <div class="actions">
       <a class="btn acc" href="#calc">Посчитать свой проект</a>
@@ -506,7 +541,7 @@ h2,h3{font-weight:500;letter-spacing:0}
 <section id="calc"><div class="wrap">
   <span class="tag">калькулятор</span>
   <h2>Посчитайте на своих цифрах</h2>
-  <p class="sub">Слева — сколько вы теряете на заявках, на которые никто не ответил вовремя. Справа — сколько стоит это закрыть. Формула открыта.</p>
+  <p class="sub">Слева — оценка возможной недополученной выручки по заданным допущениям, а не гарантированная потеря. Справа — ориентировочная стоимость разработки. Формула открыта.</p>
   <div class="calc">
     <div class="panel">
       <h3>Сколько уходит мимо</h3>
@@ -515,10 +550,10 @@ h2,h3{font-weight:500;letter-spacing:0}
       <div class="field"><label>Остаются без ответа больше часа <output id="o2">20%</output></label><input type="range" id="r2" min="0" max="70" value="20"></div>
       <div class="field"><label>Средний чек <output id="o3">3 000 ₽</output></label><input type="range" id="r3" min="500" max="30000" step="500" value="3000"></div>
       <div class="result">
-        <span class="mono">теряете в месяц, примерно</span>
+        <span class="mono">потенциальная недополученная выручка в месяц</span>
         <div class="big" id="loss">0 ₽</div>
-        <div class="row">Бот с записью окупится за <b id="pay">—</b></div>
-        <div class="formula">заявки × доля без ответа × 30 дней × 30% (покупают) × чек</div>
+        <div class="row">Условный срок покрытия стоимости бота за 15 000 ₽ <b id="pay">—</b></div>
+        <div class="formula">Сценарий, не прогноз: заявки × доля без ответа × 30 дней × 30% (условная конверсия) × средний чек. Не учитывает расходы и прибыль.</div>
       </div>
     </div>
     <div class="panel">
@@ -536,8 +571,8 @@ h2,h3{font-weight:500;letter-spacing:0}
         <label class="opt"><input type="checkbox" data-p="5000" data-d="5"><span>Публикация игры на Яндекс Играх, в ВК и ОК</span><em>+5 000 ₽</em></label>
         <label class="opt"><input type="checkbox" data-p="60000" data-d="25"><span>Команда ИИ-агентов для соцсетей</span><em>+60 000 ₽</em></label>
       </div>
-      <div class="total"><div><span class="mono">ориентир за разработку</span><div class="big" id="sum">3 000 ₽</div></div><div class="mono" id="days">≈ 3 дня</div></div>
-      <p class="mono" style="margin:-6px 0 14px">+ сервер или хостинг отдельно, обычно 150–750 ₽/мес — платите напрямую хостингу</p>
+      <div class="total"><div><span class="mono">ориентир за разработку</span><div class="big" id="sum">5 000 ₽</div></div><div class="mono" id="days">≈ 3 дня</div></div>
+      <p class="mono" style="margin:-6px 0 14px">Смета предварительная: сроки и итоговая цена уточняются после обсуждения. Сервер или хостинг оплачиваются отдельно.</p>
       <button class="btn acc" id="send" style="width:100%;justify-content:center">Отправить смету в Telegram</button>
     </div>
   </div>
@@ -629,7 +664,7 @@ h2,h3{font-weight:500;letter-spacing:0}
   <details><summary>Есть ли ежемесячная плата мне?</summary><p>Не обязательно. После сдачи и 14 дней бесплатных правок вы мне ничего не должны. По желанию можно взять поддержку: для бота или сайта — 1 500–5 000 ₽ в месяц, для игры — 3 000–10 000 ₽, для ИИ-агентов — 5 000–15 000 ₽. Сумма зависит от объёма работы. Для ИИ-агентов поддержку советую: модели и сервисы меняются, ответы нужно держать в форме.</p></details>
   <details><summary>А если бот ответит клиенту неправильно?</summary><p>Бот отвечает только по вашим материалам. Если не уверен — зовёт вас, а не выдумывает. Первое время вы читаете реальные диалоги, и мы подправляем ответы.</p></details>
   <details><summary>Я не разбираюсь в технике. Справлюсь?</summary><p>Разбираться не нужно. От вас — прайс и ответы на частые вопросы клиентов. Остальное делаю я и оставляю простую инструкцию: где смотреть заявки и что нажать.</p></details>
-  <details><summary>Чем ИИ-агент отличается от обычного бота?</summary><p>Обычный бот работает по кнопкам и заготовленным ответам. ИИ-агент понимает свободный текст, отвечает по вашим материалам и сам выполняет задачи: пишет посты, публикует, разбирает заявки. У меня самого 9 таких агентов, и каждый делает свою работу.</p></details>
+  <details><summary>Чем ИИ-агент отличается от обычного бота?</summary><p>Обычный бот работает по кнопкам и заготовленным ответам. ИИ-агент понимает свободный текст, отвечает по вашим материалам и сам выполняет задачи: пишет посты, публикует, разбирает заявки. У меня самого 10 таких агентов, и каждый делает свою работу.</p></details>
   <details><summary>Можно выложить игру на Яндекс Игры, во ВКонтакте и Одноклассники?</summary><p>Да. Я сам прохожу этот путь со своей игрой: подключаю SDK площадки, рекламу и сохранения, готовлю игру к модерации.</p></details>
   <details><summary>Как оплачивать?</summary><p>В рублях по СБП, частями: половина на старте, половина после сдачи. После оплаты — чек.</p></details>
   <details><summary>Что нужно от меня, чтобы начать?</summary><p>Написать пару строк о вашем деле и задаче. Для бота — прайс и ответы на частые вопросы клиентов, для сайта — тексты и фото (если нет — помогу). Остальное — моя работа.</p></details>
@@ -752,9 +787,11 @@ function sum(){
 $('#opts').addEventListener('change',sum);sum();
 $('#send').addEventListener('click',()=>{
   const {s,items}=sum();
-  const txt='Здравствуйте! Хочу посчитать проект:\n— '+items.join('\n— ')+'\nОриентир с сайта: '+fmt(s);
-  const done=()=>{toast('Смета скопирована — вставьте её в чат');setTimeout(()=>window.open(TG,'_blank'),600)};
-  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(done,()=>window.open(TG,'_blank'));else window.open(TG,'_blank');
+  const txt='Здравствуйте! Хочу посчитать проект:\n— '+(items.length?items.join('\n— '):'Пока не выбрал услуги')+'\nОриентир с сайта: '+fmt(s);
+  const chat=window.open(TG,'_blank','noopener');
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(()=>toast('Смета скопирована — вставьте её в чат'),()=>toast('Смета готова — отправьте её в Telegram'));}
+  else toast('Смета готова — отправьте её в Telegram');
+  if(!chat)window.location.href=TG;
 });
 </script>
 
@@ -838,7 +875,7 @@ function burst(x,y,n){if(!bc){bc=document.createElement('canvas');bc.id='fx-burs
    bx.restore();return true});
   if(coins.length)requestAnimationFrame(f);else{bon=false;bx.clearRect(0,0,innerWidth,innerHeight)}})}}
 function dpr0(){return Math.min(2,devicePixelRatio||1)}
-$$('.mark').forEach(function(m){m.addEventListener('click',function(e){e.preventDefault();var r=m.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,34)})});
+$$('.mark').forEach(function(m){m.addEventListener('click',function(){var r=m.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,34)})});
 var snd=document.getElementById('send');if(snd)snd.addEventListener('click',function(e){var r=snd.getBoundingClientRect();burst(r.left+r.width/2,r.top,30)});
 }catch(err){try{document.documentElement.classList.remove('fx');console.warn('fx',err)}catch(e){}}})();
 </script>
