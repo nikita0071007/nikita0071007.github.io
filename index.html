@@ -442,6 +442,35 @@ section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
 @media(max-width:900px){.hero-altai{min-height:730px}.altai-eagle{width:58vw;right:-5%;top:17%;opacity:.6}.altai-coin{right:14%;top:53%;opacity:.7}.altai-art::after{background:linear-gradient(90deg,rgba(5,12,18,.92),rgba(5,12,18,.43)),linear-gradient(0deg,rgba(5,12,18,.85),transparent 45%)}.assistant-grid{grid-template-columns:1fr;gap:32px}.service-cards{grid-template-columns:1fr}.service-tile{min-height:0}.assistant-section .chat{margin:auto}}
 @media(max-width:600px){.hero-altai{min-height:730px}.altai-content{padding-top:120px}.hero-altai h1{font-size:clamp(38px,10vw,52px)}.altai-eagle{width:85vw;right:-22%;top:42%;opacity:.33}.altai-coin{width:120px;right:8%;top:66%;opacity:.55}.altai-sign{margin-top:42px}.altai-bottom{font-size:9px}.altai-bottom span:nth-child(2){display:none}.hero-altai .actions{flex-direction:column;align-items:flex-start}.hero-altai .btn{min-width:210px;justify-content:center}}
 @media(prefers-reduced-motion:reduce){.altai-eagle,.altai-coin{animation:none}}
+</style><style id="altai-intro-motion">
+/* First-visit cinematic sequence: progressive enhancement, no blocking overlay */
+@media(prefers-reduced-motion:no-preference){
+.hero-altai.intro-play .altai-eagle{animation:eagle-arrival 4.9s cubic-bezier(.22,.72,.2,1) both!important;transform-origin:50% 65%}
+.hero-altai.intro-play .altai-coin{animation:coin-arrival 4.9s cubic-bezier(.22,.72,.2,1) both!important}
+.hero-altai.intro-play .altai-bg{animation:altai-camera 5s ease-out both}
+.hero-altai.intro-play .altai-copy>*{animation:altai-reveal .8s ease-out 3.7s both}
+.hero-altai.intro-play .altai-bottom{animation:altai-reveal .8s ease-out 4.1s both}
+.hero-altai.intro-play .altai-flash{animation:altai-pulse 1.3s ease-out 3.05s both}
+.hero-altai.intro-play .altai-energy i{animation:altai-spark 1.15s ease-out both}
+.hero-altai.intro-play .altai-energy i:nth-child(1){animation-delay:3.04s;--rot:12deg}
+.hero-altai.intro-play .altai-energy i:nth-child(2){animation-delay:3.13s;--rot:68deg}
+.hero-altai.intro-play .altai-energy i:nth-child(3){animation-delay:3.08s;--rot:135deg}
+.hero-altai.intro-play .altai-energy i:nth-child(4){animation-delay:3.17s;--rot:205deg}
+.hero-altai.intro-play .altai-energy i:nth-child(5){animation-delay:3.1s;--rot:260deg}
+.hero-altai.intro-play .altai-energy i:nth-child(6){animation-delay:3.2s;--rot:320deg}
+}
+.altai-energy,.altai-flash{position:absolute;pointer-events:none;z-index:2;left:calc(79% - clamp(60px,7.5vw,117px));top:calc(50% + clamp(60px,7.5vw,117px));width:clamp(120px,15vw,235px);aspect-ratio:1}
+.altai-energy i{position:absolute;top:50%;left:50%;width:3px;height:75px;border-radius:50%;opacity:0;transform-origin:center top;background:linear-gradient(#fff9bd,#ffca4a 35%,transparent);filter:drop-shadow(0 0 7px #ffbf29)}
+.altai-flash{border-radius:50%;background:radial-gradient(circle,rgba(255,250,200,.75),rgba(246,201,77,.2) 30%,transparent 70%);opacity:0;transform:scale(.2);mix-blend-mode:screen}
+@keyframes eagle-arrival{0%{opacity:0;transform:translate3d(52vw,-32vh,0) scale(.45) rotate(-24deg)}18%{opacity:1}35%{transform:translate3d(10vw,-12vh,0) scale(.86) rotate(-13deg)}51%{transform:translate3d(3vw,-4vh,0) scale(1.04) rotate(-5deg)}63%{transform:translate3d(0,1.5vh,0) scale(1.01) rotate(-10deg)}76%,100%{opacity:1;transform:translate3d(0,0,0) scale(1) rotate(-8deg)}}
+@keyframes coin-arrival{0%,20%{opacity:0;transform:translate3d(35vw,-23vh,0) scale(.45) rotate(-30deg)}36%{opacity:1}64%{transform:translate3d(0,-2vh,0) scale(1.08) rotate(7deg)}78%,100%{opacity:1;transform:translate3d(0,0,0) scale(1) rotate(0)}}
+@keyframes altai-camera{from{transform:scale(1.09)}to{transform:scale(1)}}
+@keyframes altai-reveal{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes altai-pulse{0%,100%{opacity:0;transform:scale(.25)}25%{opacity:.9;transform:scale(.75)}65%{opacity:.55;transform:scale(1.6)}}
+@keyframes altai-spark{0%,100%{opacity:0;transform:rotate(var(--rot)) scaleY(.1)}30%{opacity:1;transform:rotate(var(--rot)) scaleY(1)}75%{opacity:.65;transform:rotate(var(--rot)) scaleY(.5)}}
+@media(max-width:900px){.altai-energy,.altai-flash{left:calc(86% - 7.5vw);top:calc(53% + 7.5vw)}}
+@media(max-width:600px){.altai-energy,.altai-flash{left:calc(92% - 60px);top:calc(66% + 60px)}.altai-energy i{height:40px}.hero-altai.intro-play .altai-eagle{animation-duration:3.6s!important}.hero-altai.intro-play .altai-coin{animation-duration:3.6s!important}.hero-altai.intro-play .altai-copy>*{animation-delay:2.7s}.hero-altai.intro-play .altai-bottom{animation-delay:3s}.hero-altai.intro-play .altai-flash{animation-delay:2.3s}.hero-altai.intro-play .altai-energy i{animation-delay:2.35s}}
+@media(prefers-reduced-motion:reduce){.altai-energy,.altai-flash{display:none}}
 </style></head>
 <body>
 
@@ -457,7 +486,7 @@ section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
 
 <!-- HERO: Алтай, орёл, монета -->
 <section class="hero hero-altai" aria-labelledby="hero-title">
-<div class="altai-art" aria-hidden="true"><img class="altai-bg" src="img/scene-bg.jpg" alt="" fetchpriority="high"><img class="altai-eagle" src="img/eagle-real.webp" alt=""><img class="altai-coin" src="img/coin.webp" alt=""></div>
+<div class="altai-art" aria-hidden="true"><img class="altai-bg" src="img/scene-bg.jpg" alt="" fetchpriority="high"><img class="altai-eagle" src="img/eagle-real.webp" alt=""><img class="altai-coin" src="img/coin.webp" alt=""><div class="altai-energy"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="altai-flash"></div></div>
 <div class="wrap altai-content"><div class="altai-copy">
 <span class="tag">GUSEVMADE / СДЕЛАНО ГУСЕВЫМ</span>
 <h1 id="hero-title">Сайты, которые <span class="hl">выглядят убедительно.</span></h1>
@@ -956,5 +985,16 @@ document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.ta
  i.className='rip';i.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';b.appendChild(i);setTimeout(function(){i.remove()},750)});
 }catch(e){}})();
 </script>
-</body>
+<script id="altai-intro-start">
+(function(){
+  var hero=document.querySelector('.hero-altai');
+  if(!hero||!window.matchMedia||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    if(sessionStorage.getItem('gusevmade-altai-intro-v1'))return;
+    sessionStorage.setItem('gusevmade-altai-intro-v1','1');
+  }catch(e){}
+  hero.classList.add('intro-play');
+  window.setTimeout(function(){hero.classList.remove('intro-play')},5400);
+})();
+</script></body>
 </html>
