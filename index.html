@@ -575,7 +575,41 @@ header nav{height:72px}header .logo{font-size:17px}header nav>.btn{font-size:11p
 @media(max-width:900px){.hero-cover .altai-dust,.hero-cover .altai-ground-glow{top:45%;left:18%;width:58%;height:8%}}
 @media(max-width:600px){.hero-cover .altai-dust,.hero-cover .altai-ground-glow{top:40%;left:17%;width:66%}.hero-cover .altai-copy{overflow-wrap:break-word}.hero-cover .cover-benefits>div{max-width:none}}
 @media(prefers-reduced-motion:reduce){.hero-cover .altai-dust,.hero-cover .altai-ground-glow{display:none}.hero-cover .altai-copy>*,.hero-cover .altai-bottom{animation:none!important;opacity:1!important;transform:none!important}}
-</style></head>
+</style>
+<style id="gusevmade-static-cover-2026">
+/* Static cinematic cover: animation is deliberately postponed. */
+.hero-cover .replay-intro,.hero-cover .altai-energy,.hero-cover .altai-flash,.hero-cover .altai-dust,.hero-cover .altai-ground-glow{display:none!important}
+.hero-cover .altai-eagle,.hero-cover .altai-coin,.hero-cover .altai-bg,.hero-cover .altai-copy>*{animation:none!important;transition:none!important;opacity:1}
+.hero-cover .altai-eagle{transform:rotate(-6deg)}
+.hero-cover .altai-coin{transform:none}
+@media(min-width:901px){.hero-cover .altai-content{padding-top:clamp(180px,18vw,280px)}.hero-cover .altai-copy{width:51%}.hero-cover .altai-eagle{top:20%;width:min(52vw,870px)}.hero-cover .altai-coin{left:19%;top:55%}}
+@media(max-width:900px){
+.hero-cover{min-height:0!important;overflow:hidden}
+.hero-cover .altai-content{min-height:0!important;display:block;padding-top:clamp(410px,61vw,540px)!important;padding-bottom:42px!important}
+.hero-cover .altai-copy{width:100%;max-width:700px}
+.hero-cover .altai-eagle{width:min(102vw,700px);left:-7%;top:88px;right:auto;opacity:1!important}
+.hero-cover .altai-coin{width:clamp(95px,16vw,140px);left:calc(50% - 48px);top:clamp(285px,43vw,385px);right:auto;opacity:1!important}
+.hero-cover .altai-art::after{background:linear-gradient(180deg,rgba(5,13,21,.12) 0%,rgba(5,13,21,.12) 25%,rgba(5,13,21,.65) 44%,rgba(5,13,21,.95) 76%,rgba(5,13,21,.98) 100%)!important}
+.hero-cover .altai-bg{object-position:50% 35%;filter:saturate(.95) brightness(.83)}
+.hero-cover .cover-benefits{grid-template-columns:repeat(2,minmax(0,1fr));padding-top:22px;padding-bottom:30px}
+}
+@media(max-width:600px){
+header nav{height:72px}header .logo{font-size:clamp(15px,4.3vw,19px)}header nav>.btn{font-size:11px;padding:10px 12px}
+.hero-cover .altai-content{padding-top:clamp(355px,98vw,460px)!important;padding-bottom:34px!important}
+.hero-cover .altai-eagle{top:88px;left:-12%;width:124vw;max-width:none;opacity:.98!important}
+.hero-cover .altai-coin{top:clamp(265px,72vw,335px);width:clamp(88px,25vw,118px);left:calc(50% - clamp(44px,12.5vw,59px))}
+.hero-cover .cover-eyebrow{font-size:10px;letter-spacing:.13em;margin-bottom:13px}
+.hero-cover h1{font-size:clamp(31px,8.5vw,46px)!important;line-height:1.12;letter-spacing:-.035em;overflow-wrap:normal;hyphens:none}
+.hero-cover .lead{font-size:clamp(13px,3.5vw,16px);line-height:1.6;margin:20px 0 24px;max-width:490px}
+.hero-cover .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hero-cover .actions .btn{min-width:0;width:100%;font-size:clamp(11px,3vw,14px);padding:12px 9px;min-height:50px;justify-content:center;white-space:nowrap}
+.hero-cover .cover-benefits{gap:12px;padding-inline:18px}
+.hero-cover .cover-benefits>div{padding:8px 2px}
+.hero-cover .cover-benefits b{font-size:12px}.hero-cover .cover-benefits small{font-size:11px;line-height:1.45}
+}
+@media(max-width:370px){.hero-cover .altai-content{padding-top:345px!important}.hero-cover h1{font-size:29px!important}.hero-cover .actions{grid-template-columns:1fr}.hero-cover .actions .btn{font-size:13px}}
+</style>
+</head>
 <body>
 
 <header>
@@ -603,7 +637,7 @@ header nav{height:72px}header .logo{font-size:17px}header nav>.btn{font-size:11p
     <p class="lead">Лендинги, сайты для бизнеса, Telegram-боты и цифровые сервисы.<br>От идеи и дизайна до запуска и поддержки.</p>
     <div class="actions"><a class="btn acc" data-contact href="https://t.me/daspasibog" target="_blank" rel="noopener noreferrer">Заказать проект <span aria-hidden="true">→</span></a><a class="btn" href="#work">◉ &nbsp; Смотреть работы</a></div>
   </div></div>
-  <button class="replay-intro" type="button" aria-label="Повторить полёт орла" title="Повторить анимацию">↻ <span>Повторить полёт</span></button>
+  
   <div class="wrap cover-benefits">
     <div><span class="cover-benefit-icon" aria-hidden="true">ϟ</span><b>Быстрый запуск</b><small>Сроки обсуждаем до старта</small></div>
     <div><span class="cover-benefit-icon" aria-hidden="true">◎</span><b>Понятные цены</b><small>Без скрытых доплат</small></div>
@@ -1102,26 +1136,5 @@ document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.ta
  i.className='rip';i.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';b.appendChild(i);setTimeout(function(){i.remove()},750)});
 }catch(e){}})();
 </script>
-<script id="altai-intro-start">
-(function(){
-  var hero=document.querySelector('.hero-cover');
-  var replay=document.querySelector('.replay-intro');
-  if(!hero||!window.matchMedia)return;
-  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
-  if(reduce.matches){if(replay)replay.hidden=true;return;}
-  var timeout=0;
-  function play(){
-    hero.classList.remove('intro-play');
-    void hero.offsetWidth;
-    hero.classList.add('intro-play');
-    window.clearTimeout(timeout);
-    timeout=window.setTimeout(function(){hero.classList.remove('intro-play')},5400);
-  }
-  if(replay)replay.addEventListener('click',play);
-  var seen=false;
-  try{seen=sessionStorage.getItem('gusevmade-altai-intro-v3')==='1';sessionStorage.setItem('gusevmade-altai-intro-v3','1')}catch(e){}
-  if(!seen)play();
-  document.addEventListener('visibilitychange',function(){if(document.hidden){window.clearTimeout(timeout);hero.classList.remove('intro-play')}});
-})();
-</script></body>
+</body>
 </html>
