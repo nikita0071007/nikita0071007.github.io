@@ -409,7 +409,40 @@ section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
 @media(max-width:600px){nav{height:68px}.hero{padding:55px 0 70px}.hero h1{font-size:clamp(34px,9.3vw,52px)}.hero .lead{line-height:1.65}.facts{gap:8px;margin-top:28px}.facts div{min-width:calc(50% - 8px);padding:13px}.chat{height:490px}.actions .btn{justify-content:center}.hero::before{font-size:300px;right:-90px;top:20px}}
 @media(prefers-reduced-motion:reduce){.btn,.chat{transition:none!important}.btn:hover{transform:none}.chat:hover,.chat:focus-within{transform:none}}
 </style>
-</head>
+<style id="altai-premium">
+.hero-altai{min-height:min(850px,94svh);display:flex;flex-direction:column;justify-content:space-between;padding:0!important;isolation:isolate;background:#101b25;overflow:hidden}
+.hero-altai::before,.hero-altai::after{display:none!important}
+.altai-art{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.altai-bg{position:absolute;width:100%;height:100%;object-fit:cover;object-position:center 43%;filter:saturate(.83) brightness(.67)}
+.altai-art::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,12,18,.92) 0%,rgba(6,13,20,.79) 36%,rgba(5,12,18,.15) 76%),linear-gradient(0deg,rgba(5,12,18,.86),transparent 28%,rgba(5,12,18,.28))}
+.altai-eagle{position:absolute;width:min(46vw,680px);right:4%;top:14%;filter:drop-shadow(0 30px 32px rgba(0,0,0,.45));transform:rotate(-8deg);animation:altai-glide 9s ease-in-out infinite}
+.altai-coin{position:absolute;width:clamp(120px,15vw,235px);right:21%;top:50%;filter:drop-shadow(0 12px 35px rgba(246,201,77,.3));animation:altai-float 8s ease-in-out infinite}
+.altai-content{width:100%;padding-top:clamp(120px,15vh,190px);padding-bottom:65px;position:relative}
+.altai-copy{max-width:730px}
+.altai-copy .tag{color:#f2d492;border:0;background:none;padding:0;letter-spacing:.2em;font-size:11px}
+.hero-altai h1{font-size:clamp(42px,5.8vw,82px);font-weight:600!important;letter-spacing:-.055em;line-height:1.1;max-width:780px;text-shadow:0 3px 28px rgba(0,0,0,.35)}
+.hero-altai h1 .hl{color:#f2d492!important;-webkit-text-fill-color:#f2d492!important;background:none!important}
+.hero-altai .lead{max-width:590px;font-size:clamp(17px,1.5vw,20px);line-height:1.7;color:#e2e3de;margin:27px 0 30px}
+.hero-altai .btn{border-radius:999px;padding:16px 26px}
+.hero-altai .btn:not(.acc){background:rgba(11,19,26,.35);border-color:rgba(255,255,255,.35);backdrop-filter:blur(8px)}
+.altai-sign{margin-top:60px;font:600 11px/1.6 "JetBrains Mono",monospace;letter-spacing:.18em;color:#e3cf9c}
+.altai-bottom{width:100%;display:flex;justify-content:space-between;gap:20px;padding-block:24px;border-top:1px solid rgba(255,255,255,.25);font:11px/1.5 "JetBrains Mono",monospace;letter-spacing:.08em;color:#e6e0d2}
+.altai-bottom a{text-decoration:none;color:#f2d492}
+.service-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.service-tile{display:flex;flex-direction:column;gap:16px;min-height:310px;text-decoration:none;background:#121c23;border:1px solid #30404a;border-radius:4px;padding:30px;transition:transform .25s,border-color .25s}
+.service-tile:hover{transform:translateY(-4px);border-color:#c6a458}
+.service-tile>span{font:11px "JetBrains Mono",monospace;color:#c6a458;letter-spacing:.1em}
+.service-tile h3{font-size:clamp(20px,2vw,27px)}
+.service-tile p{color:#b8c5c8;flex:1;line-height:1.7}
+.service-tile b{color:#f2d492}
+.assistant-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.assistant-intro p{color:#b8c5c8;line-height:1.8;margin:18px 0 28px;max-width:440px}
+.assistant-section .chat{transform:none;max-width:550px;width:100%}
+@keyframes altai-glide{50%{transform:translateY(-12px) rotate(-5deg)}}@keyframes altai-float{50%{transform:translateY(12px) rotate(5deg)}}
+@media(max-width:900px){.hero-altai{min-height:730px}.altai-eagle{width:58vw;right:-5%;top:17%;opacity:.6}.altai-coin{right:14%;top:53%;opacity:.7}.altai-art::after{background:linear-gradient(90deg,rgba(5,12,18,.92),rgba(5,12,18,.43)),linear-gradient(0deg,rgba(5,12,18,.85),transparent 45%)}.assistant-grid{grid-template-columns:1fr;gap:32px}.service-cards{grid-template-columns:1fr}.service-tile{min-height:0}.assistant-section .chat{margin:auto}}
+@media(max-width:600px){.hero-altai{min-height:730px}.altai-content{padding-top:120px}.hero-altai h1{font-size:clamp(38px,10vw,52px)}.altai-eagle{width:85vw;right:-22%;top:42%;opacity:.33}.altai-coin{width:120px;right:8%;top:66%;opacity:.55}.altai-sign{margin-top:42px}.altai-bottom{font-size:9px}.altai-bottom span:nth-child(2){display:none}.hero-altai .actions{flex-direction:column;align-items:flex-start}.hero-altai .btn{min-width:210px;justify-content:center}}
+@media(prefers-reduced-motion:reduce){.altai-eagle,.altai-coin{animation:none}}
+</style></head>
 <body>
 
 <header>
@@ -422,24 +455,22 @@ section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
   </nav></div>
 </header>
 
-<!-- HERO -->
-<section class="hero"><div class="wrap hero-grid">
-  <div>
-    <span class="tag">GUSEVMADE · сделано Гусевым</span>
-    <h1>Идеи превращаю <span class="hl">в работающие цифровые продукты.</span></h1>
-    <p class="lead">Telegram-боты для записи и заявок, сайты, HTML5-игры и веб-приложения для ВКонтакте, Одноклассников, Яндекс Игр и MAX. Каждую вещь, которую предлагаю, я сначала сделал и запустил для себя. Цены в рублях, код остаётся у вас.</p>
-    <div class="actions">
-      <a class="btn acc" href="#calc">Посчитать свой проект</a>
-      <a class="btn" href="#work">Посмотреть проекты</a>
-    </div>
-    <div class="facts">
-      <div><b>от 5 000 ₽</b><span>бот с заявками</span></div>
-      <div><b>от 10 000 ₽</b><span>лендинг под ключ</span></div>
-      <div><b>500 ₽</b><span>разбор, засчитывается в заказ</span></div>
-    </div>
-  </div>
-
-  <div class="chat" id="chat">
+<!-- HERO: Алтай, орёл, монета -->
+<section class="hero hero-altai" aria-labelledby="hero-title">
+<div class="altai-art" aria-hidden="true"><img class="altai-bg" src="img/scene-bg.jpg" alt="" fetchpriority="high"><img class="altai-eagle" src="img/eagle-real.webp" alt=""><img class="altai-coin" src="img/coin.webp" alt=""></div>
+<div class="wrap altai-content"><div class="altai-copy">
+<span class="tag">GUSEVMADE / СДЕЛАНО ГУСЕВЫМ</span>
+<h1 id="hero-title">Сайты, которые <span class="hl">выглядят убедительно.</span></h1>
+<p class="lead">Лендинги, сайты для бизнеса и цифровые сервисы. От идеи и дизайна до разработки, запуска и поддержки.</p>
+<div class="actions"><a class="btn acc" data-contact href="https://t.me/daspasibog" target="_blank" rel="noopener noreferrer">Обсудить проект ↗</a><a class="btn" href="#work">Смотреть работы</a></div>
+<div class="altai-sign">АЛТАЙ · ЦИФРОВЫЕ РЕШЕНИЯ · MADE BY GUSEV</div></div></div>
+<div class="wrap altai-bottom"><span>01 / ДИЗАЙН И РАЗРАБОТКА</span><span>ЛЕНДИНГИ · САЙТЫ · АВТОМАТИЗАЦИЯ</span><a href="#work">Листайте вниз ↓</a></div></section>
+<section id="services" class="services-preview"><div class="wrap"><span class="tag">услуги</span><h2>Цифровые решения под задачи бизнеса</h2><div class="service-cards">
+<a href="#prices" class="service-tile"><span>01 / WEB</span><h3>Лендинги</h3><p>Структура, дизайн, адаптив и запуск. Страница, которая объясняет ценность предложения.</p><b>от 15 000 ₽ ↗</b></a>
+<a href="#prices" class="service-tile"><span>02 / DIGITAL</span><h3>Сайты под ключ</h3><p>Многостраничные сайты с интеграциями и формами заявок.</p><b>от 50 000 ₽ ↗</b></a>
+<a href="#prices" class="service-tile"><span>03 / AUTOMATION</span><h3>Боты и ИИ</h3><p>Telegram-боты, приём заявок и автоматизация повторяющихся задач.</p><b>от 5 000 ₽ ↗</b></a>
+</div></div></section>
+<section class="assistant-section"><div class="wrap assistant-grid"><div class="assistant-intro"><span class="tag">помощник</span><h2>Есть задача? Спросите Марину.</h2><p>Поможет разобраться в услугах и стоимости. Или напишите мне напрямую.</p><a class="btn" data-contact href="https://t.me/daspasibog" target="_blank" rel="noopener noreferrer">Написать лично ↗</a></div>  <div class="chat" id="chat">
     <div class="chat-top"><img class="ava-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzdjYzZlOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkNGYwZTYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImhhaXIiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjFmMWVmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M5Y2JjYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ia25pdCIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNkOTgyMmIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjg2NjFhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGNsaXBQYXRoIGlkPSJjIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjEwMCIvPjwvY2xpcFBhdGg+CiAgPC9kZWZzPgogIDxnIGNsaXAtcGF0aD0idXJsKCNjKSI+CiAgICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCNza3kpIi8+CiAgICA8IS0tIGdhcmRlbiBoaWxscyAtLT4KICAgIDxwYXRoIGQ9Ik0wIDE1MCBDNDAgMTMyIDcwIDE0MCAxMDAgMTM0IEMxMzUgMTI4IDE2NSAxMzYgMjAwIDEyOCBMMjAwIDIwMCBMMCAyMDBaIiBmaWxsPSIjOGZjZjcyIi8+CiAgICA8Y2lyY2xlIGN4PSIyOCIgY3k9IjE1MCIgcj0iNyIgZmlsbD0iI2ZmN2E4YSIvPjxjaXJjbGUgY3g9IjE3NCIgY3k9IjE0NiIgcj0iNiIgZmlsbD0iI2ZmZDM0ZCIvPgogICAgPCEtLSBidW4gLS0+CiAgICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIzNCIgcj0iMjAiIGZpbGw9InVybCgjaGFpcikiLz4KICAgIDxwYXRoIGQ9Ik04NiAzMCBRMTAwIDIyIDExNCAzMCIgc3Ryb2tlPSIjYjliY2JlIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz4KICAgIDwhLS0gaGFpciBiYWNrIC0tPgogICAgPHBhdGggZD0iTTU4IDk4IEM1NCA1OCA3NiA0NCAxMDAgNDQgQzEyNCA0NCAxNDYgNTggMTQyIDk4IEMxNDAgMTEyIDEzNiAxMjAgMTMwIDEyNCBMNzAgMTI0IEM2NCAxMjAgNjAgMTEyIDU4IDk4WiIgZmlsbD0idXJsKCNoYWlyKSIvPgogICAgPCEtLSBuZWNrIC0tPgogICAgPHBhdGggZD0iTTg5IDEyOCBMMTExIDEyOCBMMTEzIDE1MCBMODcgMTUwWiIgZmlsbD0iI2U4YjE4ZSIvPgogICAgPCEtLSBjYXJkaWdhbiAtLT4KICAgIDxwYXRoIGQ9Ik0yOCAyMDAgQzMyIDE2OCA1OCAxNTAgODYgMTQ3IEwxMDAgMTY2IEwxMTQgMTQ3IEMxNDIgMTUwIDE2OCAxNjggMTcyIDIwMFoiIGZpbGw9InVybCgja25pdCkiLz4KICAgIDxwYXRoIGQ9Ik04NiAxNDcgTDEwMCAxNjYgTDExNCAxNDcgTDEwOCAxNDYgTDEwMCAxNTcgTDkyIDE0NloiIGZpbGw9IiNmNmVmZTMiLz4KICAgIDxjaXJjbGUgY3g9IjEwMCIgY3k9IjE3NiIgcj0iMyIgZmlsbD0iIzdhM2YwYyIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjE5MCIgcj0iMyIgZmlsbD0iIzdhM2YwYyIvPgogICAgPCEtLSBjb2luIGJyb29jaCAtLT4KICAgIDxjaXJjbGUgY3g9IjEzMiIgY3k9IjE3MCIgcj0iNyIgZmlsbD0iI2Y1YzU0MiIgc3Ryb2tlPSIjYjk3ZjEyIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIDwhLS0gZmFjZSAtLT4KICAgIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSI5OCIgcng9IjMzIiByeT0iMzgiIGZpbGw9IiNmMWMzYTAiLz4KICAgIDxlbGxpcHNlIGN4PSI2NyIgY3k9IjEwMCIgcng9IjUiIHJ5PSI4IiBmaWxsPSIjZTVhYjg4Ii8+CiAgICA8ZWxsaXBzZSBjeD0iMTMzIiBjeT0iMTAwIiByeD0iNSIgcnk9IjgiIGZpbGw9IiNlNWFiODgiLz4KICAgIDwhLS0gaGFpciBmcm9udCAtLT4KICAgIDxwYXRoIGQ9Ik02NiA5MCBDNjQgNjIgODQgNTIgMTAwIDUyIEMxMTggNTIgMTM2IDYyIDEzNCA5MCBDMTI2IDcyIDExNCA2NiAxMDAgNjYgQzg2IDY2IDc0IDcyIDY2IDkwWiIgZmlsbD0idXJsKCNoYWlyKSIvPgogICAgPCEtLSBicm93cyAtLT4KICAgIDxwYXRoIGQ9Ik03OCA4NCBRODYgODAgOTQgODMiIHN0cm9rZT0iI2E3YTlhYiIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik0xMDYgODMgUTExNCA4MCAxMjIgODQiIHN0cm9rZT0iI2E3YTlhYiIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDwhLS0gc21pbGluZyBleWVzIC0tPgogICAgPHBhdGggZD0iTTgwIDk4IFE4NiA5MiA5MiA5OCIgc3Ryb2tlPSIjM2EyNjE4IiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTEwOCA5OCBRMTE0IDkyIDEyMCA5OCIgc3Ryb2tlPSIjM2EyNjE4IiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPCEtLSBnbGFzc2VzIC0tPgogICAgPGNpcmNsZSBjeD0iODYiIGN5PSI5NyIgcj0iMTEiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iLjE4IiBzdHJva2U9IiM4YTVhMmIiIHN0cm9rZS13aWR0aD0iMi40Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMTQiIGN5PSI5NyIgcj0iMTEiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iLjE4IiBzdHJva2U9IiM4YTVhMmIiIHN0cm9rZS13aWR0aD0iMi40Ii8+CiAgICA8cGF0aCBkPSJNOTcgOTcgUTEwMCA5NCAxMDMgOTciIHN0cm9rZT0iIzhhNWEyYiIgc3Ryb2tlLXdpZHRoPSIyLjQiIGZpbGw9Im5vbmUiLz4KICAgIDxwYXRoIGQ9Ik03NSA5NSBMNjggOTMiIHN0cm9rZT0iIzhhNWEyYiIgc3Ryb2tlLXdpZHRoPSIyLjQiLz4KICAgIDxwYXRoIGQ9Ik0xMjUgOTUgTDEzMiA5MyIgc3Ryb2tlPSIjOGE1YTJiIiBzdHJva2Utd2lkdGg9IjIuNCIvPgogICAgPCEtLSB3cmlua2xlcyAtLT4KICAgIDxwYXRoIGQ9Ik03MyAxMDQgUTcwIDEwNyA3MiAxMTAiIHN0cm9rZT0iI2Q5OWE3OCIgc3Ryb2tlLXdpZHRoPSIxLjYiIGZpbGw9Im5vbmUiLz4KICAgIDxwYXRoIGQ9Ik0xMjcgMTA0IFExMzAgMTA3IDEyOCAxMTAiIHN0cm9rZT0iI2Q5OWE3OCIgc3Ryb2tlLXdpZHRoPSIxLjYiIGZpbGw9Im5vbmUiLz4KICAgIDwhLS0gbm9zZSAtLT4KICAgIDxwYXRoIGQ9Ik0xMDAgMTAzIFE5NiAxMTMgMTAxIDExNSIgc3Ryb2tlPSIjY2Y4ZDZiIiBzdHJva2Utd2lkdGg9IjIuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8IS0tIGNoZWVrcyAtLT4KICAgIDxlbGxpcHNlIGN4PSI3NyIgY3k9IjExNCIgcng9IjgiIHJ5PSI1IiBmaWxsPSIjZjA4OTdhIiBvcGFjaXR5PSIuNSIvPgogICAgPGVsbGlwc2UgY3g9IjEyMyIgY3k9IjExNCIgcng9IjgiIHJ5PSI1IiBmaWxsPSIjZjA4OTdhIiBvcGFjaXR5PSIuNSIvPgogICAgPCEtLSBzbWlsZSAtLT4KICAgIDxwYXRoIGQ9Ik04NyAxMjAgUTEwMCAxMzEgMTEzIDEyMCIgc3Ryb2tlPSIjYTg0NzNmIiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9IiNmZmYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTg0IDEyMSBRODYgMTI0IDg4IDEyMyIgc3Ryb2tlPSIjZDk5YTc4IiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIvPgogICAgPHBhdGggZD0iTTExNiAxMjEgUTExNCAxMjQgMTEyIDEyMyIgc3Ryb2tlPSIjZDk5YTc4IiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIvPgogIDwvZz4KPC9zdmc+Cg==" alt="Бабушка Марина" width="42" height="42"><div><b>Марина</b><small>менеджер заказов · онлайн</small></div></div>
     <div class="msgs" id="msgs"></div>
     <div class="chips" id="chips">
@@ -621,8 +652,8 @@ section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
     <div class="prow"><div>Аудит и консультация</div><span>разбираю ваш бизнес: где теряются заявки и время, что автоматизировать в первую очередь, план с ценами и сроками. Засчитывается в стоимость, если заказываете работу у меня</span><div class="t">2–3 дня</div><b class="p">3 000 ₽</b></div>
     <div class="prow"><div>Бот-визитка</div><span>меню, ответы на вопросы, заявки вам в личку</span><div class="t">3–5 дней</div><b class="p">от 5 000 ₽</b></div>
     <div class="prow"><div>Бот с записью и оплатой</div><span>запись клиентов, напоминания, оплата картой, СБП или звёздами</span><div class="t">1–2 недели</div><b class="p">от 15 000 ₽</b></div>
-    <div class="prow"><div>Лендинг под ключ</div><span>одна страница, адаптив под телефон, форма заявок</span><div class="t">5–10 дней</div><b class="p">от 10 000 ₽</b></div>
-    <div class="prow"><div>Сайт или магазин</div><span>каталог, корзина, приём заказов</span><div class="t">2–3 недели</div><b class="p">от 25 000 ₽</b></div>
+    <div class="prow"><div>Лендинг Start</div><span>одна страница по готовым материалам, адаптив, кнопки связи, базовая SEO-настройка</span><div class="t">от 5 дней</div><b class="p">от 15 000 ₽</b></div><div class="prow"><div>Лендинг Business</div><span>индивидуальная структура и дизайн, формы заявок, аналитика, публикация</span><div class="t">от 10 дней</div><b class="p">от 30 000 ₽</b></div><div class="prow"><div>Редизайн сайта</div><span>обновление визуала, структуры и адаптивной версии</span><div class="t">по задаче</div><b class="p">от 15 000 ₽</b></div>
+    <div class="prow"><div>Сайт под ключ</div><span>несколько страниц, индивидуальный дизайн, интеграции и формы заявок; магазин оценивается отдельно</span><div class="t">от 3 недель</div><b class="p">от 50 000 ₽</b></div>
     <div class="prow"><div>Мини-приложение</div><span>веб-приложение для ВКонтакте, Одноклассников, Telegram или MAX</span><div class="t">2–4 недели</div><b class="p">от 20 000 ₽</b></div>
     <div class="prow"><div>HTML5-игра</div><span>для сайта, браузера, Telegram, ВК и ОК</span><div class="t">2–4 недели</div><b class="p">от 15 000 ₽</b></div>
     <div class="prow"><div>Публикация игры</div><span>Яндекс Игры, ВК, ОК: SDK, реклама, сохранения, модерация</span><div class="t">3–7 дней</div><b class="p">от 5 000 ₽</b></div>
@@ -717,10 +748,10 @@ const KB=[
  {k:['вк','вконтакте','vk','одноклас','ок ','яндекс','max','макс','мини-прил','мини прил','веб-прил','веб прил','приложен'],a:'Мини-приложение для ВКонтакте, Одноклассников, Telegram или MAX — от 20 000 ₽, 2–4 недели.\nОпубликовать игру на Яндекс Играх, в ВК и ОК — от 5 000 ₽: SDK, реклама, сохранения, модерация.'},
  {k:['салон','клиник','кафе','мастер','запис'],a:'Для записи клиентов лучше всего бот: показывает свободные окна, записывает, напоминает накануне, а вам присылает заявку. Ориентир — от 15 000 ₽. Посчитайте в калькуляторе, сколько заявок вы сейчас теряете.'},
  {k:['бот','телеграм','telegram','тг'],a:'Бот-визитка с меню и заявками — от 5 000 ₽, 3–5 дней.\nБот с записью клиентов и оплатой — от 15 000 ₽, 1–2 недели.\nНапишите, чем вы занимаетесь, — подскажу, что подойдёт.'},
- {k:['сайт','лендинг','тильд','магазин'],a:'Лендинг под ключ — от 10 000 ₽: одна страница, адаптив под телефон, форма заявок.\nСайт или магазин с корзиной — от 25 000 ₽. Пример — «Алтай-рыбалка.рф» ниже на странице.'},
+ {k:['сайт','лендинг','тильд','магазин'],a:'Лендинг Start — от 15 000 ₽, Business — от 30 000 ₽: одна страница, адаптив под телефон, форма заявок.\nСайт под ключ — от 50 000 ₽, магазин рассчитывается отдельно. Пример — «Алтай-рыбалка.рф» ниже на странице.'},
  {k:['игр','game'],a:'HTML5-игра — от 15 000 ₽. Работает в браузере, на сайте, в Telegram, ВК и ОК. Публикация на Яндекс Играх — от 5 000 ₽.\nМою игру «Бабушкина дача» можно запустить прямо на этой странице 👇'},
  {k:['срок','долго','когда','быстро'],a:'Бот — от 3 дней, лендинг — 5–10 дней, магазин — 2–3 недели, игра или мини-приложение — 2–4 недели, ИИ-агент — 2–3 недели. Черновик показываю раньше, чтобы вы успели поправить.'},
- {k:['цен','стоит','сколько','дорог','прайс','оплат'],a:'Коротко: бот от 5 000 ₽, лендинг от 10 000 ₽, игра от 15 000 ₽, мини-приложение от 20 000 ₽, ИИ-агент от 25 000 ₽. Оплата частями: половина на старте, половина после сдачи. Разбор задачи — 500 ₽.'},
+ {k:['цен','стоит','сколько','дорог','прайс','оплат'],a:'Коротко: бот от 5 000 ₽, лендинг от 15 000 ₽, игра от 15 000 ₽, мини-приложение от 20 000 ₽, ИИ-агент от 25 000 ₽. Оплата частями: половина на старте, половина после сдачи. Разбор задачи — 500 ₽.'},
  {k:['привет','здравств','добр'],a:'Здравствуйте! Чем могу помочь: бот, сайт, игра или ИИ-агент?'},
 ];
 function botReply(t){
