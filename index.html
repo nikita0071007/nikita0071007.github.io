@@ -753,7 +753,6 @@ $('#opts').addEventListener('change',sum);sum();
 $('#send').addEventListener('click',()=>{
   const {s,items}=sum();
   const txt='Здравствуйте! Хочу посчитать проект:\n— '+(items.length?items.join('\n— '):'Пока не выбрал услуги')+'\nОриентир с сайта: '+fmt(s);
-  const url=TG+(TG.includes('?')?'&':'?')+'text='+encodeURIComponent(txt);
   const chat=window.open(TG,'_blank','noopener');
   if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(()=>toast('Смета скопирована — вставьте её в чат'),()=>toast('Смета готова — отправьте её в Telegram'));}
   else toast('Смета готова — отправьте её в Telegram');
