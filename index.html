@@ -471,6 +471,76 @@ section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
 @media(max-width:900px){.altai-energy,.altai-flash{left:calc(86% - 7.5vw);top:calc(53% + 7.5vw)}}
 @media(max-width:600px){.altai-energy,.altai-flash{left:calc(92% - 60px);top:calc(66% + 60px)}.altai-energy i{height:40px}.hero-altai.intro-play .altai-eagle{animation-duration:3.6s!important}.hero-altai.intro-play .altai-coin{animation-duration:3.6s!important}.hero-altai.intro-play .altai-copy>*{animation-delay:2.7s}.hero-altai.intro-play .altai-bottom{animation-delay:3s}.hero-altai.intro-play .altai-flash{animation-delay:2.3s}.hero-altai.intro-play .altai-energy i{animation-delay:2.35s}}
 @media(prefers-reduced-motion:reduce){.altai-energy,.altai-flash{display:none}}
+</style><style id="altai-cover-final">
+/* Reference-led premium cover; all interactive labels remain HTML */
+header{position:absolute;top:0;left:0;right:0;z-index:30;background:linear-gradient(180deg,rgba(6,15,24,.85),rgba(6,15,24,.12))!important;border:0!important}
+header nav{height:94px}
+header .logo{font-family:Georgia,serif;font-size:clamp(19px,2vw,29px);text-transform:uppercase;letter-spacing:.06em}
+header .logo em{font-style:normal}
+header .menu{gap:clamp(14px,2vw,30px)}
+header .menu a{color:#f5f2eb;font-size:14px}
+header nav>.btn{border:1px solid #cba65b;background:rgba(9,17,26,.22);color:#f5c96c;border-radius:40px;box-shadow:none}
+.hero-cover{min-height:clamp(760px,58vw,990px);background:#0c1b27}
+.hero-cover .altai-bg{filter:saturate(1.08) brightness(.8);object-position:center 42%}
+.hero-cover .altai-art::after{background:linear-gradient(90deg,rgba(5,13,21,.08),rgba(5,13,21,.02) 34%,rgba(5,13,21,.64) 51%,rgba(5,13,21,.65) 100%),linear-gradient(0deg,rgba(5,12,19,.82),transparent 30%,rgba(5,12,19,.25) 100%)}
+.hero-cover .cover-haze{position:absolute;inset:0;background:radial-gradient(ellipse at 78% 20%,rgba(241,169,89,.17),transparent 32%);mix-blend-mode:screen}
+.hero-cover .altai-eagle{width:min(55vw,940px);left:-4%;right:auto;top:17%;transform:rotate(-6deg);z-index:2;filter:drop-shadow(0 24px 24px rgba(0,0,0,.55));animation:cover-hover 9s ease-in-out infinite}
+.hero-cover .altai-coin{width:clamp(135px,15vw,260px);left:18%;right:auto;top:57%;z-index:3;filter:drop-shadow(0 0 19px rgba(245,189,72,.4)) drop-shadow(0 22px 15px rgba(0,0,0,.6));animation:cover-coin-hover 8s ease-in-out infinite}
+.hero-cover .altai-content{padding-top:clamp(180px,20vw,320px);padding-bottom:110px;display:flex;justify-content:flex-end;min-height:640px}
+.hero-cover .altai-copy{width:53%;max-width:800px;position:relative;z-index:5}
+.hero-cover .cover-eyebrow{display:block;font:500 clamp(10px,1vw,14px)/1.6 Manrope,sans-serif;letter-spacing:.26em;color:#d9c8a9;margin-bottom:22px}
+.hero-cover h1{font:500 clamp(40px,4.45vw,78px)/1.13 Georgia,"Times New Roman",serif!important;letter-spacing:-.027em;text-transform:uppercase;color:#faf8f4;max-width:900px;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+.hero-cover h1 .hl{color:#faf8f4!important;-webkit-text-fill-color:#faf8f4!important}
+.hero-cover .lead{font-size:clamp(16px,1.35vw,21px);color:#e0ded6;line-height:1.65;margin:28px 0 32px}
+.hero-cover .actions{gap:18px;flex-wrap:wrap}
+.hero-cover .btn{border-radius:999px;min-height:57px;padding:15px 30px}
+.hero-cover .btn.acc{background:linear-gradient(130deg,#ffe3a0,#d9a641);border:1px solid #f5d68a;color:#17150f;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.hero-cover .btn:not(.acc){background:rgba(8,18,27,.45);border:1px solid #c7a65e;color:#f8f5ec}
+.hero-cover .cover-benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;position:relative;z-index:5;padding:30px 0 48px;margin-top:auto}
+.cover-benefits>div{display:flex;flex-direction:column;gap:7px;min-width:0}
+.cover-benefit-icon{font-size:38px;color:#e6b752;line-height:1;margin-bottom:8px;font-family:Georgia,serif}
+.cover-benefits b{font-size:clamp(13px,1.2vw,17px);font-weight:600;color:#f9f7f1}
+.cover-benefits small{font-size:clamp(11px,1vw,14px);color:#c5c4c1}
+.hero-cover .altai-energy,.hero-cover .altai-flash{left:calc(18% + clamp(67px,7.5vw,130px));top:calc(57% + clamp(67px,7.5vw,130px))}
+@keyframes cover-hover{50%{transform:translateY(-10px) rotate(-4deg)}}
+@keyframes cover-coin-hover{50%{transform:translateY(7px) rotate(3deg)}}
+@media(min-width:1100px){.hero-cover .cover-benefits>div:first-child{margin-left:6%}}
+@media(max-width:900px){
+header{position:absolute}header .menu{display:none}
+.hero-cover{min-height:860px}
+.hero-cover .altai-content{min-height:620px;padding-top:340px;padding-bottom:30px;justify-content:flex-start}
+.hero-cover .altai-copy{width:100%;max-width:660px}
+.hero-cover .altai-eagle{width:83vw;left:-8%;top:9%;opacity:.94}
+.hero-cover .altai-coin{width:170px;left:34%;top:31%}
+.hero-cover .altai-art::after{background:linear-gradient(0deg,rgba(5,13,21,.95) 0%,rgba(5,13,21,.65) 46%,rgba(5,13,21,.05) 83%),linear-gradient(90deg,rgba(5,13,21,.35),transparent)}
+.hero-cover .cover-benefits{grid-template-columns:repeat(2,1fr);gap:20px}
+.hero-cover .altai-energy,.hero-cover .altai-flash{left:calc(34% + 85px);top:calc(31% + 85px)}
+}
+@media(max-width:600px){
+header nav{height:72px}header .logo{font-size:17px}header nav>.btn{font-size:11px;padding:10px 13px}
+.hero-cover{min-height:850px}
+.hero-cover .altai-content{padding-top:315px;min-height:630px}
+.hero-cover .altai-eagle{width:110vw;left:-15%;top:9%;opacity:.85}
+.hero-cover .altai-coin{width:110px;left:35%;top:29%;opacity:1}
+.hero-cover .altai-energy,.hero-cover .altai-flash{left:calc(35% + 55px);top:calc(29% + 55px)}
+.hero-cover h1{font-size:clamp(34px,9vw,49px)!important}
+.hero-cover .cover-eyebrow{font-size:10px;letter-spacing:.12em}
+.hero-cover .lead{font-size:15px;line-height:1.6}
+.hero-cover .lead br{display:none}
+.hero-cover .actions{flex-direction:row;gap:10px}
+.hero-cover .btn{min-width:0;min-height:48px;font-size:12px;padding:12px 16px}
+.hero-cover .cover-benefits{padding-top:18px;padding-bottom:35px;gap:17px}
+.cover-benefit-icon{font-size:26px;margin-bottom:2px}
+.cover-benefits b{font-size:13px}.cover-benefits small{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.hero-cover .altai-eagle,.hero-cover .altai-coin{animation:none!important}}
+/* Landing animation ends at exact cover positions; motion is nonblocking */
+@media(prefers-reduced-motion:no-preference){
+.hero-cover.intro-play .altai-eagle{animation:cover-eagle-arrive 4.9s cubic-bezier(.2,.65,.2,1) both!important}
+.hero-cover.intro-play .altai-coin{animation:cover-coin-arrive 4.9s cubic-bezier(.2,.65,.2,1) both!important}
+}
+@keyframes cover-eagle-arrive{0%{opacity:0;transform:translate3d(35vw,-24vh,0) scale(.5) rotate(-16deg)}20%{opacity:1}50%{transform:translate3d(6vw,-7vh,0) scale(1.08) rotate(-8deg)}76%,100%{opacity:1;transform:translate3d(0,0,0) scale(1) rotate(-6deg)}}
+@keyframes cover-coin-arrive{0%{opacity:0;transform:translate3d(30vw,-23vh,0) scale(.4)}28%{opacity:1}66%{transform:translate3d(0,-10px,0) scale(1.06)}78%,100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
 </style></head>
 <body>
 
@@ -478,22 +548,34 @@ section:not(.hero) h2{letter-spacing:-.045em;text-wrap:balance}
   <div class="wrap"><nav>
     <a href="#" class="logo"><span class="mark"><b>G</b></span><span>gusev<em>made</em></span></a>
     <div class="menu">
-      <a href="#work">Проекты</a><a href="#calc">Калькулятор</a><a href="#prices">Цены</a><a href="#faq">Вопросы</a>
+      <a href="#work">Работы</a><a href="#services">Услуги</a><a href="#why">Подход</a><a href="#prices">Цены</a><a href="#faq">Вопросы</a>
     </div>
-    <a class="btn acc" data-contact href="https://t.me/daspasibog" target="_blank">Написать</a>
+    <a class="btn acc" data-contact href="https://t.me/daspasibog" target="_blank">Обсудить проект</a>
   </nav></div>
 </header>
 
-<!-- HERO: Алтай, орёл, монета -->
-<section class="hero hero-altai" aria-labelledby="hero-title">
-<div class="altai-art" aria-hidden="true"><img class="altai-bg" src="img/scene-bg.jpg" alt="" fetchpriority="high"><img class="altai-eagle" src="img/eagle-real.webp" alt=""><img class="altai-coin" src="img/coin.webp" alt=""><div class="altai-energy"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="altai-flash"></div></div>
-<div class="wrap altai-content"><div class="altai-copy">
-<span class="tag">GUSEVMADE / СДЕЛАНО ГУСЕВЫМ</span>
-<h1 id="hero-title">Сайты, которые <span class="hl">выглядят убедительно.</span></h1>
-<p class="lead">Лендинги, сайты для бизнеса и цифровые сервисы. От идеи и дизайна до разработки, запуска и поддержки.</p>
-<div class="actions"><a class="btn acc" data-contact href="https://t.me/daspasibog" target="_blank" rel="noopener noreferrer">Обсудить проект ↗</a><a class="btn" href="#work">Смотреть работы</a></div>
-<div class="altai-sign">АЛТАЙ · ЦИФРОВЫЕ РЕШЕНИЯ · MADE BY GUSEV</div></div></div>
-<div class="wrap altai-bottom"><span>01 / ДИЗАЙН И РАЗРАБОТКА</span><span>ЛЕНДИНГИ · САЙТЫ · АВТОМАТИЗАЦИЯ</span><a href="#work">Листайте вниз ↓</a></div></section>
+<!-- HERO / GUSEVMADE / ALTAY -->
+<section class="hero hero-altai hero-cover" aria-labelledby="hero-title">
+  <div class="altai-art" aria-hidden="true">
+    <img class="altai-bg" src="img/scene-bg.jpg" alt="" fetchpriority="high" decoding="async">
+    <div class="cover-haze"></div>
+    <img class="altai-eagle" src="img/eagle-real.webp" alt="" decoding="async">
+    <img class="altai-coin" src="img/coin.webp" alt="" decoding="async">
+    <div class="altai-energy"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="altai-flash"></div>
+  </div>
+  <div class="wrap altai-content"><div class="altai-copy">
+    <span class="cover-eyebrow">ЦИФРОВЫЕ РЕШЕНИЯ ДЛЯ БИЗНЕСА</span>
+    <h1 id="hero-title">Сайты, которые<br><span class="hl">приносят результат</span></h1>
+    <p class="lead">Лендинги, сайты для бизнеса, Telegram-боты и цифровые сервисы.<br>От идеи и дизайна до запуска и поддержки.</p>
+    <div class="actions"><a class="btn acc" data-contact href="https://t.me/daspasibog" target="_blank" rel="noopener noreferrer">Заказать проект <span aria-hidden="true">→</span></a><a class="btn" href="#work">◉ &nbsp; Смотреть работы</a></div>
+  </div></div>
+  <div class="wrap cover-benefits">
+    <div><span class="cover-benefit-icon" aria-hidden="true">ϟ</span><b>Быстрый запуск</b><small>Сроки обсуждаем до старта</small></div>
+    <div><span class="cover-benefit-icon" aria-hidden="true">◎</span><b>Понятные цены</b><small>Без скрытых доплат</small></div>
+    <div><span class="cover-benefit-icon" aria-hidden="true">▱</span><b>Комплексный подход</b><small>Дизайн, разработка, запуск</small></div>
+    <div><span class="cover-benefit-icon" aria-hidden="true">♢</span><b>Поддержка</b><small>После запуска</small></div>
+  </div>
+</section>
 <section id="services" class="services-preview"><div class="wrap"><span class="tag">услуги</span><h2>Цифровые решения под задачи бизнеса</h2><div class="service-cards">
 <a href="#prices" class="service-tile"><span>01 / WEB</span><h3>Лендинги</h3><p>Структура, дизайн, адаптив и запуск. Страница, которая объясняет ценность предложения.</p><b>от 15 000 ₽ ↗</b></a>
 <a href="#prices" class="service-tile"><span>02 / DIGITAL</span><h3>Сайты под ключ</h3><p>Многостраничные сайты с интеграциями и формами заявок.</p><b>от 50 000 ₽ ↗</b></a>
