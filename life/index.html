@@ -242,7 +242,7 @@ function createExpansionDecor(){
   }else if(kind==='basket'||kind==='crate'){
     box(.57,.34,.46,hue,0,.20,0,group);box(.48,.04,.37,0xd0b69c,0,.4,0,group);
   }
-  objects.push({name:spec.name,group});
+  objects.push({id:spec.id,room:spec.room,name:spec.name,group});
  }
  return objects;
 }
