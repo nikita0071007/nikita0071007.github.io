@@ -82,7 +82,7 @@ jobs:
             if(canvas.width<300||canvas.height<250)throw Error('3D canvas has incorrect dimensions');
             const dayBadge=await page.locator('#gameDayBadge').textContent();
             if(!dayBadge.includes('День'))throw Error('Simulation day badge missing');
-            console.log('PASS: character selection, pause, game meeting, lighting, roster search');
+            console.log('PASS: 3D render, character selection, pause, meeting, lighting, roster search, friendship, pets, rooms, needs, game day and canvas checks');
             if(pageErrors.length)throw Error('Unexpected JavaScript runtime errors: '+pageErrors.join(' | '));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
