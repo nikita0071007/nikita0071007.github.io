@@ -14,6 +14,17 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+      - name: Install the exact Three.js version locally for visual checks
+        run: |
+          npm install --no-save --no-audit --no-fund three@0.164.1
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('life/index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js', '/node_modules/three/build/three.module.js')
+          s=s.replace('https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/', '/node_modules/three/examples/jsm/')
+          p.write_text(s,encoding='utf-8')
+          PY
       - name: Start local copy of site
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/life-server.log 2>&1 &
@@ -33,6 +44,20 @@ jobs:
             'http://127.0.0.1:8765/life/index.html?3d=1'
           test -s life/latest-preview.png
           file life/latest-preview.png
+          "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage \
+            --enable-unsafe-swiftshader --use-gl=angle --use-angle=swiftshader \
+            --virtual-time-budget=12000 --dump-dom \
+            'http://127.0.0.1:8765/life/index.html?3d=1' >/tmp/rendered-dom.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('/tmp/rendered-dom.html').read_text(errors='replace')
+          m=re.search(r'<div id="diagnostic"[^>]*>(.*?)</div>',html,re.S)
+          if not m or '3D активно' not in m.group(1):
+              print('3D scene did not initialize; blank screenshot must not be published')
+              raise SystemExit(1)
+          print('Verified actual 3D runtime initialization')
+          PY
       - name: Publish captured screenshot to public site repo
         run: |
           git config user.name "Gusevmade visual checks"
