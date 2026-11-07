@@ -56,6 +56,7 @@ jobs:
             await page.locator('#pause').click();
             if(!(await page.locator('#pause').textContent()).includes('Продолжить'))throw Error('Pause control failed');
             await page.locator('#pause').click();
+            await page.locator('#officeTools summary').click();
             await page.locator('#meet').click();
             if(!(await page.locator('#feed').textContent()).includes('11 рабочих'))throw Error('Meeting action failed');
             await page.locator('#advancedControls summary').click();
