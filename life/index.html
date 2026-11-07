@@ -102,9 +102,9 @@ function buildPerson(group,name,i){
  const arms=[],legs=[];
  for(const side of [-1,1]){
   const arm=new T.Group();arm.position.set(side*.38,1.52,0);body.add(arm);
-  box(.2,.63,.21,cloth,0,-.3,0,arm);sphere(.105,skin,0,-.66,0,arm);arms.push(arm);
+  const sleeve=new T.Mesh(new T.CylinderGeometry(.12,.085,.56,8),material(cloth));sleeve.position.y=-.29;arm.add(sleeve);sphere(.105,skin,0,-.66,0,arm);arms.push(arm);
   const leg=new T.Group();leg.position.set(side*.17,.75,0);body.add(leg);
-  box(.23,.62,.25,dark,0,-.3,0,leg);box(.25,.14,.37,0x242b35,0,-.63,.07,leg);legs.push(leg);
+  const trouser=new T.Mesh(new T.CylinderGeometry(.135,.11,.59,8),material(dark));trouser.position.y=-.30;leg.add(trouser);box(.25,.14,.37,0x242b35,0,-.63,.07,leg);legs.push(leg);
  }
  const nameLabel=characterName(name,group);
  return {body,arms,legs,nameLabel};
