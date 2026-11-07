@@ -59,6 +59,12 @@ jobs:
             await page.locator('#officeTools summary').click();
             await page.locator('#meet').click();
             if(!(await page.locator('#feed').textContent()).includes('11 рабочих'))throw Error('Meeting action failed');
+            await page.locator('#therapy').click();
+            if(!(await page.locator('#routeInfo').textContent()).includes('В пути'))throw Error('Room-to-room waypoint navigation failed');
+            await page.locator('#conversationTools summary').click();
+            await page.locator('#speakSelected').click();
+            if(!(await page.locator('#feed').textContent()).includes('💭'))throw Error('3D speech action failed');
+            await page.screenshot({path:'life/interactions-preview.png',fullPage:false});
             await page.locator('#advancedControls summary').click();
             await page.locator('#dayNight').click();
             if(!(await page.locator('#dayNight').textContent()).includes('День'))throw Error('Lighting toggle failed');
@@ -82,7 +88,7 @@ jobs:
             if(canvas.width<300||canvas.height<250)throw Error('3D canvas has incorrect dimensions');
             const dayBadge=await page.locator('#gameDayBadge').textContent();
             if(!dayBadge.includes('День'))throw Error('Simulation day badge missing');
-            console.log('PASS: 3D render, character selection, pause, meeting, lighting, roster search, friendship, pets, rooms, needs, game day and canvas checks');
+            console.log('PASS: 3D render, room-to-room route, speech bubble action, character selection, pause, meeting, lighting, roster search, friendship, pets, rooms, needs, game day and canvas checks');
             if(pageErrors.length)throw Error('Unexpected JavaScript runtime errors: '+pageErrors.join(' | '));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
@@ -110,6 +116,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add life/visual-test-report.txt
           if [ -s life/latest-preview.png ]; then git add life/latest-preview.png; fi
+          if [ -s life/interactions-preview.png ]; then git add life/interactions-preview.png; fi
           if ! git diff --cached --quiet; then
             git commit -m "Capture actual 3D browser preview"
             git push
