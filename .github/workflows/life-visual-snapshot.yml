@@ -47,6 +47,22 @@ jobs:
             await page.screenshot({path:'life/latest-preview.png',fullPage:false});
             const diagnostic=await page.locator('#diagnostic').textContent();
             console.log('Rendered 3D:',diagnostic);
+            // Verify that core gameplay controls respond in the real browser.
+            const selectedBefore=await page.locator('#name').textContent();
+            await page.locator('#nextHero').click();
+            const selectedAfter=await page.locator('#name').textContent();
+            if(selectedBefore===selectedAfter)throw Error('Next character control failed');
+            await page.locator('#pause').click();
+            if(!(await page.locator('#pause').textContent()).includes('Продолжить'))throw Error('Pause control failed');
+            await page.locator('#pause').click();
+            await page.locator('#meet').click();
+            if(!(await page.locator('#feed').textContent()).includes('11 рабочих'))throw Error('Meeting action failed');
+            await page.locator('#advancedControls summary').click();
+            await page.locator('#dayNight').click();
+            if(!(await page.locator('#dayNight').textContent()).includes('День'))throw Error('Lighting toggle failed');
+            await page.locator('#agentSearch').fill('Бабушка');
+            if(await page.locator('#agents .agent').count()!==1)throw Error('Resident search failed');
+            console.log('PASS: character selection, pause, game meeting, lighting, roster search');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
