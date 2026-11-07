@@ -75,6 +75,9 @@ jobs:
             if(!(await page.locator('#feed').textContent()).includes('играет с кошкой'))throw Error('Pet play action failed');
             await page.locator('#roomTour').click();
             if(!(await page.locator('#currentRoom').textContent()).includes('Славик'))throw Error('Camera room tour failed');
+            await page.locator('#needsTools summary').click();
+            await page.locator('#teamEnergy').click();
+            if(!(await page.locator('#feed').textContent()).includes('Средняя игровая энергия'))throw Error('Needs dashboard action failed');
             console.log('PASS: character selection, pause, game meeting, lighting, roster search');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
