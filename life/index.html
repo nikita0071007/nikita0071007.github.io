@@ -65,7 +65,7 @@ for(const x of [-8,-4,0,4,8]){box(2.1,1.5,.028,0x91c3d8,x,1.8,-7.83);box(2.2,.07
 // Коврик перед службой охраны и дорожка в комнате отдыха.
 box(2.0,.018,.50,0x657f83,-7.4,.06,-3.95);box(2.0,.018,.49,0x7b9b87,7.4,.06,3.1);
 // Детали интерьера без тяжёлых текстур и дополнительных запросов.
-function sphere(radius,color,x,y,z,parent=scene){const m=new T.Mesh(new T.SphereGeometry(radius,10,8),material(color));m.position.set(x,y,z);parent.add(m);return m}
+const sphereGeometryCache=new Map();function sphere(radius,color,x,y,z,parent=scene){if(!sphereGeometryCache.has(radius))sphereGeometryCache.set(radius,new T.SphereGeometry(radius,10,8));const m=new T.Mesh(sphereGeometryCache.get(radius),material(color));m.position.set(x,y,z);parent.add(m);return m}
 function plant(x,z){box(.38,.38,.38,0x9c775e,x,.2,z);box(.09,.65,.09,0x54734d,x,.7,z);for(const [dx,dz] of [[-.22,0],[.2,.1],[0,-.22]])sphere(.27,0x538866,x+dx,.94,z+dz)}
 function lamp(x,z){box(.09,1.4,.09,0xb5a18c,x,.7,z);sphere(.28,0xffd99c,x,1.55,z)}
 function rug(x,z,w,d,color){box(w,.022,d,color,x,.04,z)}
