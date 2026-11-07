@@ -124,7 +124,7 @@ function buildPerson(group,name,i){
   const leg=new T.Group();leg.position.set(side*.17,.75,0);body.add(leg);
   const trouser=new T.Mesh(new T.CylinderGeometry(.135,.11,.59,8),material(dark));trouser.position.y=-.30;leg.add(trouser);box(.25,.14,.37,0x242b35,0,-.63,.07,leg);legs.push(leg);
  }
- const nameLabel=characterName(name,group);
+ if(name==='Никита'){box(.10,.47,.032,0xb69f77,0,1.25,.195,body);sphere(.09,0xc3a17d,0,1.54,-.06,body)}const nameLabel=characterName(name,group);
  return {body,arms,legs,nameLabel,eyes};
 }
 const people=defs.concat(residentDefs).map(([id,name,role,model],i)=>{
