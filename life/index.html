@@ -83,9 +83,9 @@ function buildPerson(group,name,i){
  const body=new T.Group();group.add(body);
  const torso=box(.56,.8,.34,cloth,0,1.21,0,body);
  box(.57,.2,.38,0x42516b,0,.77,0,body);
- const head=sphere(.29,skin,0,1.94,0,body);
- sphere(.3,isWoman?0x49342e:0x3b3330,0,2.13,-.035,body).scale.set(1,.46,1);
- if(isWoman){box(.12,.37,.13,0x49342e,-.27,1.86,-.04,body);box(.12,.37,.13,0x49342e,.27,1.86,-.04,body)}
+ const skinTone=[0xdbaf92,0xe4c6aa,0xb98264,0xcf9a79][i%4];const head=sphere(.29,skinTone,0,1.94,0,body);
+ const hairColor=[0x48332e,0x352d27,0x795134,0x38282f,0x26222b][i%5];sphere(.3,name==='Бабушка Марина'?0xbdbac0:hairColor,0,2.13,-.035,body).scale.set(1,.46,1);if(name==='Юрий'||name==='Михалыч')sphere(.19,0x857c74,0,1.75,.13,body).scale.set(1,.6,.45);if(name==='Анжелика'){box(.13,.12,.13,0xe2b783,-.25,.08,.18,body);box(.13,.12,.13,0xe2b783,.25,.08,.18,body)}if(name==='Бабушка Марина'){sphere(.17,0xbdbac0,-.22,2.12,0,body);sphere(.17,0xbdbac0,.22,2.12,0,body)}
+ if(isWoman){box(.12,.37,.13,hairColor,-.27,1.86,-.04,body);box(.12,.37,.13,hairColor,.27,1.86,-.04,body)}
  for(const side of [-1,1]){sphere(.035,0x25252e,side*.105,1.97,.265,body)}
  const arms=[],legs=[];
  for(const side of [-1,1]){
