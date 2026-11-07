@@ -1,0 +1,44 @@
+name: Gusevmade Life 3D visual screenshot
+on:
+  push:
+    branches: [main]
+    paths:
+      - "life/index.html"
+      - ".github/workflows/life-visual-snapshot.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start local copy of site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/life-server.log 2>&1 &
+          sleep 2
+      - name: Capture real browser rendering of the checked-out 3D page
+        run: |
+          set -e
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome not installed on runner" >&2
+            exit 1
+          fi
+          "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage \
+            --enable-unsafe-swiftshader --use-gl=angle --use-angle=swiftshader \
+            --hide-scrollbars --window-size=1440,900 --virtual-time-budget=12000 \
+            --screenshot=life/latest-preview.png \
+            'http://127.0.0.1:8765/life/index.html?3d=1'
+          test -s life/latest-preview.png
+          file life/latest-preview.png
+      - name: Publish captured screenshot to public site repo
+        run: |
+          git config user.name "Gusevmade visual checks"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add life/latest-preview.png
+          if ! git diff --cached --quiet; then
+            git commit -m "Capture actual 3D browser preview"
+            git push
+          fi
