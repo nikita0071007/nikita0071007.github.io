@@ -90,6 +90,8 @@ function pet(x,z,color,kind){const g=new T.Group();scene.add(g);g.position.set(x
 const pets=[{name:'Кошка',group:pet(-6.6,5.8,0xc4a78d,'cat'),speed:.38,wait:1,target:null},{name:'Собака',group:pet(-8.9,5.8,0x666f78,'dog'),speed:.63,wait:2,target:null}];
 function petDestination(){return {x:-9.5+Math.random()*4.1,z:3.3+Math.random()*2.9}}
 function updatePets(dt){for(const animal of pets){if(animal.group.userData.tail)animal.group.userData.tail.rotation.y=Math.sin(performance.now()*.004*(animal.name==='Собака'?2:1))*.45;if(!animal.target){animal.wait-=dt;if(animal.wait<=0)animal.target=petDestination();continue}const dx=animal.target.x-animal.group.position.x,dz=animal.target.z-animal.group.position.z,d=Math.hypot(dx,dz);if(d<.08){animal.target=null;animal.wait=1.5+Math.random()*3;continue}animal.group.position.x+=dx/d*Math.min(d,dt*animal.speed);animal.group.position.z+=dz/d*Math.min(d,dt*animal.speed);animal.group.rotation.y=Math.atan2(dx,dz)}}
+// Круглый стол и кружки в кафе-зоне.
+const cafeTable=new T.Mesh(new T.CylinderGeometry(.66,.66,.10,16),material(0xa98b72));cafeTable.position.set(9.2,.72,6.25);scene.add(cafeTable);box(.15,.65,.15,0x5c7385,9.2,.39,6.25);sphere(.13,0xf0d6bb,9.0,.85,6.20);sphere(.13,0xd5e5ec,9.36,.85,6.34);
 // Растения, уютные светильники и мебель создаются из базовых фигур, поэтому остаются лёгкими.
 // Полностью локальные объёмные жители: ни один персонаж не зависит от загрузки .glb.
 const saved=(()=>{try{return JSON.parse(localStorage.getItem('gusevmade-life-3d'))||{}}catch{return {}}})();
