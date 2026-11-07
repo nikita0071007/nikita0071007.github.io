@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gusevmade Life — пробный запуск</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;font:16px system-ui;background:#101b2a;color:#eff6ff}main{max-width:780px;margin:auto;padding:22px 16px 50px}h1{font-size:27px;margin:12px 0}p{color:#c2d3e2;line-height:1.55}.card{border:1px solid #405d79;background:#1c3045;border-radius:16px;padding:18px;margin:16px 0}.links{display:flex;flex-wrap:wrap;gap:10px}.btn{display:inline-block;background:#356b96;color:#fff;text-decoration:none;border:1px solid #6c9cc2;border-radius:10px;padding:13px 16px;font:inherit;cursor:pointer}.btn.secondary{background:#29455e}.row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #3b536a;padding:10px 0}.row:last-child{border:0}.ok{color:#86e3a6}.warn{color:#ffcf80}.muted{font-size:13px;color:#b4c7d8}.progress{height:12px;border-radius:20px;background:#344b60;overflow:hidden}.progress>div{height:100%;width:0;background:#61b78a;transition:width .4s}#events{white-space:pre-wrap;word-break:break-word;font-size:13px;color:#d5e3ef;max-height:220px;overflow:auto}button:focus-visible,a:focus-visible{outline:3px solid #ffda8b;outline-offset:3px}
+</style></head><body><main>
+<h1>🏠 Gusevmade Life — пробный запуск</h1>
+<p>Тестовая панель проверяет доступность опубликованных страниц и публичных статусов агентов. Это <strong>не запуск задач на немецком сервере</strong> и не отправка публикаций.</p>
+<div class="card"><h2>Открыть виртуальный дом</h2><div class="links">
+<a class="btn" href="./mobile.html">📱 Мобильный офис 2D</a>
+<a class="btn" href="./index.html?3d=1">🏡 Проверить 3D</a>
+<a class="btn secondary" href="./index.html">🚪 Обычный вход</a></div>
+<p class="muted">На телефоне обычный вход открывает стабильную 2D-версию. Для принудительного теста 3D нажмите «Проверить 3D».</p></div>
+<div class="card"><h2>Проверка подключения</h2>
+<div class="row"><span>Мобильная страница</span><strong id="mobile">Ожидание</strong></div>
+<div class="row"><span>3D-страница</span><strong id="desktop">Ожидание</strong></div>
+<div class="row"><span>Данные агентов из GitHub</span><strong id="agents">Ожидание</strong></div>
+<div class="row"><span>Последнее обновление данных</span><strong id="freshness">Ожидание</strong></div>
+<div class="row"><span>Результат проверок</span><strong id="result">—</strong></div>
+<div class="progress" aria-label="Прогресс технических проверок"><div id="bar"></div></div>
+<p class="muted">Процент выше — доля пройденных технических проверок, а не готовность всего проекта.</p>
+<button class="btn" id="retry" type="button">🔄 Повторить проверки</button></div>
+<div class="card"><h2>Журнал пробного запуска</h2><div id="events" role="status" aria-live="polite">Проверки ещё не начаты.</div></div>
+<p class="muted">Безопасный режим: только чтение. Управление агентами, Telegram-согласования и публикации здесь не выполняются.</p>
+</main><script>
+const $=id=>document.getElementById(id);
+const log=s=>{$('events').textContent+=(($('events').textContent?'\n':'')+new Date().toLocaleTimeString('ru-RU')+' · '+s)};
+async function checkPage(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const t=await r.text();if(!t.includes('Gusevmade Life'))throw Error('Неожиданный ответ');return true}
+async function run(){
+$('retry').disabled=true;$('events').textContent='';['mobile','desktop','agents','freshness'].forEach(id=>{$(id).textContent='Проверка…';$(id).className=''});$('result').textContent='—';$('bar').style.width='0%';
+let passed=0;const total=4;
+function mark(id,ok,label){$(id).textContent=label;$(id).className=ok?'ok':'warn';if(ok)passed++;$('bar').style.width=Math.round(passed/total*100)+'%'}
+const pages=[['mobile','./mobile.html','2D'],['desktop','./index.html?3d=1','3D']];
+await Promise.all(pages.map(async([id,url,label])=>{try{await checkPage(url);mark(id,true,'✓ Доступна');log(label+': страница доступна (отрисовка не проверялась)')}catch(e){mark(id,false,'⚠ Ошибка');log(label+': '+e.message)}}));
+try{const r=await fetch('https://raw.githubusercontent.com/nikita0071007/office/main/status.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();const count=Object.keys(data.agents||{}).length;if(count===0)throw Error('Нет агентов');mark('agents',true,'✓ '+count+' статусов');log('Получены статусы '+count+' агентов');
+const date=new Date(data.updated_at);if(!Number.isFinite(date.getTime())){mark('freshness',false,'⚠ Дата неизвестна');log('В данных отсутствует корректная дата обновления')}else{const age=(Date.now()-date.getTime())/3600000;const fresh=age>=-1&&age<=24;mark('freshness',fresh,(fresh?'✓ ':'⚠ ')+date.toLocaleString('ru-RU'));log('Возраст данных: '+Math.max(0,age).toFixed(1)+' ч. '+(fresh?'Свежие':'Возможно устарели'))}}
+catch(e){mark('agents',false,'⚠ Нет данных');mark('freshness',false,'⚠ Неизвестно');log('GitHub: '+e.message)}
+$('result').textContent=passed+' из '+total;$('result').className=passed===total?'ok':'warn';log('Проверки завершены: '+passed+'/'+total+'. Для проверки изображения и кнопок откройте офис.');$('retry').disabled=false}
+$('retry').addEventListener('click',run);run();
+</script></body></html>
