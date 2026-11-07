@@ -70,6 +70,9 @@ jobs:
             await page.locator('#friendSelected').click();
             const relationAfter=await page.locator('#partnerFriendship').textContent();
             if(relationBefore===relationAfter)throw Error('Friendship action did not update relationship');
+            await page.locator('#petsTools summary').click();
+            await page.locator('#playPets').click();
+            if(!(await page.locator('#feed').textContent()).includes('играет с кошкой'))throw Error('Pet play action failed');
             console.log('PASS: character selection, pause, game meeting, lighting, roster search');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
