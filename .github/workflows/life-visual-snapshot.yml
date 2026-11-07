@@ -39,7 +39,7 @@ jobs:
             const executablePath=require('fs').existsSync('/usr/bin/google-chrome')?'/usr/bin/google-chrome':undefined;
             const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader','--disable-dev-shm-usage']});
             const page=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1});
-            page.on('pageerror',e=>console.error('Page JS error:',e.message));
+            const pageErrors=[];page.on('pageerror',e=>{pageErrors.push(e.message);console.error('Page JS error:',e.message)});
             page.on('console',m=>{if(m.type()==='error')console.error('Browser console:',m.text())});
             await page.goto('http://127.0.0.1:8765/life/index.html?3d=1',{waitUntil:'domcontentloaded'});
             await page.waitForFunction(()=>document.getElementById('diagnostic')?.textContent.includes('3D активно'),null,{timeout:45000});
@@ -81,6 +81,7 @@ jobs:
             const canvas=await page.locator('#scene canvas').first().evaluate(c=>({width:c.width,height:c.height}));
             if(canvas.width<300||canvas.height<250)throw Error('3D canvas has incorrect dimensions');
             console.log('PASS: character selection, pause, game meeting, lighting, roster search');
+            if(pageErrors.length)throw Error('Unexpected JavaScript runtime errors: '+pageErrors.join(' | '));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
