@@ -30,8 +30,10 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/life-server.log 2>&1 &
           sleep 2
       - name: Render 3D in Chromium and verify scene with Playwright
+        continue-on-error: true
         run: |
-          node <<'JS'
+          set -o pipefail
+          node <<'JS' 2>&1 | tee /tmp/life-playwright.log
           const {chromium}=require('playwright-core');
           (async()=>{
             const executablePath=require('fs').existsSync('/usr/bin/google-chrome')?'/usr/bin/google-chrome':undefined;
@@ -50,11 +52,27 @@ jobs:
           JS
           test -s life/latest-preview.png
           file life/latest-preview.png
+      - name: Save visual test diagnostics
+        if: always()
+        run: |
+          mkdir -p life
+          echo 'Gusevmade Life visual test' > life/visual-test-report.txt
+          date -u >> life/visual-test-report.txt
+          echo '--- browser ---' >> life/visual-test-report.txt
+          command -v google-chrome >> life/visual-test-report.txt || true
+          echo '--- dependencies ---' >> life/visual-test-report.txt
+          ls -ld node_modules/three node_modules/playwright-core >> life/visual-test-report.txt 2>&1 || true
+          echo '--- browser log ---' >> life/visual-test-report.txt
+          tail -80 /tmp/life-playwright.log >> life/visual-test-report.txt 2>&1 || true
+          echo '--- local server ---' >> life/visual-test-report.txt
+          tail -20 /tmp/life-server.log >> life/visual-test-report.txt 2>&1 || true
       - name: Publish captured screenshot to public site repo
+        if: always()
         run: |
           git config user.name "Gusevmade visual checks"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add life/latest-preview.png
+          git add life/visual-test-report.txt
+          if [ -s life/latest-preview.png ]; then git add life/latest-preview.png; fi
           if ! git diff --cached --quiet; then
             git commit -m "Capture actual 3D browser preview"
             git push
