@@ -47,6 +47,24 @@ jobs:
             await page.screenshot({path:'life/latest-preview.png',fullPage:false});
             const diagnostic=await page.locator('#diagnostic').textContent();
             console.log('Rendered 3D:',diagnostic);
+            // New 250-item visual and social pack: validate actual runtime objects, not static counts.
+            const pack=await page.evaluate(()=>window.__lifeExpansionInfo);
+            if(!pack||pack.decor!==100||pack.dialogues!==70||pack.wardrobe!==56||pack.mechanics!==24||pack.total!==250)throw Error('250-item game expansion failed to initialize: '+JSON.stringify(pack));
+            await page.locator('#expansionDetails summary').click();
+            if(await page.locator('#decorRoom option').count()!==9)throw Error('Room decoration catalogue missing');
+            if(await page.locator('#decorItem option').count()!==10)throw Error('3D decor room contents missing');
+            await page.locator('#decorRoom').selectOption('6');
+            if(await page.locator('#decorItem option').count()!==15)throw Error('Grandma room decor not fully rendered');
+            await page.locator('#focusDecor').click();
+            if(!(await page.locator('#feed').textContent()).includes('Рассматриваем'))throw Error('Inspect 3D object failed');
+            await page.locator('#quotesDetails summary').click();
+            if(await page.locator('#quotePicker option').count()!==5)throw Error('Character-specific voice lines missing');
+            await page.locator('#sayQuote').click();
+            if(!(await page.locator('#feed').textContent()).includes('💬'))throw Error('Selected quote event missing');
+            const decorationVisible=await page.evaluate(()=>window.__lifeExpansionInfo.decor===100);
+            if(!decorationVisible)throw Error('Visual expansion items not available');
+            await page.screenshot({path:'life/expansion-preview.png',fullPage:false});
+            console.log('PASS: expansion 100 decorated objects, 70 authored phrases, 56 wardrobe elements, 24 game-engine improvements');
             // Verify that core gameplay controls respond in the real browser.
             const selectedBefore=await page.locator('#name').textContent();
             await page.locator('#cameraTools summary').click();
@@ -157,6 +175,7 @@ jobs:
           if [ -s life/interactions-preview.png ]; then git add life/interactions-preview.png; fi
           if [ -s life/activities-preview.png ]; then git add life/activities-preview.png; fi
           if [ -s life/mobile-preview.png ]; then git add life/mobile-preview.png; fi
+          if [ -s life/expansion-preview.png ]; then git add life/expansion-preview.png; fi
           if ! git diff --cached --quiet; then
             git commit -m "Capture actual 3D browser preview"
             git push
