@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "life/index.html"
+      - "life/expansion-pack.js"
       - ".github/workflows/life-visual-snapshot.yml"
   workflow_dispatch:
 permissions:
@@ -50,6 +51,7 @@ jobs:
             // New 250-item visual and social pack: validate actual runtime objects, not static counts.
             const pack=await page.evaluate(()=>window.__lifeExpansionInfo);
             if(!pack||pack.decor!==100||pack.dialogues!==70||pack.wardrobe!==56||pack.mechanics!==24||pack.total!==250)throw Error('250-item game expansion failed to initialize: '+JSON.stringify(pack));
+            const addedWearables=await page.evaluate(()=>window.__lifeExpansionInfo?.wardrobe===56);if(!addedWearables)throw Error('Wardrobe data failed');
             await page.locator('#expansionDetails summary').click();
             if(await page.locator('#decorRoom option').count()!==9)throw Error('Room decoration catalogue missing');
             if(await page.locator('#decorItem option').count()!==10)throw Error('3D decor room contents missing');
