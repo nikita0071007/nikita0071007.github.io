@@ -237,7 +237,47 @@ function buildPerson(group,name,i){
   const leg=new T.Group();leg.position.set(side*.17,.75,0);body.add(leg);
   const trouser=new T.Mesh(new T.CylinderGeometry(.135,.11,.59,8),material(dark));trouser.position.y=-.30;leg.add(trouser);box(.25,.14,.37,0x242b35,0,-.63,.07,leg);legs.push(leg);
  }
- if(name==='Никита'){box(.10,.47,.032,0xb69f77,0,1.25,.195,body);sphere(.09,0xc3a17d,0,1.54,-.06,body)}if(name==='Анжелика'){for(const dx of [-.17,.17]){box(.25,.09,.36,0x242632,dx,.10,.13,body);box(.13,.11,.13,0xe0b89b,dx,.20,-.08,body)}}if(name==='Бабушка Марина'){sphere(.23,0xc7c4c9,0,2.23,-.18,body);box(.56,.08,.13,0xa88d84,0,1.23,.20,body)}if(name==='Славик'){box(.26,.18,.035,0xe9c077,-.16,1.40,.22,body);box(.17,.22,.07,0x283b4d,.34,1.11,.17,body)}if(name==='Игорь'){box(.48,.59,.055,0xb3a18a,.43,1.15,.21,body);box(.36,.045,.055,0xe2d8c2,.43,1.42,.25,body)}if(name==='Макс'){box(.20,.38,.035,0x303e4f,.40,1.05,.20,body);box(.155,.28,.012,0x77b8d2,.40,1.05,.22,body)}if(name==='Олег'){box(.52,.35,.045,0x303d52,-.37,1.20,.22,body);box(.42,.25,.015,0x6686a6,-.37,1.20,.25,body)}if(name==='Вера'){box(.51,.34,.045,0xf1e2c7,.39,1.15,.20,body);box(.33,.020,.050,0x5c82ba,.38,1.21,.24,body)}if(name==='Лиза'){for(const dx of [-.29,.29])sphere(.12,0x4f5869,dx,1.95,0,body);const band=new T.Mesh(new T.TorusGeometry(.32,.038,5,14,Math.PI),material(0x4f5869));band.position.y=2.1;band.rotation.z=Math.PI;body.add(band)}if(name==='Марина'){sphere(.12,0x3e4c69,.30,1.99,0,body);box(.06,.24,.08,0x3e4c69,.30,1.89,.10,body)}const nameLabel=characterName(name,group);
+ if(name==='Никита'){box(.10,.47,.032,0xb69f77,0,1.25,.195,body);sphere(.09,0xc3a17d,0,1.54,-.06,body)}if(name==='Анжелика'){for(const dx of [-.17,.17]){box(.25,.09,.36,0x242632,dx,.10,.13,body);box(.13,.11,.13,0xe0b89b,dx,.20,-.08,body)}}if(name==='Бабушка Марина'){sphere(.23,0xc7c4c9,0,2.23,-.18,body);box(.56,.08,.13,0xa88d84,0,1.23,.20,body)}if(name==='Славик'){box(.26,.18,.035,0xe9c077,-.16,1.40,.22,body);box(.17,.22,.07,0x283b4d,.34,1.11,.17,body)}if(name==='Игорь'){box(.48,.59,.055,0xb3a18a,.43,1.15,.21,body);box(.36,.045,.055,0xe2d8c2,.43,1.42,.25,body)}if(name==='Макс'){box(.20,.38,.035,0x303e4f,.40,1.05,.20,body);box(.155,.28,.012,0x77b8d2,.40,1.05,.22,body)}if(name==='Олег'){box(.52,.35,.045,0x303d52,-.37,1.20,.22,body);box(.42,.25,.015,0x6686a6,-.37,1.20,.25,body)}if(name==='Вера'){box(.51,.34,.045,0xf1e2c7,.39,1.15,.20,body);box(.33,.020,.050,0x5c82ba,.38,1.21,.24,body)}if(name==='Лиза'){for(const dx of [-.29,.29])sphere(.12,0x4f5869,dx,1.95,0,body);const band=new T.Mesh(new T.TorusGeometry(.32,.038,5,14,Math.PI),material(0x4f5869));band.position.y=2.1;band.rotation.z=Math.PI;body.add(band)}if(name==='Марина'){sphere(.12,0x3e4c69,.30,1.99,0,body);box(.06,.24,.08,0x3e4c69,.30,1.89,.10,body)}// 41/200 Nikita blazer lapels
+if(name==='Никита'){for(const side of [-1,1])box(.13,.29,.038,0xc5b19c,side*.19,1.37,.24,body)}
+// 42/200 Grandma glasses
+if(name==='Бабушка Марина'){for(const side of [-1,1]){const lens=new T.Mesh(new T.TorusGeometry(.105,.014,5,14),material(0xb59d87));lens.position.set(side*.13,1.96,.28);body.add(lens)}}
+// 43/200 Lena comfortable scarf
+if(name==='Лена'){box(.42,.12,.30,0xe2c6b6,0,1.64,.12,body)}
+// 44/200 Angelika pearl earrings
+if(name==='Анжелика'){for(const side of [-1,1])sphere(.066,0xecc8b1,side*.285,1.86,.065,body)}
+// 45/200 Slavik security sleeve
+if(name==='Славик'){box(.18,.13,.055,0x5dc5b1,-.38,1.32,.14,body)}
+// 46/200 Igor coach wristwatch
+if(name==='Игорь'){box(.16,.08,.14,0xb4b8ba,.38,.91,.07,body)}
+// 47/200 Vera analyst chart pin
+if(name==='Вера'){box(.22,.10,.04,0x6caaca,-.23,1.38,.21,body)}
+// 48/200 Max content backpack
+if(name==='Макс'){box(.45,.58,.22,0x3c6f91,0,1.17,-.26,body)}
+// 49/200 Artem headset earpieces
+if(name==='Артём'){for(const side of [-1,1])sphere(.13,0x32394e,side*.29,1.98,0,body)}
+// 50/200 Yuri small cross pendant
+if(name==='Юрий'){box(.055,.26,.03,0xc9ab76,0,1.29,.26,body);box(.18,.055,.03,0xc9ab76,0,1.32,.27,body)}
+// 51/200 Lisa colorful bracelet
+if(name==='Лиза'){box(.15,.09,.15,0xe6b27d,-.38,.84,.02,body)}
+// 52/200 Mikhaylych archive satchel
+if(name==='Михалыч'){box(.50,.35,.18,0x806b57,.30,1.05,.22,body)}
+// 53/200 Oleg producer lapel
+if(name==='Олег'){box(.20,.08,.04,0xb6c0c7,.18,1.42,.21,body)}
+// 54/200 Marina service badge
+if(name==='Марина'){box(.26,.14,.045,0xffdbb0,-.19,1.34,.25,body)}
+// 55/200 Nikita pocket square
+if(name==='Никита'){box(.14,.11,.04,0xd9a8a2,.21,1.43,.24,body)}
+// 56/200 Grandma cardigan buttons
+if(name==='Бабушка Марина'){for(const y of [1.18,1.31,1.44])sphere(.036,0xe6d4b9,0,y,.25,body)}
+// 57/200 Lena pendant
+if(name==='Лена'){sphere(.072,0xb0d0bb,0,1.47,.26,body)}
+// 58/200 Angelika camera wrist strap
+if(name==='Анжелика'){box(.11,.07,.12,0x423849,.38,.91,.08,body)}
+// 59/200 Artem editor color stripes
+if(name==='Артём'){for(let i=0;i<3;i++)box(.22,.04,.04,[0x98b4de,0xbba0d3,0xbcd8ad][i],-.17,1.42-i*.11,.22,body)}
+// 60/200 Mikhaylych grey hair sideburns
+if(name==='Михалыч'){for(const side of [-1,1])box(.09,.23,.09,0xb2b0ab,side*.28,1.97,-.02,body)}
+const nameLabel=characterName(name,group);
  return {body,arms,legs,nameLabel,eyes};
 }
 const people=defs.concat(residentDefs).map(([id,name,role,model],i)=>{
