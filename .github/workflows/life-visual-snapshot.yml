@@ -64,6 +64,12 @@ jobs:
             if(!(await page.locator('#dayNight').textContent()).includes('День'))throw Error('Lighting toggle failed');
             await page.locator('#agentSearch').fill('Бабушка');
             if(await page.locator('#agents .agent').count()!==1)throw Error('Resident search failed');
+            await page.locator('#agentSearch').fill('');
+            await page.locator('#friendshipTools summary').click();
+            const relationBefore=await page.locator('#partnerFriendship').textContent();
+            await page.locator('#friendSelected').click();
+            const relationAfter=await page.locator('#partnerFriendship').textContent();
+            if(relationBefore===relationAfter)throw Error('Friendship action did not update relationship');
             console.log('PASS: character selection, pause, game meeting, lighting, roster search');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
