@@ -323,7 +323,52 @@ function showRoute(p){
  routeLine=new T.Line(new T.BufferGeometry().setFromPoints(stops),routeMaterial);
  routeLine.computeLineDistances();routeLine.renderOrder=9;scene.add(routeLine);
 }
-function go(p,x,z,action){p.route=routeTo(p,x,z);p.target=p.route.shift()||null;p.action=action;if(p===chosen){showRoute(p);const el=document.getElementById('routeInfo');if(el)el.textContent='🚶 В пути · '+(p.route.length+1)+' участков'}}function talk(){let a=pick(people),b=pick(people.filter(p=>p!==a)),relation=Math.min(a.relations[b.id]??25,b.relations[a.id]??25),romance=relation>75&&!a.isResident&&!b.isResident&&Math.random()<.15,phrase=pick(romance?['Мне нравится быть рядом с тобой.','Пойдём вместе гулять после работы?']:['Как твои дела?','Давай выпьем кофе.','Есть идея для проекта!','Рад тебя видеть.','Как проходит твой день?']);a.relations[b.id]=clamp((a.relations[b.id]??25)+4);b.relations[a.id]=clamp((b.relations[a.id]??25)+4);a.social=clamp(a.social+18);b.social=clamp(b.social+18);a.socialGlowUntil=performance.now()+3500;b.socialGlowUntil=performance.now()+3500;go(a,b.group.position.x+.5,b.group.position.z+.4,'Общается с '+b.name);a.mood=clamp(a.mood+3);b.mood=clamp(b.mood+3);say(a,phrase);say(b,'Слушаю тебя!');log(a.name+' → '+b.name+': «'+phrase+'»'+(romance?' 💗':''));save();renderInfo()}
+function go(p,x,z,action){p.route=routeTo(p,x,z);p.target=p.route.shift()||null;p.action=action;if(p===chosen){showRoute(p);const el=document.getElementById('routeInfo');if(el)el.textContent='🚶 В пути · '+(p.route.length+1)+' участков'}}const rolePhrases={
+// 61/200 analyst
+'analyst':['Новые графики подскажут, что улучшить.'],
+// 62/200 poster
+'poster':['Для короткого ролика нужна хорошая идея.'],
+// 63/200 guard
+'guard':['Проверю, всё ли спокойно в нашем офисе.'],
+// 64/200 editor
+'editor':['Сейчас подберу удачные кадры для монтажа.'],
+// 65/200 video
+'video':['Пора снимать новую серию Бабушкиной дачи!'],
+// 66/200 critic
+'critic':['Любой текст становится лучше после правки.'],
+// 67/200 coach
+'coach':['Команда, поделимся задачами и поддержим друг друга.'],
+// 68/200 community
+'community':['Зрителям важно получить добрый ответ.'],
+// 69/200 archivist
+'archivist':['Все хорошие идеи должны быть сохранены.'],
+// 70/200 producer
+'producer':['Сначала идея, затем план, затем результат.'],
+// 71/200 orders
+'orders':['Нужно внимательно выслушать каждого клиента.'],
+// 72/200 resident-nikita
+'resident-nikita':['Хочу, чтобы у всех было уютно и спокойно.'],
+// 73/200 resident-grandma
+'resident-grandma':['А где мои питомцы? Пора угостить их.'],
+// 74/200 resident-lena
+'resident-lena':['Иногда полезно просто выговориться.']
+};
+const moodPhrases={
+// 75/200 morning
+'morning':'Доброе утро! С чего начнём этот день?',
+// 76/200 midday
+'midday':'После работы полезно выпить чашку чая.',
+// 77/200 evening
+'evening':'Вечером хочется подвести итоги дня.',
+// 78/200 tired
+'tired':'Кажется, пора немного отдохнуть.',
+// 79/200 happy
+'happy':'Сегодня отличный повод улыбнуться!',
+// 80/200 lonely
+'lonely':'Как хорошо, что здесь есть друзья.'
+};
+function roleDialogue(p){const context=p.energy<38?'tired':p.social<35?'lonely':p.mood>82?'happy':gameMinutes<660?'morning':gameMinutes<1050?'midday':'evening';return pick([...(rolePhrases[p.id]||[]),moodPhrases[context],'Как проходит твой день?'])}
+function talk(){let a=pick(people),b=pick(people.filter(p=>p!==a)),relation=Math.min(a.relations[b.id]??25,b.relations[a.id]??25),romance=relation>75&&!a.isResident&&!b.isResident&&Math.random()<.15,phrase=romance?pick(['Мне нравится быть рядом с тобой.','Пойдём вместе гулять после работы?']):roleDialogue(a);a.relations[b.id]=clamp((a.relations[b.id]??25)+4);b.relations[a.id]=clamp((b.relations[a.id]??25)+4);a.social=clamp(a.social+18);b.social=clamp(b.social+18);a.socialGlowUntil=performance.now()+3500;b.socialGlowUntil=performance.now()+3500;go(a,b.group.position.x+.5,b.group.position.z+.4,'Общается с '+b.name);a.mood=clamp(a.mood+3);b.mood=clamp(b.mood+3);say(a,phrase);say(b,'Слушаю тебя!');log(a.name+' → '+b.name+': «'+phrase+'»'+(romance?' 💗':''));save();renderInfo()}
 document.getElementById('nextResident').onclick=()=>{const residents=people.filter(x=>x.isResident),i=residents.indexOf(chosen);chosen=residents[(i+1)%residents.length];renderInfo();document.getElementById('focus').click()};document.getElementById('nextWorker').onclick=()=>{const workers=people.filter(x=>!x.isResident),i=workers.indexOf(chosen);chosen=workers[(i+1)%workers.length];renderInfo();document.getElementById('focus').click()};document.getElementById('selectSad').onclick=()=>{chosen=people.reduce((a,b)=>a.mood<b.mood?a:b);renderInfo();document.getElementById('encourage').click()};document.getElementById('selectLonely').onclick=()=>{chosen=people.reduce((a,b)=>a.social<b.social?a:b);renderInfo();document.getElementById('focus').click()};document.getElementById('selectTired').onclick=()=>{chosen=people.reduce((a,b)=>a.energy<b.energy?a:b);renderInfo();document.getElementById('focus').click()};document.getElementById('clearAgentSearch').onclick=()=>{document.getElementById('agentSearch').value='';renderInfo()};document.getElementById('agentSearch').oninput=()=>renderInfo();document.getElementById('agentFilter').onchange=()=>renderInfo();function renderInfo(){showRoute(chosen);for(const p of people){p.selection.visible=p===chosen;p.figure.nameLabel.material.opacity=p===chosen?1:.78;p.figure.nameLabel.scale.set(p===chosen?2.65:2.35,p===chosen?.56:.49,1)}const list=document.getElementById('agents');list.replaceChildren();for(const p of people){const query=document.getElementById('agentSearch').value.trim().toLowerCase();if(query&&!(p.name+' '+p.role).toLowerCase().includes(query))continue;const filter=document.getElementById('agentFilter').value;if(filter==='work'&&p.isResident||filter==='residents'&&!p.isResident||filter==='low'&&p.energy>=45||filter==='social'&&p.social>=45)continue;let d=document.createElement('div');d.className='agent'+(p===chosen?' active':'');d.textContent=(p.isResident?'🎭 ':'🧠 ')+p.name+' · '+p.role+' · '+p.status;d.setAttribute('role','button');d.tabIndex=0;d.onclick=()=>{chosen=p;renderInfo()};d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chosen=p;renderInfo()}};list.append(d)}document.getElementById('rosterCount').textContent=list.children.length+' из '+people.length+' персонажей';document.getElementById('name').textContent=chosen.name+' · '+chosen.role;document.getElementById('selectedHud').textContent='👤 '+chosen.name+' · '+(chosen.isResident?'игровой житель':'рабочий агент');document.getElementById('heroType').textContent=chosen.isResident?'🎭 Игровой житель · не связан с сервером':'🟢 Рабочий агент · статус из GitHub';const bars=document.getElementById('needsBars');bars.replaceChildren();for(const [label,value,color] of [['⚡ Энергия',chosen.energy,'#78bd73'],['💬 Общение',chosen.social,'#62a9e1'],['😊 Настроение',chosen.mood,'#e5b966']]){const line=document.createElement('div');const textLine=document.createElement('div');textLine.textContent=label+' · '+Math.round(value)+'%';const track=document.createElement('div');track.style.cssText='height:8px;background:#142338;border-radius:6px;overflow:hidden';const fill=document.createElement('div');fill.style.cssText='height:100%;border-radius:6px;background:'+color+';width:'+Math.max(0,Math.min(100,value))+'%';track.append(fill);line.append(textLine,track);bars.append(line)}const targetPicker=document.getElementById('socialTarget');const targetPreviously=targetPicker.value;targetPicker.replaceChildren();for(const other of people.filter(x=>x!==chosen)){const option=document.createElement('option');option.value=other.id;option.textContent=other.name;targetPicker.append(option)}if(people.some(x=>x.id===targetPreviously&&x!==chosen))targetPicker.value=targetPreviously;document.getElementById('partnerFriendship').textContent='🤝 Отношения: '+Math.round(chosen.relations[targetPicker.value]??25)+'%';const weakest=[['энергия',chosen.energy],['общение',chosen.social],['настроение',chosen.mood]].sort((a,b)=>a[1]-b[1])[0];document.getElementById('needAdvice').textContent=weakest[1]<40?'💡 Совет: '+(weakest[0]==='энергия'?'отправь героя отдыхать':weakest[0]==='общение'?'предложи разговор':'поддержи настроение'):'✨ Потребности в норме';const friends=Object.entries(chosen.relations||{}).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id,n])=>(people.find(p=>p.id===id)?.name||id)+' '+Math.round(n)+'%');document.getElementById('friendsInfo').textContent=friends.length?'🤝 Знакомые: '+friends.join(' · '):'🤝 Знакомства появятся в игре';const homeRoom=roomData.find(r=>Math.abs(chosen.home.x-r.x)<r.w/2&&Math.abs(chosen.home.z-r.z)<r.d/2);document.getElementById('homeZoneInfo').textContent='🚪 Место: '+(homeRoom?.name||'Общая зона');document.getElementById('routeInfo').textContent=chosen.target?'🚶 В пути · '+(chosen.route.length+1)+' участков':'📍 На месте';document.getElementById('currentAction').textContent='🎭 Сейчас: '+chosen.action;document.getElementById('details').textContent='Энергия '+Math.round(chosen.energy)+'% · Общение '+Math.round(chosen.social)+'% · Настроение '+Math.round(chosen.mood)+'%\n'+chosen.action+'\nЗадача: '+chosen.task}
 const dailyDone={};
 function gameDaily(key,start,finish,callback){
