@@ -124,7 +124,7 @@ function buildPerson(group,name,i){
   const leg=new T.Group();leg.position.set(side*.17,.75,0);body.add(leg);
   const trouser=new T.Mesh(new T.CylinderGeometry(.135,.11,.59,8),material(dark));trouser.position.y=-.30;leg.add(trouser);box(.25,.14,.37,0x242b35,0,-.63,.07,leg);legs.push(leg);
  }
- if(name==='Никита'){box(.10,.47,.032,0xb69f77,0,1.25,.195,body);sphere(.09,0xc3a17d,0,1.54,-.06,body)}if(name==='Анжелика'){for(const dx of [-.17,.17]){box(.25,.09,.36,0x242632,dx,.10,.13,body);box(.13,.11,.13,0xe0b89b,dx,.20,-.08,body)}}if(name==='Бабушка Марина'){sphere(.23,0xc7c4c9,0,2.23,-.18,body);box(.56,.08,.13,0xa88d84,0,1.23,.20,body)}const nameLabel=characterName(name,group);
+ if(name==='Никита'){box(.10,.47,.032,0xb69f77,0,1.25,.195,body);sphere(.09,0xc3a17d,0,1.54,-.06,body)}if(name==='Анжелика'){for(const dx of [-.17,.17]){box(.25,.09,.36,0x242632,dx,.10,.13,body);box(.13,.11,.13,0xe0b89b,dx,.20,-.08,body)}}if(name==='Бабушка Марина'){sphere(.23,0xc7c4c9,0,2.23,-.18,body);box(.56,.08,.13,0xa88d84,0,1.23,.20,body)}if(name==='Славик'){box(.26,.18,.035,0xe9c077,-.16,1.40,.22,body);box(.17,.22,.07,0x283b4d,.34,1.11,.17,body)}const nameLabel=characterName(name,group);
  return {body,arms,legs,nameLabel,eyes};
 }
 const people=defs.concat(residentDefs).map(([id,name,role,model],i)=>{
