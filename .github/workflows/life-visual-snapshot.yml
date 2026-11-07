@@ -78,6 +78,8 @@ jobs:
             await page.locator('#needsTools summary').click();
             await page.locator('#teamEnergy').click();
             if(!(await page.locator('#feed').textContent()).includes('Средняя игровая энергия'))throw Error('Needs dashboard action failed');
+            const canvas=await page.locator('#scene canvas').first().evaluate(c=>({width:c.width,height:c.height}));
+            if(canvas.width<300||canvas.height<250)throw Error('3D canvas has incorrect dimensions');
             console.log('PASS: character selection, pause, game meeting, lighting, roster search');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
