@@ -387,6 +387,66 @@ gameDaily('community',795,807,()=>{const actor=people.find(p=>p.id==='community'
 gameDaily('customer',870,882,()=>{const actor=people.find(p=>p.id==='orders');go(actor,8.5,4.5,'📦 Отвечает игровым клиентам');actor.mood=clamp(actor.mood+2);log('📦 Марина занимается игровыми запросами')});
 gameDaily('directorBreak',810,822,()=>{const actor=people.find(p=>p.id==='resident-nikita');go(actor,-7.5,-0.6,'☕ Пьёт кофе в кабинете');actor.mood=clamp(actor.mood+2);log('☕ Никита устраивает игровой перерыв')});
 gameDaily('winddown',1320,1332,()=>{people.filter(p=>p.isResident).forEach(p=>go(p,p.home.x,p.home.z,'🌙 Готовится ко сну'));log('🌙 В доме наступает игровое время отдыха')});
+// 81/200 Ранний обход Славика
+gameDaily('more-earlyGuard',370,382,()=>{const p=people.find(x=>x.id==='guard');if(p){go(p,-8.1,-5.6,'Обходит игровую охрану (игровая симуляция)');log('📅 Ранний обход Славика · игра')}});
+// 82/200 Чаепитие бабушки Марины
+gameDaily('more-grandmaBreakfast',400,412,()=>{const p=people.find(x=>x.id==='resident-grandma');if(p){go(p,-7.7,4.9,'Готовит утренний чай (игровая симуляция)');log('📅 Чаепитие бабушки Марины · игра')}});
+// 83/200 Никита составляет план дня
+gameDaily('more-nikitaPlan',430,442,()=>{const p=people.find(x=>x.id==='resident-nikita');if(p){go(p,-7.4,-0.7,'Планирует игровой день (игровая симуляция)');log('📅 Никита составляет план дня · игра')}});
+// 84/200 Утреннее чтение Юрия
+gameDaily('more-yuriMorningRead',475,487,()=>{const p=people.find(x=>x.id==='critic');if(p){go(p,-0.4,-0.5,'Читает книгу (игровая симуляция)');log('📅 Утреннее чтение Юрия · игра')}});
+// 85/200 Лена готовится к игровому дню
+gameDaily('more-lenaMorning',495,507,()=>{const p=people.find(x=>x.id==='resident-lena');if(p){go(p,0.1,4.6,'Готовит кабинет (игровая симуляция)');log('📅 Лена готовится к игровому дню · игра')}});
+// 86/200 Славик проверяет мониторы
+gameDaily('more-slavikCameras',530,542,()=>{const p=people.find(x=>x.id==='guard');if(p){go(p,-8.9,-5.8,'Изучает игровые мониторы (игровая симуляция)');log('📅 Славик проверяет мониторы · игра')}});
+// 87/200 Макс делает игровую раскадровку
+gameDaily('more-maxStoryboard',550,562,()=>{const p=people.find(x=>x.id==='poster');if(p){go(p,6.3,-0.5,'Рисует раскадровку (игровая симуляция)');log('📅 Макс делает игровую раскадровку · игра')}});
+// 88/200 Игорь приглашает на зарядку
+gameDaily('more-igorWarmup',590,602,()=>{const p=people.find(x=>x.id==='coach');if(p){go(p,0.7,-5.3,'Готовит игровую разминку (игровая симуляция)');log('📅 Игорь приглашает на зарядку · игра')}});
+// 89/200 Михалыч наводит порядок в архиве
+gameDaily('more-mikhaylychBooks',615,627,()=>{const p=people.find(x=>x.id==='archivist');if(p){go(p,-1.4,0.1,'Разбирает архивные книги (игровая симуляция)');log('📅 Михалыч наводит порядок в архиве · игра')}});
+// 90/200 Анжелика регулирует свет
+gameDaily('more-angelikaLight',640,652,()=>{const p=people.find(x=>x.id==='video');if(p){go(p,8.4,-5.4,'Настраивает свет студии (игровая симуляция)');log('📅 Анжелика регулирует свет · игра')}});
+// 91/200 Лиза просматривает игровые сообщения
+gameDaily('more-lizaRead',680,692,()=>{const p=people.find(x=>x.id==='community');if(p){go(p,8.5,0.1,'Читает игровые комментарии (игровая симуляция)');log('📅 Лиза просматривает игровые сообщения · игра')}});
+// 92/200 Марина готовит ответы клиентам в игре
+gameDaily('more-marinaRequests',710,722,()=>{const p=people.find(x=>x.id==='orders');if(p){go(p,8.1,4.7,'Просматривает заявки (игровая симуляция)');log('📅 Марина готовит ответы клиентам в игре · игра')}});
+// 93/200 Макс зашёл за чашкой кофе
+gameDaily('more-maxSnack',730,742,()=>{const p=people.find(x=>x.id==='poster');if(p){go(p,7.6,5.2,'Делает игровой перерыв (игровая симуляция)');log('📅 Макс зашёл за чашкой кофе · игра')}});
+// 94/200 Олег составляет игровой список идей
+gameDaily('more-olegIdeas',770,782,()=>{const p=people.find(x=>x.id==='producer');if(p){go(p,8.2,-0.6,'Записывает идеи (игровая симуляция)');log('📅 Олег составляет игровой список идей · игра')}});
+// 95/200 Вера сопоставляет игровые показатели
+gameDaily('more-veraChart',790,802,()=>{const p=people.find(x=>x.id==='analyst');if(p){go(p,6.4,4.6,'Сравнивает графики (игровая симуляция)');log('📅 Вера сопоставляет игровые показатели · игра')}});
+// 96/200 Юрий перечитывает рукопись
+gameDaily('more-yuriQuiet',820,832,()=>{const p=people.find(x=>x.id==='critic');if(p){go(p,0,-0.4,'Редактирует рукопись (игровая симуляция)');log('📅 Юрий перечитывает рукопись · игра')}});
+// 97/200 Лена устраивает короткий перерыв
+gameDaily('more-lenaTea',845,857,()=>{const p=people.find(x=>x.id==='resident-lena');if(p){go(p,-0.8,5.4,'Пьёт травяной чай (игровая симуляция)');log('📅 Лена устраивает короткий перерыв · игра')}});
+// 98/200 Анжелика изучает сценарий
+gameDaily('more-angelikaEdit',890,902,()=>{const p=people.find(x=>x.id==='video');if(p){go(p,7.1,-5.2,'Проверяет игровой сценарий (игровая симуляция)');log('📅 Анжелика изучает сценарий · игра')}});
+// 99/200 Славик заполняет игровой отчёт
+gameDaily('more-slavikReport',910,922,()=>{const p=people.find(x=>x.id==='guard');if(p){go(p,-7.5,-5.4,'Записывает результаты осмотра (игровая симуляция)');log('📅 Славик заполняет игровой отчёт · игра')}});
+// 100/200 Михалыч сортирует материалы
+gameDaily('more-mikhaylychSort',950,962,()=>{const p=people.find(x=>x.id==='archivist');if(p){go(p,-1.3,0.2,'Раскладывает игровые документы (игровая симуляция)');log('📅 Михалыч сортирует материалы · игра')}});
+// 101/200 Бабушка Марина вяжет у окна
+gameDaily('more-grandmaKnit',970,982,()=>{const p=people.find(x=>x.id==='resident-grandma');if(p){go(p,-8.2,4.7,'Вяжет тёплый плед (игровая симуляция)');log('📅 Бабушка Марина вяжет у окна · игра')}});
+// 102/200 Игорь готовит поддержку команды
+gameDaily('more-igorCoaching',1000,1012,()=>{const p=people.find(x=>x.id==='coach');if(p){go(p,0.1,-5.6,'Читает заметки по коучингу (игровая симуляция)');log('📅 Игорь готовит поддержку команды · игра')}});
+// 103/200 Вера отдыхает в общей зоне
+gameDaily('more-veraTea',1030,1042,()=>{const p=people.find(x=>x.id==='analyst');if(p){go(p,6.7,5.1,'Отдыхает после анализа (игровая симуляция)');log('📅 Вера отдыхает в общей зоне · игра')}});
+// 104/200 Лиза пишет дружелюбные ответы
+gameDaily('more-lizaCommunity',1060,1072,()=>{const p=people.find(x=>x.id==='community');if(p){go(p,8.5,-0.1,'Готовит игровые ответы (игровая симуляция)');log('📅 Лиза пишет дружелюбные ответы · игра')}});
+// 105/200 Артём смотрит пробный монтаж
+gameDaily('more-artemPreview',1090,1102,()=>{const p=people.find(x=>x.id==='editor');if(p){go(p,1.6,-0.4,'Пересматривает монтаж (игровая симуляция)');log('📅 Артём смотрит пробный монтаж · игра')}});
+// 106/200 Никита вспоминает разговоры
+gameDaily('more-nikitaDinner',1120,1132,()=>{const p=people.find(x=>x.id==='resident-nikita');if(p){go(p,-7.6,-0.6,'Подводит итоги разговоров (игровая симуляция)');log('📅 Никита вспоминает разговоры · игра')}});
+// 107/200 Лена читает вечером
+gameDaily('more-lenaRead',1150,1162,()=>{const p=people.find(x=>x.id==='resident-lena');if(p){go(p,0.7,5.3,'Читает книгу по психологии (игровая симуляция)');log('📅 Лена читает вечером · игра')}});
+// 108/200 Бабушка Марина играет с кошкой
+gameDaily('more-grandmaPets',1180,1192,()=>{const p=people.find(x=>x.id==='resident-grandma');if(p){go(p,-8,5.7,'Играет с кошкой (игровая симуляция)');log('📅 Бабушка Марина играет с кошкой · игра')}});
+// 109/200 Олег завершает игровой список задач
+gameDaily('more-olegWrap',1230,1242,()=>{const p=people.find(x=>x.id==='producer');if(p){go(p,8.6,-0.5,'Заканчивает игровой план (игровая симуляция)');log('📅 Олег завершает игровой список задач · игра')}});
+// 110/200 Славик проверяет игровой офис вечером
+gameDaily('more-nightWatch',1280,1292,()=>{const p=people.find(x=>x.id==='guard');if(p){go(p,-8.8,-5.5,'Ночной осмотр охраны (игровая симуляция)');log('📅 Славик проверяет игровой офис вечером · игра')}});
 }
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.06)*simSpeed;last=now;if(!paused){timer+=dt;clockAccumulator+=dt;if(clockAccumulator>=1){const nextTime=gameMinutes+Math.floor(clockAccumulator)*2;if(nextTime>=1440)gameDay+=Math.floor(nextTime/1440);gameMinutes=nextTime%1440;clockAccumulator%=1;document.getElementById('gameDayBadge').textContent='📅 День '+gameDay;runDailyRoutines();const hh=String(Math.floor(gameMinutes/60)).padStart(2,'0'),mm=String(gameMinutes%60).padStart(2,'0');document.getElementById('gameClock').textContent=(gameMinutes>=1140||gameMinutes<360?'🌙':'☀️')+' Игровое '+hh+':'+mm;if(autoLight){const night=gameMinutes>=1140||gameMinutes<360;if(evening!==night)document.getElementById('dayNight').click()}}updatePets(dt);for(const p of people){p.speech.sprite.visible=now<p.speech.until;p.needsLight.visible=p.energy<25;p.needsLight.position.y=2.68+Math.sin(now*.004)*.04;p.workLight.visible=!p.isResident&&/work|working|busy|active|работ|занят/i.test(p.status||'');p.workLight.position.y=2.75+Math.sin(now*.003+p.home.z)*.05;p.socialGlow.visible=now<p.socialGlowUntil;p.socialGlow.position.y=2.91+Math.sin(now*.005)*.07;if(p.action.includes('Отдых')&&!p.target)p.energy=clamp(p.energy+dt*.34);p.energy=clamp(p.energy-dt*.12);if(p.action.includes('Общается')&&!p.target)p.social=clamp(p.social+dt*.25);p.social=clamp(p.social-dt*.08);p.mood=clamp(p.mood-dt*.017);if(p.target){let dx=p.target.x-p.group.position.x,dz=p.target.z-p.group.position.z,dist=Math.hypot(dx,dz);if(dist>.08){p.group.position.x+=dx/dist*Math.min(dist,dt*p.speed);p.group.position.z+=dz/dist*Math.min(dist,dt*p.speed);p.group.rotation.y=Math.atan2(dx,dz);}else{p.target=p.route.shift()||null;if(p===chosen)showRoute(p);if(!p.target)p.wait=4+Math.random()*9;}}else if((p.wait-=dt)<0){if(p.energy<35){go(p,p.isResident?p.home.x:7,p.isResident?p.home.z:6,'Отдыхает ☕');p.energy=clamp(p.energy+25)}else if(Math.random()<.55)go(p,p.home.x,p.home.z,p.isResident?'Отдыхает дома':'За рабочим столом');else if(p.isResident)go(p,p.home.x+(Math.random()-.5)*1.2,p.home.z+(Math.random()-.5)*1.2,p.id==='resident-lena'?'Принимает гостей':p.id==='resident-nikita'?'Обходит дом':'Отдыхает с питомцами');else go(p,p.home.x+(Math.random()-.5)*1.4,p.home.z+(Math.random()-.5)*1.4,'В своём кабинете')}const moving=!!p.target;const sitting=!moving&&now<p.sitUntil;if(now<p.waveUntil)p.figure.arms[1].rotation.z=-2.15;const step=moving?Math.sin(now*.008*p.speed):0;p.figure.legs[0].rotation.x=sitting?-1.12:step*.42;p.figure.legs[1].rotation.x=sitting?-1.12:-step*.42;p.figure.arms[0].rotation.x=-step*.25;p.figure.arms[1].rotation.x=step*.25;if(!moving){p.figure.arms[0].rotation.z=Math.sin(now*.001+p.home.z)*.10;p.figure.arms[1].rotation.z=now<p.waveUntil?-2.15:-Math.sin(now*.001+p.home.z)*.10}else{p.figure.arms[0].rotation.z=0;p.figure.arms[1].rotation.z=now<p.waveUntil?-2.15:0}p.figure.body.position.y=sitting?-.30:moving?Math.abs(step)*.055:Math.sin(now*.0015+p.home.x)*.012;p.figure.body.rotation.z=moving?Math.sin(now*.008*p.speed)*.045:Math.sin(now*.001+p.home.x)*.014;const blinking=(Math.sin(now*.0027+p.home.x*2)>.995);p.figure.eyes.forEach(eye=>eye.scale.y=blinking?.12:1)}if(timer>12){timer=0;updateNeedSummary();if(autoTalkEnabled)talk()}if(chosen){const routeText=chosen.target?'🚶 В пути · '+(chosen.route.length+1)+' участков':'📍 На месте';const routeEl=document.getElementById('routeInfo');if(routeEl.textContent!==routeText)routeEl.textContent=routeText}}if(followChosen){const target=new T.Vector3(chosen.group.position.x,1,chosen.group.position.z);const diff=target.clone().sub(controls.target);controls.target.addScaledVector(diff,.06);camera.position.addScaledVector(diff,.06)}controls.update();renderer.render(scene,camera)}requestAnimationFrame(animate);document.getElementById('diagnostic').textContent='3D активно: 14 объёмных персонажей · 9 зон';window.__life3dReady?.();setTimeout(()=>{const d=document.getElementById('diagnostic');if(d&&d.textContent.startsWith('3D активно'))d.style.opacity='.20'},4500);function resize(){let r=root.getBoundingClientRect();renderer.setSize(Math.max(1,Math.floor(r.width)),Math.max(1,Math.floor(r.height)),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix();}new ResizeObserver(resize).observe(root);resize();document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden)save()});
 document.getElementById('quality').textContent=lowQuality?'⚙️ Графика: эконом':'⚙️ Графика: авто';document.getElementById('quality').onclick=e=>{lowQuality=!lowQuality;renderer.setPixelRatio(lowQuality?Math.min(window.devicePixelRatio||1,.8):Math.min(window.devicePixelRatio||1,1.5));try{localStorage.setItem('gusevmade-low-quality',String(lowQuality))}catch{}e.target.textContent=lowQuality?'⚙️ Графика: эконом':'⚙️ Графика: авто';log(lowQuality?'⚙️ Включён экономный режим графики':'⚙️ Включён обычный режим графики')};
