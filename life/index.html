@@ -134,6 +134,64 @@ box(.36,.028,.05,0xba8777,-6.8,1.33,-.68);
 for(let i=0;i<5;i++)box(.13,.31+i%2*.09,.24,[0x746178,0x988a64,0x668a83][i%3],-.7+i*.17,.98,-1.7);
 sphere(.16,0xf9e0b1,1.65,1.45,-.25);
 box(.66,.025,.50,0xe1d5b3,.83,.96,-.45);
+// YouTube clapperboard stripes
+for(let i=0;i<4;i++)box(.12,.065,.02,0xece0ca,5.82+i*.17,1.22,-4.38);
+// Nikita office plant
+plant(-10.05,.45);
+// Nikita bookshelf
+for(let i=0;i<5;i++)box(.16,.51,.28,[0x9cae86,0xb8977d,0x788fa3][i%3],-9.6+i*.19,.58,-1.85);
+// Nikita desk calendar
+box(.44,.34,.045,0xe7ddc8,-6.8,1.21,-.73);
+// Nikita calendar line
+box(.36,.028,.05,0xba8777,-6.8,1.33,-.68);
+// Yuri books display
+for(let i=0;i<5;i++)box(.13,.31+i%2*.09,.24,[0x746178,0x988a64,0x668a83][i%3],-.7+i*.17,.98,-1.7);
+// Yuri reading lamp
+sphere(.16,0xf9e0b1,1.65,1.45,-.25);
+// Yuri parchment sheet
+box(.66,.025,.50,0xe1d5b3,.83,.96,-.45);
+// Yuri reference bookmark
+box(.045,.026,.29,0xb76c67,1.06,.99,-.35);
+// Content studio camera desk
+box(1.14,.14,.64,0xb1987c,6.0,.65,.7);
+// Max content moodboard
+box(.76,.48,.055,0x637e96,5.7,1.36,-1.8);
+// Max moodboard notes
+for(let i=0;i<3;i++)box(.17,.19,.065,[0xe3bb9a,0xa8c8bb,0xcab7d7][i],5.48+i*.21,1.36,-1.72);
+// Oleg planning folders
+for(let i=0;i<4;i++)box(.24,.04,.52,[0x7294ad,0xad816b,0x98a57d,0xa391bb][i],9.5,.72+i*.055,-.95);
+// Grandma side table
+box(.62,.18,.62,0xa9876d,-6.05,.43,4.6);
+// Grandma tea cup
+sphere(.115,0xf1d9be,-6.05,.60,4.58);
+// Grandma family photo frame
+box(.61,.51,.065,0xc5a886,-9.3,1.4,2.7);
+// Grandma photo miniature
+box(.44,.33,.07,0x8daa9f,-9.3,1.4,2.78);
+// Grandma small ottoman
+box(.67,.31,.58,0xbaa497,-7.1,.19,6.45);
+// Grandma knitting basket
+box(.48,.33,.43,0xb18e6e,-8.8,.2,6.45);
+// Lena watercolor frame
+box(.77,.62,.06,0xb59b7f,-.75,1.5,2.7);
+// Lena artwork colored canvas
+box(.6,.45,.065,0x9ac6ba,-.75,1.5,2.78);
+// Lena aromatic diffuser
+box(.18,.29,.18,0xd3b8b0,1.0,.55,5.9);
+// Lena soft lamp
+sphere(.16,0xffd9b1,1.05,.99,5.9);
+// Lounge board game pieces
+for(let i=0;i<6;i++)sphere(.045,i%2?0xe0bd8d:0x7889ad,7.15+(i%3)*.17,.71,6.05+Math.floor(i/3)*.17);
+// Lounge throw cushion
+box(.49,.15,.31,0xd3a7a4,6.65,.8,5.05);
+// Lounge throw cushion second
+box(.49,.15,.31,0xaac8c2,8.2,.8,5.05);
+// Lounge flower vase
+box(.18,.27,.18,0xc1a9ba,9.63,.45,4.9);sphere(.18,0xd3b5c8,9.63,.74,4.9);
+// Lounge magazine shelf
+box(1.0,.13,.34,0xb19272,9.15,.43,3.75);
+// Lounge mini magazines
+for(let i=0;i<3;i++)box(.30,.022,.21,[0x8e9fba,0xb89c9e,0x9fb5a1][i],8.89+i*.24,.52,3.75);
 // Полностью локальные объёмные жители: ни один персонаж не зависит от загрузки .glb.
 const saved=(()=>{try{return JSON.parse(localStorage.getItem('gusevmade-life-3d'))||{}}catch{return {}}})();
 function characterName(text,group){
