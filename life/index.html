@@ -124,6 +124,7 @@ box(.04,.035,.33,0x44758b,.7,.96,-5.57);
 box(.85,1.2,.08,0xf1ead7,2.6,1.15,-6.95);
 for(let i=0;i<3;i++)box(.48,.025,.035,[0x9bbaba,0xc1a28c,0xbcc08f][i],2.57,1.35-i*.22,-6.88);
 for(let i=0;i<5;i++)box(.27,.39,.07,0x555073,5.05+i*.42,1.5,-7.55);
+sphere(.19,0xe46a77,8.85,1.86,-7.45);
 // Полностью локальные объёмные жители: ни один персонаж не зависит от загрузки .glb.
 const saved=(()=>{try{return JSON.parse(localStorage.getItem('gusevmade-life-3d'))||{}}catch{return {}}})();
 function characterName(text,group){
