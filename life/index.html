@@ -98,6 +98,7 @@ function updatePets(dt){for(const animal of pets){if(animal.group.userData.tail)
 const cafeTable=new T.Mesh(new T.CylinderGeometry(.66,.66,.10,16),material(0xa98b72));cafeTable.position.set(9.2,.72,6.25);scene.add(cafeTable);box(.15,.65,.15,0x5c7385,9.2,.39,6.25);sphere(.13,0xf0d6bb,9.0,.85,6.20);sphere(.13,0xd5e5ec,9.36,.85,6.34);
 for(const [x,z] of [[-8,-5],[-4,-5],[0,-5],[4,-5],[8,-5],[-8,0],[-4,0],[0,0],[4,0],[8,0]]){box(.54,.028,.19,0x3a4a59,x,.87,z+.25)}
 for(let i=0;i<4;i++){box(.07,.08+i*.065,.024,[0x7ebbd2,0x9dc99a,0xe6bc7a,0xc3a5d5][i],5.85+i*.18,1.25+i*.033,4.12)}
+box(.68,.07,.43,0x2b4051,-9.2,.81,-4.35);for(let i=0;i<4;i++)sphere(.065,[0x6cbf96,0xeac073,0x6cbf96,0xdb817a][i],-9.43+i*.16,.89,-4.24);
 // Растения, уютные светильники и мебель создаются из базовых фигур, поэтому остаются лёгкими.
 // Полностью локальные объёмные жители: ни один персонаж не зависит от загрузки .glb.
 const saved=(()=>{try{return JSON.parse(localStorage.getItem('gusevmade-life-3d'))||{}}catch{return {}}})();
