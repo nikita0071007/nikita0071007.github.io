@@ -92,7 +92,7 @@ function characterName(text,group){
 function buildPerson(group,name,i){
  const isWoman=['Вера','Анжелика','Лиза','Марина','Бабушка Марина','Лена'].includes(name);
  const skin=0xdbaf92,cloth=[0x577db1,0xb38e62,0x6b8d87,0x8c7bb9,0xc47d9f,0x7f9b72,0x9d7769][i%7],dark=0x303d51;
- const body=new T.Group();group.add(body);
+ const shadow=new T.Mesh(new T.CircleGeometry(.39,16),new T.MeshBasicMaterial({color:0x101927,transparent:true,opacity:.24,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.045;group.add(shadow);const body=new T.Group();group.add(body);
  const torso=box(.56,.8,.34,cloth,0,1.21,0,body);
  box(.57,.2,.38,0x42516b,0,.77,0,body);if(['Анжелика','Лена','Лиза'].includes(name)){const skirt=new T.Mesh(new T.CylinderGeometry(.29,.40,.48,10),material(cloth));skirt.position.set(0,.75,0);body.add(skirt)}if(['Славик','Никита','Игорь'].includes(name)){box(.055,.45,.025,0xe0b6a1,0,1.25,.19,body)}if(name==='Анжелика'){box(.58,.09,.35,0xd5bad1,0,1.58,0,body)}
  const skinTone=[0xdbaf92,0xe4c6aa,0xb98264,0xcf9a79][i%4];const head=sphere(.29,skinTone,0,1.94,0,body);
