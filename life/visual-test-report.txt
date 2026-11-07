@@ -1,20 +1,16 @@
 Gusevmade Life visual test
-Sat Nov  7 17:49:13 UTC 2026
+Sat Nov  7 17:51:14 UTC 2026
 --- browser ---
 /usr/bin/google-chrome
 --- dependencies ---
-drwxr-xr-x 5 runner runner 4096 Nov  7 17:48 node_modules/playwright-core
-drwxr-xr-x 5 runner runner 4096 Nov  7 17:48 node_modules/three
+drwxr-xr-x 5 runner runner 4096 Nov  7 17:50 node_modules/playwright-core
+drwxr-xr-x 5 runner runner 4096 Nov  7 17:50 node_modules/three
 --- browser log ---
-Page JS error: Cannot access 'sphereGeometryCache' before initialization
 Browser console: Failed to load resource: the server responded with a status of 404 (File not found)
-page.waitForFunction: Timeout 45000ms exceeded.
-    at [stdin]:9:14 {
-  name: 'TimeoutError'
-}
+Rendered 3D: 3D активно: 14 объёмных персонажей · 9 зон
 --- local server ---
-127.0.0.1 - - [07/Nov/2026 17:48:28] "GET /life/index.html?3d=1 HTTP/1.1" 200 -
-127.0.0.1 - - [07/Nov/2026 17:48:28] "GET /node_modules/three/build/three.module.js HTTP/1.1" 200 -
-127.0.0.1 - - [07/Nov/2026 17:48:28] "GET /node_modules/three/examples/jsm/controls/OrbitControls.js HTTP/1.1" 200 -
-127.0.0.1 - - [07/Nov/2026 17:48:28] code 404, message File not found
-127.0.0.1 - - [07/Nov/2026 17:48:28] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [07/Nov/2026 17:51:10] "GET /life/index.html?3d=1 HTTP/1.1" 200 -
+127.0.0.1 - - [07/Nov/2026 17:51:10] "GET /node_modules/three/build/three.module.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Nov/2026 17:51:10] "GET /node_modules/three/examples/jsm/controls/OrbitControls.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Nov/2026 17:51:12] code 404, message File not found
+127.0.0.1 - - [07/Nov/2026 17:51:12] "GET /favicon.ico HTTP/1.1" 404 -
