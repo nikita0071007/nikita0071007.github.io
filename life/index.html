@@ -83,6 +83,8 @@ box(1.1,.048,.72,0xcdaeb0,-8.3,.62,4.6);box(.53,.045,.25,0xf0d6c2,-8.3,.68,4.5);
 // Телевизор и мягкое кресло бабушки.
 box(1.5,.85,.12,0x202e42,-5.35,1.05,4.1);box(1.28,.65,.02,0x7ea6b1,-5.35,1.05,4.17);
 box(1.15,.45,1.1,0xb39383,-8.3,.36,4.5);box(1.15,.65,.2,0xb39383,-8.3,.86,4.0);
+// Кошачья лежанка и миски в комнате бабушки.
+box(.98,.14,.75,0x9c7b6d,-9.55,.15,6.15);box(.77,.16,.58,0xd1b6a3,-9.55,.3,6.15);for(const x of [-6.8,-6.32]){const bowl=new T.Mesh(new T.CylinderGeometry(.18,.14,.13,12),material(0x7586a0));bowl.position.set(x,.13,6.13);scene.add(bowl)}
 // Небольшие условные питомцы (игровые фигурки).
 function pet(x,z,color,kind){const g=new T.Group();scene.add(g);g.position.set(x,0,z);box(.48,.27,.65,color,0,.25,0,g);sphere(.24,color,0,.45,-.28,g);for(const dx of [-.16,.16]){box(.11,.2,.11,color,dx,.1,.2,g);const ear=new T.Mesh(new T.ConeGeometry(kind==='cat'?.11:.095,kind==='cat'?.25:.18,5),material(color));ear.position.set(dx*1.05,.71,-.32);g.add(ear);sphere(.026,0x232d38,dx*.85,.47,-.475,g)}sphere(.035,kind==='cat'?0xd88798:0x303039,0,.38,-.50,g);const tail=box(.10,.10,.52,color,.22,.43,.46,g);tail.rotation.x=-.35;g.userData.tail=tail;return g}
 const pets=[{name:'Кошка',group:pet(-6.6,5.8,0xc4a78d,'cat'),speed:.38,wait:1,target:null},{name:'Собака',group:pet(-8.9,5.8,0x666f78,'dog'),speed:.63,wait:2,target:null}];
