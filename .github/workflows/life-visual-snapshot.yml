@@ -49,6 +49,7 @@ jobs:
             console.log('Rendered 3D:',diagnostic);
             // Verify that core gameplay controls respond in the real browser.
             const selectedBefore=await page.locator('#name').textContent();
+            await page.locator('#cameraTools summary').click();
             await page.locator('#nextHero').click();
             const selectedAfter=await page.locator('#name').textContent();
             if(selectedBefore===selectedAfter)throw Error('Next character control failed');
