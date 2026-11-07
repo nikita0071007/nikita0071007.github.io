@@ -133,6 +133,7 @@ box(.44,.34,.045,0xe7ddc8,-6.8,1.21,-.73);
 box(.36,.028,.05,0xba8777,-6.8,1.33,-.68);
 for(let i=0;i<5;i++)box(.13,.31+i%2*.09,.24,[0x746178,0x988a64,0x668a83][i%3],-.7+i*.17,.98,-1.7);
 sphere(.16,0xf9e0b1,1.65,1.45,-.25);
+box(.66,.025,.50,0xe1d5b3,.83,.96,-.45);
 // Полностью локальные объёмные жители: ни один персонаж не зависит от загрузки .glb.
 const saved=(()=>{try{return JSON.parse(localStorage.getItem('gusevmade-life-3d'))||{}}catch{return {}}})();
 function characterName(text,group){
