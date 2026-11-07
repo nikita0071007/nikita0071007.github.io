@@ -29,6 +29,50 @@ for(let i=0;i<8;i++){const x=-10+i*2.8;box(1.3,.15,.65,x,12.65,-8.1,mat('#435b40
 function mountain(cx,cz,r,h,c){const geo=new T.ConeGeometry(r,h,5,1);const mesh=new T.Mesh(geo,mat(c));mesh.position.set(cx,h/2-2,cz);mesh.rotation.y=rng()*6.28;scene.add(mesh);const snow=new T.Mesh(new T.ConeGeometry(r*.24,h*.22,5),mat('#b7c0bd'));snow.position.set(cx,h-2-h*.1,cz);scene.add(snow)}
 for(let i=0;i<35;i++){let a=i/35*Math.PI*1.4+Math.PI*.1,rad=60+rng()*30;mountain(Math.cos(a)*rad-12,-Math.sin(a)*rad-20,7+rng()*12,18+rng()*27,i%3===0?'#506271':'#66727a')}
 for(let i=0;i<90;i++){const a=rng()*Math.PI*2,r=22+rng()*48,x=Math.cos(a)*r,z=Math.sin(a)*r;if(z>19)continue;cylinder(.12,.2,1.4,x,.1,z,wood);ball(.65+rng()*.6,x,1.3,z,leaf)}
+
+/* Дополнительное наполнение виллы: балкон, сад, мебель и свет. */
+const railing=mat('#b9c3c4',.35,.6),cushion=mat('#c7a98a'),rug=mat('#aa8c70'),water=mat('#4b9bad',.18,.25),snowmat=mat('#e0e6df'),lightGold=mat('#f7c17c'),redwood=mat('#754b37');
+function chair(x,y,z,angle=0){const g=new T.Group();g.position.set(x,y,z);g.rotation.y=angle;scene.add(g);box(.85,.15,.8,0,.5,0,cushion,g);box(.85,.85,.13,0,.96,-.37,wood,g);for(const dx of [-.32,.32])for(const dz of [-.3,.3])box(.1,.55,.1,dx,.22,dz,metal,g)}
+function lamp(x,y,z){cylinder(.05,.08,1.45,x,y+.73,z,metal);ball(.25,x,y+1.48,z,lightGold)}
+function flowerpot(x,y,z){cylinder(.38,.28,.55,x,y+.28,z,stone);cylinder(.07,.09,.65,x,y+.86,z,plant);for(let i=0;i<5;i++)ball(.25,x+Math.cos(i*1.26)*.25,y+1.2+Math.sin(i)*.1,z+Math.sin(i*1.26)*.25,leaf)}
+// Балкон с безопасным ограждением
+box(11,.24,2.8,6.9,6.43,9.65,wood);
+for(let i=0;i<=10;i++)box(.07,1.1,.07,1.55+i*1.06,7.1,10.94,railing);
+box(10.7,.07,.07,6.9,7.67,10.94,railing);
+chair(4.5,6.65,9.4,Math.PI);chair(6,6.65,9.4,Math.PI);
+flowerpot(10.7,6.6,9.7);flowerpot(2.3,6.6,9.7);
+// Терраса, дорожка, пруд
+box(14,.16,5,0,.55,11.3,wood);
+for(let i=0;i<12;i++)box(2,.08,1.2,-1.1,.5,14+i*1.4,stone);
+const pond=cylinder(3.5,3.5,.14,17,-.4,12,water);pond.scale.z=.65;
+for(let i=0;i<9;i++){const a=i*2.4;ball(.4,17+Math.cos(a)*3.2,-.2,12+Math.sin(a)*2.2,stone)}
+for(let i=0;i<9;i++)flowerpot(-11+i*2.6,.55,11.1);
+// Гостиная: диваны, журнальный столик, ковёр
+box(5,.035,3,-5,6.55,4.5,rug);
+box(3.7,.42,1.2,-5.5,7.02,3.9,cushion);
+box(3.7,1.0,.24,-5.5,7.48,3.3,mat('#476373'));
+box(2.1,.22,1.1,-5.5,7.1,5.6,redwood);
+chair(-2.7,6.6,5.1,Math.PI/2);
+// Студия Анжелики: два экрана, микрофон, мягкий свет
+box(3,.12,1.3,8.7,7.4,-5.3,redwood);
+for(const dx of [-.7,.7]){box(1.12,.72,.09,8.7+dx,7.96,-5.6,dark);box(.96,.53,.02,8.7+dx,7.96,-5.53,mat('#315b78'))}
+cylinder(.045,.045,.85,10.25,7.85,-5.0,metal);ball(.13,10.25,8.3,-5,metal);
+chair(8.7,6.7,-3.9,Math.PI);
+lamp(11.5,6.7,-5.7);
+// Кабинет директора и переговорная
+box(3.7,.17,1.4,-8.5,7.55,-5.6,redwood);chair(-8.5,6.7,-4.1,Math.PI);
+box(3.2,.15,1.4,1.5,7.55,4.3,wood);
+for(let i=0;i<6;i++)chair(.3+(i%3)*1.2,6.7,3.2+Math.floor(i/3)*2.1,i<3?0:Math.PI);
+// Кабинет психолога и комната бабушки
+box(2.6,.3,1.4,3.8,6.85,-1.3,cushion);
+chair(2.3,6.65,-.1,.6);lamp(5.7,6.7,-1.1);
+box(2.9,.35,1.65,9.5,6.92,4.3,cushion);
+box(2.9,.8,.16,9.5,7.4,3.5,wood);flowerpot(11.2,6.65,4.2);
+// Рабочие мониторы, клавиатуры, чашки
+for(let i=0;i<11;i++){const x=-11.3+(i%7)*3.65,z=-5.8+Math.floor(i/7)*5.1;box(.18,.18,.18,x+.85,1.8,z+.25,lightGold)}
+// Фасадные лампы
+for(const x of [-11,-7,-3,3,7,11]){ball(.15,x,5.95,8.55,lightGold);ball(.15,x,11.9,8.55,lightGold)}
+
 const defs=[['analyst','Вера','Аналитика',-10,-4],['poster','Макс','Контент',-6,-4],['guard','Славик','Охрана',-2,-4],['editor','Артём','Монтаж',2,-4],['video','Анжелика','YouTube · игровой персонаж',6,-4],['critic','Юрий','Редактор',10,-4],['coach','Игорь','Коуч',-10,1],['community','Лиза','Комментарии',-6,1],['archivist','Михалыч','Архив',-2,1],['producer','Олег','Продюсер',2,1],['orders','Марина','Заказы',6,1],['resident-nikita','Никита','Директор',-7,3.4],['resident-lena','Лена','Психолог',2,3.4],['resident-grandma','Бабушка Марина','Отдыхает с питомцами',8,3.4]];
 const people=[],skin=[mat('#edbb94'),mat('#dca781'),mat('#b78264')],clothes=['#3b6e84','#9c6658','#566c53','#78629a','#b17b54','#4e668a','#5e8c80'];
 for(let i=0;i<defs.length;i++){const [id,name,role,x,z]=defs[i],upper=i>=11,y=upper?6.65:.92;const g=new T.Group();g.position.set(x,y,z);scene.add(g);const cloth=mat(clothes[i%clothes.length]);cylinder(.35,.29,1.05,0,.8,0,cloth,g);ball(.34,0,1.59,0,skin[i%3],g);const hair=ball(.36,0,1.82,-.045,mat(i===13?'#c4c6c4':i===4||i===12?'#342b29':'#3d332c'),g);hair.scale.set(1,.55,1);for(let d of [-.22,.22]){cylinder(.11,.12,.65,d,.2,0,mat('#343f48'),g);cylinder(.1,.1,.65,d*.95,1.0,0,cloth,g)}const label=document.createElement('span');label.textContent=name;nameRoot.appendChild(label);g.userData={id,name,role,label,baseX:x,baseZ:z,phase:i*2.1,upper};people.push(g)}
