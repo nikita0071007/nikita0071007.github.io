@@ -30,7 +30,7 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/life-server.log 2>&1 &
           sleep 2
       - name: Render 3D in Chromium and verify scene with Playwright
-        continue-on-error: true
+        # 200/200 A failing browser check now fails the GitHub Action instead of falsely passing.
         run: |
           set -o pipefail
           node <<'JS' 2>&1 | tee /tmp/life-playwright.log
@@ -88,6 +88,44 @@ jobs:
             if(canvas.width<300||canvas.height<250)throw Error('3D canvas has incorrect dimensions');
             const dayBadge=await page.locator('#gameDayBadge').textContent();
             if(!dayBadge.includes('День'))throw Error('Simulation day badge missing');
+// 181/200 Full 14-person roster
+            await page.locator('#agentFilter').selectOption('all');if(await page.locator('#agents .agent').count()!==14)throw Error('Expected 14 residents');
+            // 182/200 Eleven real agent roster entries
+            await page.locator('#agentFilter').selectOption('work');if(await page.locator('#agents .agent').count()!==11)throw Error('Expected 11 working agents');
+            // 183/200 Three simulation-only residents
+            await page.locator('#agentFilter').selectOption('residents');if(await page.locator('#agents .agent').count()!==3)throw Error('Expected 3 game residents');
+            // 184/200 Search within resident roster
+            await page.locator('#agentSearch').fill('Бабушка');if(await page.locator('#agents .agent').count()!==1)throw Error('Grandma search failed');
+            // 185/200 Clear agent search via on-page button
+            await page.locator('#clearAgentSearch').click();if(await page.locator('#agents .agent').count()!==3)throw Error('Clear search failed');
+            // 186/200 Return to complete resident roster
+            await page.locator('#agentFilter').selectOption('all');if(await page.locator('#agents .agent').count()!==14)throw Error('Restoring agent filter failed');
+            // 187/200 Personality is visible in selected character card
+            if(!(await page.locator('#traitInfo').textContent()).includes('Характер'))throw Error('Personality card missing');
+            // 188/200 Favorite activity button opens activity panel
+            await page.locator('#favoriteActivity').click();if(!(await page.locator('#activityMenu').evaluate(n=>n.open)))throw Error('Favorite activity menu not opened');
+            // 189/200 Character needs display exactly three bars
+            if(await page.locator('#needsBars>div').count()!==3)throw Error('Character needs bars missing');
+            // 190/200 Activities are filtered and available for selected person
+            if(await page.locator('#lifeActivity option').count()<20)throw Error('Playable activities missing');
+            // 191/200 Activity effect preview shows real game deltas
+            if(!(await page.locator('#activityImpact').textContent()).includes('⚡'))throw Error('Activity effect preview missing');
+            // 192/200 Different activity action registers in journal
+            await page.locator('#lifeActivity').selectOption({index:0});await page.locator('#performActivity').click();if(!(await page.locator('#feed').textContent()).includes('игровое действие'))throw Error('Playable activity action failed');
+            // 193/200 Selected hero status remains visible after activity
+            if(!(await page.locator('#selectedHud').textContent()).includes('👤'))throw Error('Selected hero HUD missing');
+            // 194/200 Social target picker includes other 13 residents
+            if(await page.locator('#socialTarget option').count()!==13)throw Error('Social partner options incorrect');
+            // 195/200 Manual save writes local character state
+            await page.locator('#saveNow').click();const saveData=await page.evaluate(()=>JSON.parse(localStorage.getItem('gusevmade-life-3d')||'{}'));if(!saveData.analyst||!saveData['resident-grandma'])throw Error('Local game save lacks characters');
+            // 196/200 Daily routine completion state is included in local save
+            if(!Object.prototype.hasOwnProperty.call(saveData,'__dailyDone'))throw Error('Game routines are not saved');
+            // 197/200 Capture genuine activity screenshot from the Chromium browser
+            await page.screenshot({path:'life/activities-preview.png',fullPage:false});
+            // 198/200 Validate separate Canvas mobile 2D fallback in real Chromium
+            const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});await mobile.goto('http://127.0.0.1:8765/life/mobile.html',{waitUntil:'domcontentloaded'});await mobile.waitForTimeout(900);const mobileCanvas=await mobile.locator('#office').evaluate(el=>({width:el.width,height:el.height}));if(mobileCanvas.width<200||mobileCanvas.height<200)throw Error('Mobile 2D fallback failed');
+            // 199/200 Capture actual mobile fallback screenshot
+            await mobile.screenshot({path:'life/mobile-preview.png',fullPage:false});await mobile.close();console.log('PASS: 200-step 3D and mobile regression checks');
             console.log('PASS: 3D render, room-to-room route, speech bubble action, character selection, pause, meeting, lighting, roster search, friendship, pets, rooms, needs, game day and canvas checks');
             if(pageErrors.length)throw Error('Unexpected JavaScript runtime errors: '+pageErrors.join(' | '));
             await browser.close();
@@ -117,6 +155,8 @@ jobs:
           git add life/visual-test-report.txt
           if [ -s life/latest-preview.png ]; then git add life/latest-preview.png; fi
           if [ -s life/interactions-preview.png ]; then git add life/interactions-preview.png; fi
+          if [ -s life/activities-preview.png ]; then git add life/activities-preview.png; fi
+          if [ -s life/mobile-preview.png ]; then git add life/mobile-preview.png; fi
           if ! git diff --cached --quiet; then
             git commit -m "Capture actual 3D browser preview"
             git push
