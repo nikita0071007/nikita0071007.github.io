@@ -5,6 +5,7 @@ on:
     paths:
       - "life/index.html"
       - "life/expansion-pack.js"
+      - "life/life-250-pack.js"
       - ".github/workflows/life-visual-snapshot.yml"
   workflow_dispatch:
 permissions:
@@ -147,6 +148,29 @@ jobs:
             // 199/200 Capture actual mobile fallback screenshot
             await mobile.screenshot({path:'life/mobile-preview.png',fullPage:false});await mobile.close();console.log('PASS: 200-step 3D and mobile regression checks');
             console.log('PASS: 3D render, room-to-room route, speech bubble action, character selection, pause, meeting, lighting, roster search, friendship, pets, rooms, needs, game day and canvas checks');
+
+            // Verify all 250 additions really appear in the running 3D game.
+            const seasonCount=await page.locator('#season250Count').textContent();
+            if(!seasonCount.includes('250'))throw Error('Season content not active');
+            if(await page.locator('#scene').getAttribute('data-season-decor-count')!=='70')throw Error('70 room objects not constructed');
+            await page.locator('#outfitPanel summary').click();
+            const outfitOptions=await page.locator('#outfitPicker option').count();
+            if(outfitOptions<2)throw Error('Character wardrobe is not populated');
+            await page.locator('#wearOutfit').click();
+            await page.locator('#gesturesPanel summary').click();
+            if(await page.locator('#gesturePicker option').count()!==60)throw Error('60 animations not loaded');
+            await page.locator('#doGesture').click();
+            await page.locator('#storyPanel summary').click();
+            if(await page.locator('#storyPicker option').count()!==50)throw Error('50 interactive stories not loaded');
+            await page.locator('#performStory').click();
+            if(!(await page.locator('#feed').textContent()).includes('игровая сцена'))throw Error('Playable story did not execute');
+            await page.locator('#achievementsPanel summary').click();
+            if(await page.locator('#achievementsList > div').count()!==30)throw Error('30 achievements not rendered');
+            const seasonProgress=await page.evaluate(()=>JSON.parse(localStorage.getItem('gusevmade-life-3d')||'{}').__life250Progress||{});
+            if(!seasonProgress.story||!seasonProgress.gesture||!seasonProgress.outfit)throw Error('Season milestones not persisted');
+            await page.screenshot({path:'life/season-250-preview.png',fullPage:false});
+            console.log('PASS: 70 real props, 40 outfits, 60 animated gestures, 50 playable scenes and 30 persistent achievements');
+
             if(pageErrors.length)throw Error('Unexpected JavaScript runtime errors: '+pageErrors.join(' | '));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
@@ -177,6 +201,7 @@ jobs:
           if [ -s life/interactions-preview.png ]; then git add life/interactions-preview.png; fi
           if [ -s life/activities-preview.png ]; then git add life/activities-preview.png; fi
           if [ -s life/mobile-preview.png ]; then git add life/mobile-preview.png; fi
+          if [ -s life/season-250-preview.png ]; then git add life/season-250-preview.png; fi
           if [ -s life/expansion-preview.png ]; then git add life/expansion-preview.png; fi
           if ! git diff --cached --quiet; then
             git commit -m "Capture actual 3D browser preview"
