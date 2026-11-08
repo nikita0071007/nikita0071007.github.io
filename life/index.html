@@ -327,8 +327,22 @@ function buildPerson(group,name,i){
  const torso=new T.Mesh(new T.CylinderGeometry(.27,.34,.81,10),material(cloth));torso.position.set(0,1.21,0);body.add(torso);const garments=[torso];garments.push(sphere(.29,cloth,0,1.55,0,body));garments[1].scale.set(1.18,.55,.68);const outfitTrim=box(.32,.075,.05,0xd4b591,0,1.56,.26,body);
  box(.57,.2,.38,0x42516b,0,.77,0,body);if(['Анжелика','Лена','Лиза'].includes(name)){const skirt=new T.Mesh(new T.CylinderGeometry(.29,.40,.48,10),material(cloth));skirt.position.set(0,.75,0);body.add(skirt);garments.push(skirt)}if(['Славик','Никита','Игорь'].includes(name)){box(.055,.45,.025,0xe0b6a1,0,1.25,.19,body)}if(name==='Анжелика'){box(.58,.09,.35,0xd5bad1,0,1.58,0,body)}
  const skinTone=[0xdbaf92,0xe4c6aa,0xb98264,0xcf9a79][i%4];const head=sphere(.29,skinTone,0,1.94,0,body);head.scale.set(1.02,1.13,.91);for(const side of [-1,1]){const ear=sphere(.083,skinTone,side*.291,1.945,-.004,body);ear.scale.set(.55,1,.65);}
- const hairColor=[0x48332e,0x352d27,0x795134,0x38282f,0x26222b][i%5];sphere(.3,name==='Бабушка Марина'?0xbdbac0:hairColor,0,2.13,-.035,body).scale.set(1,.46,1);if(name==='Юрий'||name==='Михалыч')sphere(.19,0x857c74,0,1.75,.13,body).scale.set(1,.6,.45);if(name==='Анжелика'){box(.13,.12,.13,0xe2b783,-.25,.08,.18,body);box(.13,.12,.13,0xe2b783,.25,.08,.18,body)}if(name==='Бабушка Марина'){sphere(.17,0xbdbac0,-.22,2.12,0,body);sphere(.17,0xbdbac0,.22,2.12,0,body)}
+ const hairColor=name==='Бабушка Марина'?0xbdbac0:[0x48332e,0x352d27,0x795134,0x38282f,0x26222b][i%5];sphere(.3,name==='Бабушка Марина'?0xbdbac0:hairColor,0,2.13,-.035,body).scale.set(1,.46,1);if(name==='Юрий'||name==='Михалыч')sphere(.19,0x857c74,0,1.75,.13,body).scale.set(1,.6,.45);if(name==='Анжелика'){box(.13,.12,.13,0xe2b783,-.25,.08,.18,body);box(.13,.12,.13,0xe2b783,.25,.08,.18,body)}if(name==='Бабушка Марина'){sphere(.17,0xbdbac0,-.22,2.12,0,body);sphere(.17,0xbdbac0,.22,2.12,0,body)}
  if(isWoman){for(const side of [-1,1]){sphere(name==='Анжелика'?.16:.13,hairColor,side*.255,1.89,-.06,body).scale.set(1,.95,1.3)}}if(name==='Анжелика')sphere(.18,hairColor,0,2.24,-.23,body);if(name==='Лена')sphere(.21,hairColor,0,2.15,-.27,body);
+
+ // Unique, light 3D hairstyles for the whole cast, not flat portraits.
+ const hairShape=(r,x,y,z,scx,scy,scz,color=hairColor)=>{const h=sphere(r,color,x,y,z,body);h.scale.set(scx,scy,scz);return h};
+ const topParts=3+(i%3);
+ for(let k=0;k<topParts;k++){const xx=(k-(topParts-1)/2)*.13;hairShape(.135,xx,2.18+.03*Math.sin(k+i),.045,.90,.56,.73)}
+ if(['Анжелика','Лена','Лиза','Вера','Марина'].includes(name)){
+  for(const side of [-1,1])for(let strand=0;strand<3;strand++)hairShape(.16,side*(.246+strand*.013),2.00-strand*.125,-.09,.59,1.03,.86);
+ }
+ if(name==='Анжелика'||name==='Лена'){for(let k=0;k<3;k++)hairShape(.16,-.07+k*.085,2.22-k*.045,-.21,.83,.87,.76)}
+ if(name==='Бабушка Марина'){for(let k=0;k<3;k++)hairShape(.15,Math.sin(k*2)*.14,2.22,-.16,.92,.85,.8);hairShape(.19,.1,2.30,-.19,.96,.90,.9)}
+ if(name==='Славик'||name==='Игорь')hairShape(.34,0,2.14,-.10,1,.27,.96);
+ if(name==='Артём'||name==='Макс')hairShape(.18,-.13,2.25,.06,.92,.8,.62);
+ if(name==='Юрий'||name==='Михалыч')for(const side of [-1,1])hairShape(.20,side*.23,2.08,-.08,.5,.55,.78,name==='Михалыч'?0xb6b3af:hairColor);
+
  const mouth=new T.Mesh(new T.TorusGeometry(.085,.012,4,12,Math.PI),material(0x9d5b53));mouth.position.set(0,1.84,.28);mouth.rotation.z=Math.PI;body.add(mouth);const eyes=[];for(const side of [-1,1]){const white=sphere(.068,0xf6ede4,side*.107,1.985,.256,body);white.scale.set(1.04,.69,.52);eyes.push(white);const iris=sphere(.038,[0x456d83,0x6d754d,0x755740,0x527e6a][i%4],side*.107,1.983,.296,body);iris.scale.set(.79,1,.48);eyes.push(iris);const pupil=sphere(.021,0x1c2935,side*.107,1.983,.314,body);eyes.push(pupil);sphere(.012,0xffffff,side*.102-.011,2.0,.329,body);const brow=sphere(.083,hairColor,side*.11,2.078,.244,body);brow.scale.set(.94,.17,.25)}const nose=sphere(.061,skinTone,0,1.865,.291,body);nose.scale.set(.56,.85,.74);const tip=sphere(.032,skinTone,0,1.839,.322,body);tip.scale.set(1,.52,.52);for(const side of [-1,1]){const cheek=sphere(.092,0xc99186,side*.17,1.837,.230,body);cheek.material=cheek.material.clone();cheek.material.transparent=true;cheek.material.opacity=.30;cheek.scale.set(1.0,.55,.23)}if(['Юрий','Игорь','Вера','Михалыч'].includes(name)){for(const side of [-1,1]){const lens=new T.Mesh(new T.TorusGeometry(.115,.015,5,14),material(0x303b48));lens.position.set(side*.13,1.97,.275);body.add(lens)}box(.08,.015,.02,0x303b48,0,1.97,.29,body)}
  const arms=[],legs=[];
  for(const side of [-1,1]){
