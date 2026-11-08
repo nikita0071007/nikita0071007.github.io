@@ -347,7 +347,7 @@ function buildPerson(group,name,i){
  const arms=[],legs=[];
  for(const side of [-1,1]){
   const arm=new T.Group();arm.position.set(side*.38,1.52,0);body.add(arm);
-  const sleeve=new T.Mesh(new T.CylinderGeometry(.12,.085,.56,8),material(cloth));sleeve.position.y=-.29;arm.add(sleeve);garments.push(sleeve);sphere(.105,skin,0,-.66,0,arm);arms.push(arm);
+  const sleeve=new T.Mesh(new T.CylinderGeometry(.12,.085,.56,8),material(cloth));sleeve.position.y=-.29;arm.add(sleeve);garments.push(sleeve);const hand=sphere(.105,skinTone,0,-.66,0,arm);hand.scale.set(.84,1.16,.79);const thumb=sphere(.045,skinTone,side*.078,-.635,.055,arm);thumb.scale.set(.7,1,.75);arms.push(arm);
   const leg=new T.Group();leg.position.set(side*.17,.75,0);body.add(leg);
   const trouser=new T.Mesh(new T.CylinderGeometry(.135,.11,.59,8),material(dark));trouser.position.y=-.30;leg.add(trouser);box(.25,.14,.37,0x242b35,0,-.63,.07,leg);legs.push(leg);
  }
