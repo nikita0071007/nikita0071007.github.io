@@ -82,6 +82,83 @@ let live={},updatedAt='';function showPerson(p){const real=p.id.startsWith('resi
 function renderRoster(){const out=document.getElementById('rosterContent');out.replaceChildren();for(const p of people){const d=p.userData,real=d.id.startsWith('resident-')?null:live[d.id];const row=document.createElement('button');row.style.cssText='display:block;width:100%;text-align:left;margin:4px 0;font-size:12px';row.textContent=d.name+' · '+d.role+(real?' | сервер: '+(real.name||d.id)+' · '+(real.status||'нет статуса'):' | игровой житель');row.onclick=()=>{showPerson(d);document.getElementById('rosterPanel').hidden=true};out.appendChild(row)}}document.getElementById('roster').onclick=()=>{const p=document.getElementById('rosterPanel');p.hidden=!p.hidden;if(!p.hidden)renderRoster()};document.getElementById('closeRoster').onclick=()=>document.getElementById('rosterPanel').hidden=true;async function refresh(){const el=document.getElementById('status');el.textContent='⏳ Обновление статусов…';try{const r=await fetch('https://raw.githubusercontent.com/nikita0071007/office/main/status.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();live=d.agents||{};updatedAt=d.updated_at||'';const age=(Date.now()-Date.parse(updatedAt))/3600000;renderRoster();el.textContent=(age>24||!Number.isFinite(age)?'🟠 Данные могут быть устаревшими':'🟢 Данные получены')+' · '+Object.keys(live).length+' агентов · '+(updatedAt||'дата неизвестна')+' · источник: GitHub';}catch(e){el.textContent='⚠️ Нет связи с GitHub. Дом работает в демонстрационном режиме.'}}document.getElementById('refresh').onclick=refresh;refresh();setInterval(refresh,120000);
 function view(x,y,z,tx=0,ty=4,tz=0){camera.position.set(x,y,z);controls.target.set(tx,ty,tz);controls.update()}document.getElementById('front').onclick=()=>{roof.visible=true;view(28,20,33)};document.getElementById('ground').onclick=()=>{roof.visible=false;view(18,10,24,0,2,0)};document.getElementById('upper').onclick=()=>{roof.visible=false;view(18,16,23,0,9,0)};
 let evening=true;document.getElementById('night').onclick=()=>{evening=!evening;scene.background.set(evening?'#758895':'#a9d5ed');scene.fog.color.set(evening?'#758895':'#a9d5ed');sun.intensity=evening?2.3:3.2;hemi.intensity=evening?2:2.6};let showLabels=true;document.getElementById('labels').onclick=()=>{showLabels=!showLabels;nameRoot.style.display=showLabels?'block':'none'};
-let last=0;let frame=0;let framesInWindow=0,windowStart=performance.now(),fps=0;let qualityMode=0;let autoSlowWindows=0,autoFastWindows=0;const qualityModes=['авто','эконом','обычное'];const qualityButton=document.getElementById('quality');qualityButton.onclick=()=>{qualityMode=(qualityMode+1)%3;autoSlowWindows=0;autoFastWindows=0;const ratio=qualityMode===1?.65:qualityMode===2?Math.min(devicePixelRatio||1,1.4):Math.min(devicePixelRatio||1,1);renderer.setPixelRatio(ratio);renderer.setSize(innerWidth,innerHeight);qualityButton.textContent='⚡ Качество: '+qualityModes[qualityMode]};document.getElementById('metrics').onclick=()=>{const p=document.getElementById('metricsPanel');p.hidden=!p.hidden};function tick(t){requestAnimationFrame(tick);framesInWindow++;if(t-windowStart>=1200){fps=Math.round(framesInWindow*1000/(t-windowStart));framesInWindow=0;windowStart=t;if(qualityMode===0){autoSlowWindows=fps<24?autoSlowWindows+1:0;autoFastWindows=fps>48?autoFastWindows+1:0;if(autoSlowWindows>=3&&renderer.getPixelRatio()>.7){renderer.setPixelRatio(.7);renderer.setSize(innerWidth,innerHeight);autoSlowWindows=0}else if(autoFastWindows>=6&&renderer.getPixelRatio()<Math.min(devicePixelRatio||1,1)){renderer.setPixelRatio(Math.min(devicePixelRatio||1,1));renderer.setSize(innerWidth,innerHeight);autoFastWindows=0}}const p=document.getElementById('metricsText');if(p){p.textContent='FPS: '+fps+' · Экран: '+innerWidth+'×'+innerHeight+' · Масштаб рендера: '+renderer.getPixelRatio().toFixed(2)+' · Геометрий: '+renderer.info.memory.geometries+' · Текстур: '+renderer.info.memory.textures+' · Вызовов отрисовки: '+renderer.info.render.calls+' · ОЗУ телефона: не определяется достоверно';}}const dt=Math.min((t-last)/1000||.016,.06);last=t;for(let i=0;i<people.length;i++){const p=people[i],d=p.userData;p.position.x=d.baseX+Math.sin(t*.00028+d.phase)*.32;p.position.z=d.baseZ+Math.cos(t*.00023+d.phase)*.25;p.rotation.y=Math.sin(t*.0004+d.phase)*.35;const v=p.position.clone().add(new T.Vector3(0,2.4,0)).project(camera);d.label.style.left=(v.x*.5+.5)*innerWidth+'px';d.label.style.top=(-v.y*.5+.5)*innerHeight+'px';d.label.style.display=v.z>1||v.x < -1.2||v.x>1.2||v.y < -1.2||v.y>1.2?'none':'block'}controls.update();renderer.render(scene,camera)}requestAnimationFrame(tick);
-document.addEventListener('visibilitychange',()=>{last=performance.now();windowStart=performance.now();framesInWindow=0});addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+// Keep the user's choice separate from the temporary automatic render scale.
+const qualityModes=['авто','эконом','обычное'];
+const qualityValues=['auto','economy','normal'];
+const qualityStorageKey='gusevmade-mountain-quality';
+let qualityMode=0;
+try{const saved=qualityValues.indexOf(localStorage.getItem(qualityStorageKey));if(saved>=0)qualityMode=saved}catch{}
+let framesInWindow=0,windowStart=performance.now(),fps=null;
+let autoSlowWindows=0,autoFastWindows=0,autoReduced=false;
+let recoveryWait=0,recoveryDelay=30000;
+const qualityButton=document.getElementById('quality');
+const metricsText=document.getElementById('metricsText');
+function renderMetrics(){
+  metricsText.textContent=(fps===null?'FPS: замер после изменения или возобновления…':'FPS: '+fps)+
+    ' · Экран: '+innerWidth+'×'+innerHeight+
+    ' · Буфер рендера: '+renderer.domElement.width+'×'+renderer.domElement.height+
+    ' · Масштаб рендера: '+renderer.getPixelRatio().toFixed(2)+
+    ' · Геометрий: '+renderer.info.memory.geometries+
+    ' · Текстур: '+renderer.info.memory.textures+
+    ' · Вызовов отрисовки: '+renderer.info.render.calls+
+    ' · ОЗУ телефона: не определяется достоверно';
+}
+function resetPerformanceWindow(t=performance.now()){
+  framesInWindow=0;windowStart=t;fps=null;
+  autoSlowWindows=0;autoFastWindows=0;
+  renderMetrics();
+}
+function applyQuality(t=performance.now()){
+  const base=Math.min(devicePixelRatio||1,1);
+  const ratio=qualityMode===1?Math.min(devicePixelRatio||1,.65):
+    qualityMode===2?Math.min(devicePixelRatio||1,1.4):autoReduced?Math.min(base,.7):base;
+  renderer.setPixelRatio(ratio);
+  renderer.setSize(innerWidth,innerHeight);
+  qualityButton.textContent='⚡ Качество: '+qualityModes[qualityMode]+(qualityMode===0&&autoReduced?' ↓':'');
+  resetPerformanceWindow(t);
+}
+qualityButton.onclick=()=>{
+  qualityMode=(qualityMode+1)%qualityModes.length;
+  autoReduced=false;recoveryWait=0;recoveryDelay=30000;
+  try{localStorage.setItem(qualityStorageKey,qualityValues[qualityMode])}catch{}
+  applyQuality();
+};
+document.getElementById('metrics').onclick=()=>{
+  const panel=document.getElementById('metricsPanel');panel.hidden=!panel.hidden;
+};
+function samplePerformance(t){
+  framesInWindow++;
+  const elapsed=t-windowStart;
+  if(elapsed<1200)return;
+  const measuredFps=framesInWindow*1000/elapsed;
+  fps=Math.round(measuredFps);framesInWindow=0;windowStart=t;
+  if(qualityMode===0){
+    recoveryWait=Math.max(0,recoveryWait-elapsed);
+    autoSlowWindows=measuredFps<24?autoSlowWindows+1:0;
+    autoFastWindows=measuredFps>48?autoFastWindows+1:0;
+    if(!autoReduced&&autoSlowWindows>=3&&renderer.getPixelRatio()>.7){
+      autoReduced=true;
+      // Count only visible sampling time. Repeated failed recoveries back off to two minutes.
+      recoveryWait=recoveryDelay;recoveryDelay=Math.min(recoveryDelay*2,120000);
+      applyQuality(t);return;
+    }
+    if(autoReduced&&autoFastWindows>=6&&recoveryWait===0){
+      autoReduced=false;applyQuality(t);return;
+    }
+  }
+  renderMetrics();
+}
+applyQuality();
+function tick(t){
+  requestAnimationFrame(tick);
+  if(document.hidden)return;
+  // Read diagnostics after this frame has rendered, so its scale and draw calls agree.
+  for(let i=0;i<people.length;i++){const p=people[i],d=p.userData;p.position.x=d.baseX+Math.sin(t*.00028+d.phase)*.32;p.position.z=d.baseZ+Math.cos(t*.00023+d.phase)*.25;p.rotation.y=Math.sin(t*.0004+d.phase)*.35;const v=p.position.clone().add(new T.Vector3(0,2.4,0)).project(camera);d.label.style.left=(v.x*.5+.5)*innerWidth+'px';d.label.style.top=(-v.y*.5+.5)*innerHeight+'px';d.label.style.display=v.z>1||v.x < -1.2||v.x>1.2||v.y < -1.2||v.y>1.2?'none':'block'}
+  controls.update();renderer.render(scene,camera);samplePerformance(t);
+}
+requestAnimationFrame(tick);
+document.addEventListener('visibilitychange',()=>resetPerformanceWindow());
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();applyQuality();
+});
 </script></body></html>
