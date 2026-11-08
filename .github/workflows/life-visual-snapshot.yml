@@ -71,6 +71,10 @@ jobs:
             // Verify that core gameplay controls respond in the real browser.
             const selectedBefore=await page.locator('#name').textContent();
             await page.locator('#cameraTools summary').click();
+            await page.locator('#portraitCamera').click();
+            await page.waitForTimeout(500);
+            await page.screenshot({path:'life/portrait-preview.png',fullPage:false});
+            if(!(await page.locator('#feed').textContent()).includes('Портретный ракурс'))throw Error('3D portrait camera failed');
             await page.locator('#nextHero').click();
             const selectedAfter=await page.locator('#name').textContent();
             if(selectedBefore===selectedAfter)throw Error('Next character control failed');
@@ -170,6 +174,7 @@ jobs:
             if(!seasonProgress.story||!seasonProgress.gesture||!seasonProgress.outfit)throw Error('Season milestones not persisted');
             await page.screenshot({path:'life/season-250-preview.png',fullPage:false});
             console.log('PASS: 70 real props, 40 outfits, 60 animated gestures, 50 playable scenes and 30 persistent achievements');
+            console.log('PASS: updated face geometry, 3D portrait focus, screenshot rendering');
 
             if(pageErrors.length)throw Error('Unexpected JavaScript runtime errors: '+pageErrors.join(' | '));
             await browser.close();
@@ -202,6 +207,7 @@ jobs:
           if [ -s life/activities-preview.png ]; then git add life/activities-preview.png; fi
           if [ -s life/mobile-preview.png ]; then git add life/mobile-preview.png; fi
           if [ -s life/season-250-preview.png ]; then git add life/season-250-preview.png; fi
+          if [ -s life/portrait-preview.png ]; then git add life/portrait-preview.png; fi
           if [ -s life/expansion-preview.png ]; then git add life/expansion-preview.png; fi
           if ! git diff --cached --quiet; then
             git commit -m "Capture actual 3D browser preview"
