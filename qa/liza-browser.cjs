@@ -17,6 +17,10 @@ globalThis.lifeQA=()=>{
   position:liza.position.toArray(), heading:liza.rotation.y, floor,
   sole:bounds?.min.y, camera:camera.position.toArray(), target:controls.target.toArray(),
   bone:human?.object.getObjectByName('LowerLegL')?.quaternion.toArray(),
+  hips:human?.object.getObjectByName('Hips')?.getWorldPosition(new T.Vector3()).y,
+  smile:human?.object.getObjectByName('LizaSmile')?.morphTargetInfluences[0],
+  hand:human?.object.getObjectByName('FistR')?.getWorldPosition(new T.Vector3()).y,
+  phase:human?.phase,
   visible:!document.hidden, status:document.getElementById('status').textContent};
 };`;
 const server=http.createServer(async(req,res)=>{
@@ -106,7 +110,7 @@ async function run(){
   const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   await config(mobile,errors);
   let attempts=0;
-  await mobile.route('**/life/assets/liza.glb',async route=>{
+  await mobile.route(url=>url.pathname.endsWith('/life/assets/liza.glb'),async route=>{
     attempts++;
     if(attempts===1)await route.fulfill({status:503,body:'test asset failure'});
     else await route.continue();
@@ -148,6 +152,13 @@ async function run(){
   assert.match(await mobile.locator('#status').textContent(),/10 из 10/);
   await list.filter({hasText:'Лиза'}).click();
   assert.equal(await mobile.locator('#humanFocus').getAttribute('aria-expanded'),'true');
+  await mobile.getByRole('button',{name:'Улыбка'}).tap();
+  await mobile.waitForFunction(()=>lifeQA().smile>.97);
+  assert.equal(await mobile.getByRole('button',{name:'Улыбка'}).getAttribute('aria-pressed'),'true');
+  assert.ok(await mobile.locator('body').evaluate(el=>el.classList.contains('human-portrait')));
+  await mobile.screenshot({path:path.join(out,'liza-mobile-smile.png')});
+  await mobile.getByRole('button',{name:'Улыбка'}).tap();
+  await mobile.waitForFunction(()=>lifeQA().smile<.03);
   await mobile.getByRole('button',{name:'Закрыть панель персонажа'}).tap();
   await mobile.locator('#roster').click();
   await mobile.locator('#rosterContent button').filter({hasText:'Вера'}).click();
@@ -165,19 +176,47 @@ async function run(){
   assert.deepEqual(errors,[]);
   console.log('2D roster and GET-only status checks pass; no uncaught page errors');
 
-  if(cli('--record')){
-   await mobile.close();
-   await desktop.getByRole('button',{name:'Лиза 3D'}).click();
-   await recording(desktop,async()=>{
-    await desktop.waitForTimeout(650);
-    await desktop.getByRole('button',{name:'Ходить'}).click();
-    await desktop.waitForTimeout(3700);
-    await desktop.getByRole('button',{name:'Бежать'}).click();
-    await desktop.waitForTimeout(3200);
-    await desktop.getByRole('button',{name:'Стоять'}).click();
-    await desktop.waitForTimeout(1050);
-   });
-  }
+  await mobile.close();
+  await desktop.getByRole('button',{name:'Лиза 3D'}).click();
+  const oldHips=(await metrics(desktop)).hips;
+  const choose=async name=>desktop.getByRole('button',{name}).click();
+  const runActions=async()=>{
+   await choose('Сесть');
+   await desktop.getByText('Лиза сидит на террасе.',{exact:true}).waitFor({timeout:25000});
+   const seated=await metrics(desktop);
+   assert.ok(oldHips-seated.hips>.14);
+   assert.ok(Math.abs(seated.sole-seated.floor)<.025);
+   assert.equal(await desktop.getByRole('button',{name:'Радость'}).isDisabled(),true);
+   assert.equal(await desktop.getByRole('button',{name:'Встать'}).getAttribute('aria-pressed'),'true');
+   await desktop.screenshot({path:path.join(out,'liza-seated.png')});
+   await desktop.waitForTimeout(450);
+   assert.equal((await metrics(desktop)).phase,'seated');
+   await choose('Встать');
+   await desktop.getByText('Лиза стоит рядом со стулом.',{exact:true}).waitFor({timeout:12000});
+   const standing=await metrics(desktop);
+   assert.ok(standing.hips-seated.hips>.15);
+   assert.deepEqual(standing.position,seated.position);
+   await choose('Радость');
+   await desktop.getByText('Лиза радуется!',{exact:true}).waitFor();
+   await desktop.waitForFunction(y=>lifeQA().hand>y+.3,standing.hand);
+   await desktop.getByText('Лиза стоит рядом со стулом.',{exact:true}).waitFor();
+   await choose('Улыбка');
+   await desktop.waitForFunction(()=>lifeQA().smile>.97);
+   await desktop.screenshot({path:path.join(out,'liza-smile.png')});
+   await desktop.waitForTimeout(1200);
+  };
+  if(cli('--record'))await recording(desktop,runActions);
+  else await runActions();
+  await choose('Улыбка');
+  await desktop.waitForFunction(()=>lifeQA().smile<.04);
+  await choose('Сесть');
+  await desktop.getByText('Лиза сидит на террасе.',{exact:true}).waitFor();
+  await choose('Ходить');
+  await desktop.getByText('На террасе. Выбери действие.',{exact:true}).waitFor({timeout:25000});
+  assert.equal(await desktop.getByRole('button',{name:'Ходить'}).getAttribute('aria-pressed'),'true');
+  assert.deepEqual(errors,[]);
+  console.log('Chair approach, seated hold, stand up, returning to patrol, gesture, desktop smile, and mobile portrait passed');
+
  }finally{
   await browser.close();
   server.close();

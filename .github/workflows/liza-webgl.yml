@@ -1,4 +1,4 @@
-name: Liza WebGL preview checks
+name: Liza seating and expression WebGL checks
 on:
   push:
     branches: [verify/liza-webgl]
@@ -26,11 +26,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: liza-webgl-evidence
+          name: liza-seating-evidence
           path: |
             life-qa/liza-walk.png
             life-qa/liza-run.png
             life-qa/liza-mobile.png
+            life-qa/liza-seated.png
+            life-qa/liza-smile.png
+            life-qa/liza-mobile-smile.png
             life-qa/frames/
           if-no-files-found: ignore
           retention-days: 14

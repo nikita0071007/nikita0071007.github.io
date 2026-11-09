@@ -1,11 +1,16 @@
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createLizaFace} from './liza-face.js';
 
 export const PATROL = {centerZ: 16.2, floor: .67, halfStraight: 1.65, radius: 1.12};
+// The cushion meets the lowest point of the seated trousers at the end of SitDown.
+export const LIZA_CHAIR = {x: 2.74, z: 14.37, standingZ: 14.71, seatHeight: .265};
 const straight = PATROL.halfStraight * 2;
 const turn = Math.PI * PATROL.radius;
 const perimeter = 2 * (straight + turn);
 const pace = {Idle: 0, Walk: 1.17, Run: 2.8};
+const transitions = new Set(['to-chair', 'sitting', 'rising', 'returning']);
+const oneShots = ['SitDown', 'StandUp', 'Victory'];
 
 function placeOnPath(host, distance) {
   const {centerZ, floor, halfStraight, radius} = PATROL;
@@ -33,6 +38,13 @@ function placeOnPath(host, distance) {
   host.rotation.y = heading;
 }
 
+function turnTowards(host, heading, dt) {
+  const delta = heading - host.rotation.y;
+  const shortest = Math.atan2(Math.sin(delta), Math.cos(delta));
+  host.rotation.y += T.MathUtils.clamp(shortest, -4.2 * dt, 4.2 * dt);
+  return Math.abs(shortest) < .045;
+}
+
 function soleVertices(model, floor, tolerance) {
   const point = new T.Vector3();
   const samples = [];
@@ -56,16 +68,19 @@ function soleVertices(model, floor, tolerance) {
 export function prepareHuman(gltf) {
   const model = gltf.scene;
   const clips = new Map(gltf.animations.map(clip => [clip.name, clip]));
-  for (const name of Object.keys(pace)) {
-    if (!clips.has(name)) throw new Error('Missing animation: ' + name);
-  }
   const mixer = new T.AnimationMixer(model);
-  const actions = {
-    Idle: mixer.clipAction(clips.get('Idle')),
-    Walk: mixer.clipAction(clips.get('Walk')).setEffectiveTimeScale(.7),
-    Run: mixer.clipAction(clips.get('Run')).setEffectiveTimeScale(.8)
-  };
-  let state = 'Idle';
+  const actions = {};
+  for (const name of [...Object.keys(pace), ...oneShots]) {
+    const clip = clips.get(name);
+    if (!clip) throw new Error('Missing animation: ' + name);
+    actions[name] = mixer.clipAction(clip);
+    if (oneShots.includes(name)) {
+      actions[name].setLoop(T.LoopOnce, 1);
+      actions[name].clampWhenFinished = true;
+    }
+  }
+  actions.Walk.setEffectiveTimeScale(.7);
+  actions.Run.setEffectiveTimeScale(.8);
   actions.Idle.play();
   mixer.update(0);
   model.updateMatrixWorld(true);
@@ -75,40 +90,131 @@ export function prepareHuman(gltf) {
   const scale = 2.05 / height;
   const soles = soleVertices(model, bounds.min.y, .15 / scale);
   if (!soles.length) throw new Error('Model has no skinned feet');
+  const face = createLizaFace(model);
   const wrapper = new T.Group();
   wrapper.scale.setScalar(scale);
   model.position.y -= bounds.min.y;
   wrapper.add(model);
 
-  // Start on the left bend facing the camera, with a continuous tangent at each turn.
-  let distance = perimeter - turn / 2;
-  let speed = 0;
+  let phase = 'patrol', mode = 'Idle', pose = 'Idle', afterGesture = 'patrol';
+  let distance = perimeter - turn / 2, speed = 0, smiling = false;
+  const route = new T.Object3D();
   const point = new T.Vector3();
+
+  function selectPose(next) {
+    if (pose === next) return;
+    const action = actions[next];
+    if (!action.isScheduled() || oneShots.includes(next)) action.reset().setEffectiveWeight(0).play();
+    pose = next;
+  }
+
+  function approach(host, x, z, dt) {
+    const dx = x - host.position.x, dz = z - host.position.z;
+    const remaining = Math.hypot(dx, dz);
+    if (remaining < .012) {
+      host.position.set(x, PATROL.floor, z);
+      speed = 0;
+      selectPose('Idle');
+      return true;
+    }
+    const heading = Math.atan2(dx, dz);
+    turnTowards(host, heading, dt);
+    const facingTarget = Math.cos(heading - host.rotation.y) > .91;
+    const targetSpeed = facingTarget ? Math.min(pace.Walk, Math.max(.18, remaining * 4.5)) : 0;
+    speed = T.MathUtils.damp(Math.min(speed, pace.Walk), targetSpeed, 13, dt);
+    if (facingTarget) {
+      const step = Math.min(remaining, speed * dt);
+      host.position.x += dx * step / remaining;
+      host.position.z += dz * step / remaining;
+    }
+    selectPose(facingTarget ? 'Walk' : 'Idle');
+    return false;
+  }
+
+  mixer.addEventListener('finished', ({action}) => {
+    if (action === actions.SitDown && phase === 'sitting') {
+      phase = 'seated';
+    } else if (action === actions.StandUp && phase === 'rising') {
+      phase = mode === 'Idle' ? 'at-chair' : 'returning';
+      selectPose('Idle');
+    } else if (action === actions.Victory && phase === 'celebrating') {
+      phase = afterGesture;
+      selectPose('Idle');
+    }
+  });
+
   return {
     object: wrapper,
+    get phase() { return phase; },
+    get mode() { return mode; },
+    get smiling() { return smiling; },
+    portraitTarget(target) { return face.anchor.getWorldPosition(target); },
+    toggleSmile() { smiling = !smiling; },
     setState(next) {
-      if (!Object.hasOwn(actions, next)) throw new Error('Unknown animation: ' + next);
-      if (next === state) return;
-      // Keep weights continuous even if the user changes commands mid-transition.
-      const selected = actions[next];
-      if (!selected.isRunning()) selected.reset().setEffectiveWeight(0).play();
-      state = next;
+      if (transitions.has(phase) || phase === 'celebrating') return false;
+      if (next === 'Sit') {
+        mode = 'Idle';
+        if (phase === 'seated') {
+          phase = 'rising';
+          selectPose('StandUp');
+        } else if (phase === 'at-chair') {
+          phase = 'sitting';
+          selectPose('SitDown');
+        } else {
+          phase = 'to-chair';
+        }
+        return true;
+      }
+      if (next === 'Victory') {
+        if (phase === 'seated') return false;
+        mode = 'Idle';
+        afterGesture = phase;
+        phase = 'celebrating';
+        selectPose('Victory');
+        return true;
+      }
+      if (!Object.hasOwn(pace, next)) return false;
+      mode = next;
+      if (phase === 'seated') {
+        phase = 'rising';
+        selectPose('StandUp');
+      } else if (phase === 'at-chair' && mode !== 'Idle') {
+        phase = 'returning';
+      } else {
+        selectPose(mode);
+      }
+      return true;
     },
     update(dt, host) {
       const step = Math.min(Math.max(dt, 0), .06);
       const blend = 1 - Math.exp(-step * 15);
+      if (phase === 'patrol' || (phase === 'celebrating' && afterGesture === 'patrol')) {
+        speed = T.MathUtils.lerp(speed, pace[mode], blend);
+        if (!pace[mode] && speed < .01) speed = 0;
+        distance = (distance + speed * step) % perimeter;
+        placeOnPath(host, distance);
+      } else if (phase === 'to-chair') {
+        if (approach(host, LIZA_CHAIR.x, LIZA_CHAIR.standingZ, step) && turnTowards(host, 0, step)) {
+          phase = 'sitting';
+          selectPose('SitDown');
+        }
+      } else if (phase === 'returning') {
+        placeOnPath(route, distance);
+        if (approach(host, route.position.x, route.position.z, step) && turnTowards(host, route.rotation.y, step)) {
+          phase = 'patrol';
+          selectPose(mode);
+        }
+      }
+
       for (const [name, action] of Object.entries(actions)) {
-        if (!action.isRunning()) continue;
-        const target = name === state ? 1 : 0;
+        if (!action.isScheduled()) continue;
+        const target = name === pose ? 1 : 0;
         const weight = T.MathUtils.lerp(action.getEffectiveWeight(), target, blend);
         action.setEffectiveWeight(weight);
         if (!target && weight < .003) action.stop();
       }
       mixer.update(step);
-      speed = T.MathUtils.lerp(speed, pace[state], blend);
-      if (!pace[state] && speed < .01) speed = 0;
-      distance = (distance + speed * step) % perimeter;
-      placeOnPath(host, distance);
+      face.update(step, smiling || phase === 'celebrating');
       wrapper.position.y = 0;
       host.updateMatrixWorld(true);
       let lowest = Infinity;
@@ -116,7 +222,7 @@ export function prepareHuman(gltf) {
         mesh.getVertexPosition(index, point).applyMatrix4(mesh.matrixWorld);
         lowest = Math.min(lowest, point.y);
       }
-      // Correct penetration from blended poses while preserving the run's flight phase.
+      // Correct penetration during blends while preserving the run's flight phase.
       wrapper.position.y = Math.max(0, PATROL.floor - lowest);
     }
   };
@@ -126,7 +232,7 @@ export async function loadHuman() {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
   try {
-    const url = new URL('./assets/liza.glb', import.meta.url);
+    const url = new URL('./assets/liza.glb?v=seating', import.meta.url);
     const response = await fetch(url, {signal: controller.signal});
     if (!response.ok) throw new Error('Model download failed: ' + response.status);
     const gltf = await new GLTFLoader().parseAsync(await response.arrayBuffer(), '');
