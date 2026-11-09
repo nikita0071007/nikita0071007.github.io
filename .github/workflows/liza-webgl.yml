@@ -1,0 +1,50 @@
+name: Liza WebGL preview checks
+on:
+  push:
+    branches: [verify/liza-webgl]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser dependencies
+        run: |
+          npm install --no-save --no-package-lock --no-audit --no-fund three@0.160.1 playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Exercise quality and WebGL interactions
+        run: |
+          mkdir -p life-qa
+          curl -fsSL --max-time 25 https://raw.githubusercontent.com/nikita0071007/office/main/status.json -o life-qa/status.json
+          node --test tests/mountain-quality.test.cjs
+          node qa/liza-browser.cjs --record
+      - name: Encode the browser recording
+        run: |
+          cd life-qa/frames
+          python3 - <<'PY'
+          import json
+          frames=json.load(open('frames.json'))
+          with open('concat.txt','w') as out:
+              for i,frame in enumerate(frames):
+                  print("file '" + frame['file'] + "'",file=out)
+                  duration=max(.01,min(.2,frames[i+1]['timestamp']-frame['timestamp'])) if i+1<len(frames) else .04
+                  print(f'duration {duration:.6f}',file=out)
+              print("file '" + frames[-1]['file'] + "'",file=out)
+          PY
+          ffmpeg -hide_banner -loglevel error -f concat -safe 0 -i concat.txt -vf 'fps=24,pad=ceil(iw/2)*2:ceil(ih/2)*2' -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart ../liza-walk-run.mp4
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: liza-webgl-evidence
+          path: |
+            life-qa/liza-walk.png
+            life-qa/liza-run.png
+            life-qa/liza-mobile.png
+            life-qa/liza-walk-run.mp4
+          if-no-files-found: ignore
+          retention-days: 14
