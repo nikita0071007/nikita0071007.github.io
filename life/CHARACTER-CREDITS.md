@@ -2,10 +2,10 @@
 
 ## Published Liza model
 
-- Quaternius, Ultimate Animated Character Pack, Casual_Female.gltf (mesh and Idle, Walk, Run clips). Author and CC0 designation: https://quaternius.com/packs/ultimatedanimatedcharacter.html
+- Quaternius, Ultimate Animated Character Pack, Casual_Female.gltf (mesh and Idle, Walk, Run, SitDown, StandUp, Victory clips). Author and CC0 designation: https://quaternius.com/packs/ultimatedanimatedcharacter.html
 - Asset copy: https://github.com/TheFlameFoundation/MagicWorlds/blob/1230ca734e484d0a8acaeb0e59a47e6b6b3f9c54/worlds/robot-world/glTF_Character/Casual_Female.gltf
 - CC0 1.0 Universal: https://creativecommons.org/publicdomain/zero/1.0/
-- Converted to a self-contained GLB with the three clips used on this page and adjusted colors. Hosted at assets/liza.glb.
+- Converted to a self-contained GLB with the six clips used on this page and adjusted colors. The site adds its own animated facial features. Hosted at assets/liza.glb.
 
 ## Earlier Michelle prototype
 
