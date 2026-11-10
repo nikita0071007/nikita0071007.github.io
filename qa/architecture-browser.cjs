@@ -13,12 +13,14 @@ globalThis.architectureQA=()=>{
     spot.set(x,y,z).project(camera);
     bounds.push([(spot.x+1)*innerWidth/2,(1-spot.y)*innerHeight/2]);
   }
+  const peaks=grounds.getObjectByName('Ridges and trees').children.filter(mesh=>!mesh.isInstancedMesh);
+  const ridgeZ=Math.max(...peaks.map(mesh=>new T.Box3().setFromObject(mesh).max.z));
   return {
     webgl:renderer.getContext().getParameter(renderer.getContext().VERSION),
     draws:renderer.info.render.calls,hero:document.body.classList.contains('architecture-view'),
     mode:roomMode,zone:roomZone,evening,leds:glow.visible,pathLights:approach.lights.visible,
     camera:camera.position.toArray(),target:controls.target.toArray(),bounds,
-    ratio:renderer.getPixelRatio(),models:models.size,people:people.length,
+    ratio:renderer.getPixelRatio(),models:models.size,people:people.length,ridgeZ,
     textureMaps:[...new Set([...scene.children.flatMap(root=>{
       const urls=[];root.traverse(node=>{const url=node.material?.map?.image?.src;
         if(url?.includes('/assets/materials/'))urls.push(url)});return urls;
@@ -85,6 +87,7 @@ async function frameContainsHouse(page){
   for(const [x,y] of reportNow.bounds)assert.ok(x>=0&&x<=width&&y>=header.height-3&&y<=height,
     JSON.stringify({point:[x,y],viewport:[width,height],header}));
   assert.ok(reportNow.draws>100&&reportNow.draws<860,JSON.stringify(reportNow));
+  assert.ok(reportNow.ridgeZ < -14,'Mountain geometry enters the front view');
 }
 async function zone(page,id,mode){
   await page.locator('[data-office-zone="'+id+'"]').click();
