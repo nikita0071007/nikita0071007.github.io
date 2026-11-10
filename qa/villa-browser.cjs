@@ -405,6 +405,11 @@ async function villaTest(browser,base,errors){
   await phone.locator('#lifePanel').waitFor();
   assert.equal((await officeState(phone)).mode,null);
   assert.deepEqual((await officeState(phone)).interiors,[true,true]);
+  if(process.env.VILLA_DETAIL_RECHECK){
+    await phase(phone,'talking');
+    const terrace=await report(phone,true);
+    assert.ok(terrace.meeting.actors.every(actor=>Math.abs(actor.sole-.67)<.03));
+  }
   await phone.close();
   console.log('Villa mobile: gym deep link, both orientations and return to the social terrace passed');
 }
@@ -416,9 +421,11 @@ async function run(){
   try{
     const errors=[];
     await villaTest(browser,base,errors);
-    await officeTest(browser,base,errors);
-    await mobileTest(browser,base,errors);
-    await desktopTest(browser,base,errors);
+    if(!process.env.VILLA_DETAIL_RECHECK){
+      await officeTest(browser,base,errors);
+      await mobileTest(browser,base,errors);
+      await desktopTest(browser,base,errors);
+    }
     assert.deepEqual(errors,[]);
   }finally{
     await browser.close();

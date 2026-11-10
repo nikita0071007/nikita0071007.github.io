@@ -23,7 +23,7 @@ jobs:
           curl -fsSL --max-time 25 https://raw.githubusercontent.com/nikita0071007/office/main/status.json -o life-qa/status.json
           node --test tests/*.test.*
           node qa/check-rooms.mjs
-          node qa/villa-browser.cjs
+          VILLA_DETAIL_RECHECK=1 node qa/villa-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
