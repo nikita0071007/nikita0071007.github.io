@@ -50,6 +50,11 @@ export function roomFrame({center, size}, width, height, top, bottom) {
   return {position: target.clone().addScaledVector(diagonal, distance), target};
 }
 
+// Keep the camera export used by pages cached before the room selector shipped.
+export function officeFrame(zone, width, height, top, bottom) {
+  return roomFrame(OFFICE_ZONES[zone], width, height, top, bottom);
+}
+
 export function buildOffice() {
   const {root:office,p,cube,drum,shade,sphere,part,block,soft,tube,assembly,shadow,
     planter,officeChair,boards,finish} = createDecor('Office interior', OFFICE_FLOOR);
