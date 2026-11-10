@@ -94,7 +94,7 @@ async function mobileTest(browser,base,errors){
     assert.match(await page.locator('#lifeBubble').textContent(),/Лиза.*Привет/);
     await page.screenshot({path:path.join(out,'terrace-mobile.png')});
     await page.waitForFunction(()=>lifeQA().meeting.line===1&&lifeQA().meeting.actors[1].speech>.27);
-    assert.match(await page.locator('#lifeBubble').textContent(),/Вера.*Конечно/);
+    assert.match(await page.locator('#lifeBubble').textContent(),/Вера.*Привет/);
     await phase(page,'rising');
     assert.equal((await report(page)).total,1);
     await phase(page,'leaving');
@@ -178,6 +178,9 @@ async function desktopTest(browser,base,errors){
   await desktop.locator('#lifeFocus').click();
   await phase(desktop,'talking');
   await desktop.locator('#lifeBubble').waitFor();
+  const header=await desktop.locator('header').boundingBox();
+  const bubble=await desktop.locator('#lifeBubble').boundingBox();
+  assert.ok(bubble.y>=header.y+header.height,JSON.stringify({header,bubble}));
   await desktop.screenshot({path:path.join(out,'terrace-desktop.png')});
   await desktop.waitForFunction(()=>lifeQA().loaded===13,null,{timeout:40000});
   const state=await report(desktop);

@@ -322,9 +322,12 @@ function closeLife(){
   controls.minDistance=13;
 }
 function focusLife(){
-  const distance=Math.max(6.7,2.65/(Math.tan(camera.fov*Math.PI/360)*camera.aspect));
+  const tangent=Math.tan(camera.fov*Math.PI/360);
+  const distance=Math.max(6.7,2.65/(tangent*camera.aspect));
+  const headerHeight=document.querySelector('header').offsetHeight;
+  const lift=Math.max(0,headerHeight-86)*2*distance*tangent/innerHeight;
   const {x,z}=MEETING_AREA;
-  view(x+.4,3.65,z+distance,x,1.15,z);
+  view(x+.4,3.65+lift,z+distance,x,1.15+lift,z);
 }
 function showLife(){
   closeHuman();
@@ -641,7 +644,12 @@ function tick(t){
       p.position.z=d.baseZ+Math.cos(t*.00023+d.phase)*.25;
       p.rotation.y=Math.sin(t*.0004+d.phase)*.35;
     }
-    if(houseMeetings.has(p)){
+    const inMeeting=houseMeetings.has(p);
+    if(!lifePanel.hidden&&!inMeeting){
+      d.label.style.display='none';
+      continue;
+    }
+    if(inMeeting){
       models.get(p).portraitTarget(labelTarget);
       labelTarget.y+=.14;
     }else{
