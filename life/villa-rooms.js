@@ -1,21 +1,23 @@
 import * as T from 'three';
-import {createDecor} from './villa-decor.js?v=surfaces';
+import {createDecor} from './villa-decor.js?v=architecture';
 
 export const UPPER_FLOOR = 6.53;
 export const UPPER_HOMES = {
-  'resident-nikita': [-8.9,-3.0],
+  'resident-nikita': [-8.9,6.55],
   'resident-lena': [-.12,-2.4],
-  video: [8.45,-2.90],
-  'resident-grandma': [-6.23,4.82]
+  video: [8.45,6.63],
+  'resident-grandma': [-6.23,-4.93]
 };
 
 export const UPPER_ZONES = {
-  overview: {label:'Обзор',center:[0,7.84,1.22],size:[26.75,3.46,19.95],text:'Кабинеты, студия, комната бабушки и общий спортзал.'},
-  director: {label:'Никита',title:'Кабинет Никиты',center:[-8.66,7.85,-4.88],size:[8.55,2.78,6.79],angle:[.39,.78,1],text:'Стол из тёмного дерева, ноутбук, библиотека и два кресла для гостей.'},
+  overview: {label:'Обзор',center:[3.05,7.84,.76],size:[32.85,3.46,18.72],text:'Кабинеты, гостиная, угловая терраса и общий спортзал.'},
+  director: {label:'Никита',title:'Кабинет Никиты',center:[-8.66,7.85,4.67],size:[8.55,2.78,6.79],angle:[.39,.78,1],text:'Кабинет у панорамного стекла со столом, библиотекой и креслами для гостей.'},
   therapy: {label:'Лена',title:'Кабинет Лены',center:[.00,7.86,-4.88],size:[7.44,2.80,6.79],angle:[.41,.81,1],text:'Диван, два кресла для бесед, мягкий ковёр и тёплый торшер.'},
-  studio: {label:'Анжелика',title:'Студия Анжелики',center:[8.65,7.88,-4.88],size:[8.65,2.83,6.79],angle:[.38,.77,1],text:'Место монтажа и уголок съёмки с камерой, микрофоном и кольцевым светом.'},
-  grandma: {label:'Бабушка',title:'Комната бабушки Марины',center:[-7.19,7.71,5.01],size:[6.8,2.67,6.87],text:'Кресло, плед, семейные рамки и уголок для питомцев.'},
-  gym: {label:'Спортзал',title:'Общий спортзал',center:[8.17,7.74,4.98],size:[8.97,2.63,6.93],text:'Дорожка, скамья, гантели и коврики.'}
+  studio: {label:'Анжелика',title:'Студия Анжелики',center:[8.65,7.88,4.65],size:[8.65,2.83,6.79],angle:[.38,.77,1],text:'Место монтажа и уголок съёмки с камерой, микрофоном и кольцевым светом.'},
+  lounge: {label:'Гостиная',title:'Гостиная второго этажа',center:[.10,7.85,4.84],size:[7.32,2.73,6.78],angle:[-.23,.68,1],text:'Мягкий диван, кресла, круглый стол и место для бесед.'},
+  terrace: {label:'Терраса',title:'Угловая терраса',center:[16.0,7.58,3.10],size:[6.85,2.54,13.5],angle:[.49,.66,1],text:'Диван и столик на открытом воздухе под перголой.'},
+  grandma: {label:'Бабушка',title:'Комната бабушки Марины',center:[-7.19,7.71,-4.74],size:[6.8,2.67,6.87],text:'Кресло, плед, семейные рамки и уголок для питомцев.'},
+  gym: {label:'Спортзал',title:'Общий спортзал',center:[8.17,7.74,-4.62],size:[8.97,2.63,6.93],text:'Дорожка, скамья, гантели и коврики.'}
 };
 
 export const GARDEN_ZONE = {
@@ -24,7 +26,7 @@ export const GARDEN_ZONE = {
 };
 
 export function buildUpperFloor(surfaces) {
-  const {p,matte,drum,pot,shade,sphere,part,block,soft,tube,assembly,
+  const {layout,p,matte,drum,pot,shade,sphere,part,block,soft,tube,assembly,
     shadow,planter,officeChair,boards,finish} = createDecor('Upper rooms',UPPER_FLOOR,surfaces);
   const floor=UPPER_FLOOR;
   const lilac=matte('#796882','linen'), rose=matte('#ad8584','linen'), rubber=matte('#4a6263');
@@ -82,13 +84,9 @@ export function buildUpperFloor(surfaces) {
     soft(w*.58,h*.37,.018,x,y,z+.067,color).rotation.z=.20;
   }
 
-  // The slab has a real opening at the top of the existing stair.
-  block(26.23,.31,11.27,0,6.365,-3.005,p.base);
-  block(23.71,.31,6.04,1.265,6.365,5.65,p.base);
-  block(.51,.31,6.04,-12.86,6.365,5.65,p.base);
-  boards(-13.08,13.08,-8.61,2.63,6.517);
-  boards(-10.57,13.08,2.63,8.65,6.517);
-  boards(-13.08,-12.61,2.63,8.65,6.517);
+  // The exterior stair reaches the full upper slab at the front.
+  block(26.23,.31,17.26,0,6.365,.02,p.base);
+  boards(-13.08,13.08,-8.61,8.65,6.517);
   block(25.94,2.60,.16,0,floor+1.30,-8.39,p.wall);
   block(26.01,.094,.22,0,floor+2.65,-8.39,p.walnut);
   block(.17,1.41,11.1,-12.94,floor+.705,-2.83,p.wall);
@@ -104,14 +102,11 @@ export function buildUpperFloor(surfaces) {
   // Continuous hallway with openings into every room.
   soft(24.55,.027,1.48,0,floor+.015,.38,p.cream);
   for(const z of [-.29,1.05])block(24.3,.011,.036,0,floor+.034,z,p.walnut);
-  for(const z of [3.05,4.42,5.82,7.22,8.34])block(.075,.79,.075,-10.66,floor+.40,z,p.metal);
-  block(.105,.09,5.37,-10.66,floor+.81,5.70,p.walnut);
-  for(const x of [-12.61,-10.66])block(.075,.79,.075,x,floor+.40,8.40,p.metal);
-  block(2.01,.09,.105,-11.635,floor+.81,8.40,p.walnut);
   planter(-10.08,.35,.82,p.teal);
   planter(11.73,.35,.88,p.cream);
 
   // Director's office.
+  const directorStart=layout.children.length;
   const leather=matte('#314650',null,{roughness:.49}),brass=matte('#bc9559',null,{metalness:.43,roughness:.36});
   roomRug(7.94,6.20,-8.65,-4.97,p.forest);
   block(7.93,2.49,.085,-8.69,floor+1.245,-8.264,p.teal);
@@ -167,6 +162,7 @@ export function buildUpperFloor(surfaces) {
   block(.62,.217,.33,-6.47,floor+.984,-7.71,p.cream);
   block(.69,.079,.37,-6.47,floor+1.133,-7.71,p.teal);
   planter(-5.19,-5.15,.86,p.cream);
+  for(const object of layout.children.slice(directorStart))object.position.z+=9.55;
 
   // Lena's quiet room.
   roomRug(7.75,6.10,-.10,-4.97,lilac);
@@ -197,6 +193,7 @@ export function buildUpperFloor(surfaces) {
   planter(-3.22,-2.61,.79,p.cream);
 
   // Recording studio.
+  const studioStart=layout.children.length;
   roomRug(8.09,6.2,8.60,-4.98,p.navy);
   block(7.05,2.46,.09,8.61,floor+1.26,-8.24,p.teal);
   for(let i=0;i<18;i++)block(.077,2.32,.088,5.37+i*.37,floor+1.26,-8.13,i%2?p.oak:p.forest);
@@ -226,8 +223,10 @@ export function buildUpperFloor(surfaces) {
   soft(.48,.23,.095,9.48,floor+1.02,-1.61,p.navy);
   part(sphere,.099,.099,.041,9.48,floor+1.021,-1.551,p.clay);
   planter(5.24,-7.47,.68,p.teal);
+  for(const object of layout.children.slice(studioStart))object.position.z+=9.53;
 
   // Grandma's room and pet corner.
+  const grandmaStart=layout.children.length;
   roomRug(6.61,6.44,-7.20,5.01,rose);
   block(4.52,1.53,.136,-8.11,floor+.765,1.738,p.wall);
   block(4.59,.084,.18,-8.11,floor+1.57,1.738,p.walnut);
@@ -269,21 +268,32 @@ export function buildUpperFloor(surfaces) {
   }
   pet(-8.62,7.43,.8,p.amber,true);
   pet(-7.36,6.73,-.31,p.walnut,false);
+  for(const object of layout.children.slice(grandmaStart))object.position.z-=9.75;
 
-  // Shared reading landing and gym.
-  roomRug(6.09,5.93,.12,4.89,p.forest);
-  const landing=assembly(.10,6.81,Math.PI);
-  soft(3.12,.19,.73,0,.417,0,p.canvas,landing);
-  soft(3.12,.53,.13,0,.69,-.31,p.teal,landing);
-  for(const x of [-1.31,1.31])block(.13,.38,.52,x,.20,0,p.walnut,landing);
-  soft(2.56,.84,.46,.15,floor+.44,2.67,p.walnut);
-  for(let i=0;i<10;i++){
-    const h=.22+i%3*.068;
-    block(.114,h,.22,-.94+i*.228,floor+.865+h/2,2.68,[p.mint,p.clay,p.cream,p.navy][i%4]);
+  // The lounge is visible through the tall upper windows.
+  part(drum,6.40,.029,5.88,.12,floor+.033,4.88,linen);
+  function sofa(x,z,heading,width){
+    const seat=assembly(x,z,heading);
+    soft(width,.34,1.26,0,.31,0,p.canvas,seat);
+    soft(width,.64,.26,0,.72,-.515,linen,seat);
+    for(const dx of [-1,1]){
+      soft(.28,.57,1.26,dx*(width/2-.12),.54,0,linen,seat);
+      soft((width-.54)/2,.20,1.01,dx*(width-.54)/4,.52,.069,linen,seat);
+      soft(.47,.47,.22,dx*(width*.30),.79,-.14,dx>0?p.teal:p.clay,seat).rotation.z=dx*.24;
+    }
   }
-  planter(-2.52,6.70,.97,p.cream);
-  planter(2.66,6.66,.94,p.teal);
+  sofa(.04,2.90,0,4.18);
+  chair(-2.18,5.93,2.29,p.canvas);
+  chair(2.28,5.92,-2.34,p.canvas);
+  part(drum,1.76,.39,1.58,.11,floor+.236,4.74,brass);
+  part(drum,1.82,.064,1.64,.11,floor+.453,4.74,p.walnut);
+  tube(.28,.25,.25,floor+.60,4.63,p.cream);
+  soft(.52,.045,.30,-.34,floor+.51,4.92,p.clay);
+  part(drum,.78,.43,.78,-.81,floor+.25,6.32,p.teal);
+  planter(-2.68,2.35,1.29,p.cream);
+  lamp(2.81,2.23);
 
+  const gymStart=layout.children.length;
   roomRug(8.67,6.42,8.17,5.02,rubber);
   block(3.37,1.77,.112,10.72,floor+1.39,1.89,p.trim);
   block(3.19,1.57,.038,10.72,floor+1.39,1.959,mirror);
@@ -321,15 +331,31 @@ export function buildUpperFloor(surfaces) {
     part(drum,.185,.55,.185,x,floor+.14,7.30,p.mint).rotation.z=Math.PI/2;
   }
   planter(11.89,7.17,.83,p.cream);
+  for(const object of layout.children.slice(gymStart))object.position.z-=9.60;
 
-  // Balcony under the open front of the upper cutaway.
-  block(10.82,.22,2.39,6.88,6.412,9.80,p.walnut);
-  boards(1.51,12.25,8.64,10.99,6.517);
-  for(let i=0;i<10;i++)block(.072,.93,.072,1.53+i*1.184,floor+.465,10.95,p.metal);
-  block(10.84,.073,.10,6.87,floor+.958,10.95,p.walnut);
-  chair(4.15,9.68,-.35,p.teal);
-  chair(6.01,9.68,.35,p.teal);
-  planter(10.9,9.67,.77,p.cream);
+  // Outdoor seating on the right-hand terrace.
+  block(6.54,.24,13.42,16.03,6.395,3.21,p.base);
+  boards(12.77,19.28,-3.49,9.92,6.517);
+  for(const x of [12.79,14.4,16.0,17.6,19.23])block(.072,1.00,.072,x,floor+.50,9.89,p.metal);
+  for(const z of [-3.46,-1.20,1.02,3.23,5.45,7.67])block(.072,1.00,.072,19.23,floor+.50,z,p.metal);
+  block(6.46,.073,.10,16.0,floor+1.025,9.89,p.metal);
+  block(.098,.073,13.37,19.23,floor+1.025,3.22,p.metal);
+  block(6.40,.86,.044,16.0,floor+.48,9.89,p.glass);
+  block(.044,.86,13.26,19.23,floor+.48,3.22,p.glass);
+  sofa(17.82,2.20,-Math.PI/2,3.70);
+  chair(14.41,4.24,2.65,p.canvas);
+  chair(14.68,.42,.30,p.canvas);
+  part(drum,1.61,.085,1.56,15.85,floor+.47,2.39,p.oak);
+  tube(.24,.43,15.85,floor+.23,2.39,p.metal);
+  tube(.23,.18,15.83,floor+.594,2.45,p.cream);
+  for(const [x,z] of [[13.56,6.19],[18.23,5.89]]){
+    soft(.38,.056,.39,x,floor+.06,z,p.metal);
+    soft(.30,.46,.30,x,floor+.318,z,p.lamp);
+    soft(.40,.068,.41,x,floor+.583,z,p.metal);
+    for(const dx of [-.16,.16])for(const dz of [-.16,.16])block(.04,.54,.04,x+dx,floor+.323,z+dz,p.trim);
+  }
+  planter(18.0,-1.50,1.65,p.cream);
+  for(const x of [14.05,15.37,16.69,18.01])planter(x,9.32,.82,p.walnut);
   return finish();
 }
 
