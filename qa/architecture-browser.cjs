@@ -1,4 +1,4 @@
-const {chromium}=require('playwright');
+const {chromium}=require('playwright-core');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const http=require('node:http');
@@ -99,7 +99,7 @@ async function zone(page,id,mode){
 }
 async function run(){
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-  const browser=await chromium.launch({headless:true,args:['--no-sandbox',
+  const browser=await chromium.launch({headless:true,executablePath:process.env.VILLA_CHROMIUM,args:['--no-sandbox',
     '--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader','--disable-dev-shm-usage']});
   const url='http://127.0.0.1:'+server.address().port+'/life/mountain.html';
   const errors=[];
