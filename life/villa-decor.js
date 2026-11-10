@@ -128,6 +128,6 @@ export function createDecor(name, floor, surfaces) {
     }
     return root;
   }
-  return {root, p, matte, cube, drum, pot, shade, sphere, part, block, soft, tube, assembly,
+  return {root, layout, p, matte, cube, drum, pot, shade, sphere, part, block, soft, tube, assembly,
     shadow, planter, officeChair, boards, finish};
 }

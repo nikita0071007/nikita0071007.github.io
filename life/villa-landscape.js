@@ -1,5 +1,98 @@
 import * as T from 'three';
 
+export function buildVillaApproach(materials){
+  const root=new T.Group(), lights=new T.Group();
+  root.name='Stone approach and planted banks';
+  root.add(lights);
+  const slate=materials.matte('#958574','stone');
+  const boulder=materials.matte('#575a54','stone');
+  const stem=materials.matte('#66503a','wood');
+  const leaf=materials.matte('#ffffff',null,{roughness:.92});
+  const amber=new T.MeshBasicMaterial({color:'#ffc070',toneMapped:false});
+  const rock=new T.IcosahedronGeometry(1,1);
+  const points=rock.getAttribute('position');
+  for(let i=0;i<points.count;i++){
+    const x=points.getX(i),y=points.getY(i),z=points.getZ(i);
+    const irregular=1+.14*Math.sin(x*15+y*7+z*11)+.06*Math.sin(x*24-z*13);
+    points.setXYZ(i,x*irregular,y*irregular,z*irregular);
+  }
+  rock.computeVertexNormals();
+  const transform=new T.Object3D();
+  const steps=[
+    [-8.75,.62,10.68,2.56,1.00],[-8.81,.43,11.60,2.53,.94],[-8.91,.23,12.53,2.57,.93],
+    [-9.06,.04,13.44,2.51,.94],[-9.25,-.15,14.35,2.45,.91],[-9.47,-.34,15.27,2.38,.90],
+    [-9.79,-.49,16.19,2.35,.82],[-10.16,-.49,17.04,2.24,.85],[-10.66,-.49,17.89,2.28,.84],
+    [-11.24,-.49,18.72,2.19,.89],[-11.90,-.49,19.59,2.25,.93],[-12.49,-.49,20.53,2.21,1.01]
+  ];
+  const slab=new T.BoxGeometry(1,1,1);
+  const blocks=new T.InstancedMesh(slab,slate,steps.length);
+  steps.forEach(([x,y,z,w,d],i)=>{
+    const h=Math.max(.10,y+.55);
+    transform.position.set(x,y-h/2,z);
+    transform.rotation.set(0,-.052*i,0);
+    transform.scale.set(w,h,d);
+    transform.updateMatrix();
+    blocks.setMatrixAt(i,transform.matrix);
+  });
+  const fixtures=[[-10.28,11.68],[-7.47,13.70],[-11.08,15.86],[-8.80,18.09],[-13.66,20.26],
+    [13.43,10.97],[15.29,13.49],[-14.55,11.40],[12.16,16.67]];
+  const stands=new T.InstancedMesh(slab,stem,fixtures.length);
+  const bulbs=new T.InstancedMesh(slab,amber,fixtures.length);
+  fixtures.forEach(([x,z],i)=>{
+    transform.rotation.set(0,0,0);
+    transform.position.set(x,-.22,z);
+    transform.scale.set(.102,.66,.104);
+    transform.updateMatrix();
+    stands.setMatrixAt(i,transform.matrix);
+    transform.position.y=.096;
+    transform.scale.set(.127,.37,.129);
+    transform.updateMatrix();
+    bulbs.setMatrixAt(i,transform.matrix);
+  });
+  lights.add(bulbs);
+
+  let seed=2711;
+  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+  const rocks=[
+    [-14.6,11.0,1.6],[-13.9,13.84,.92],[-10.9,15.18,.62],[-14.94,19.4,1.63],
+    [-8.08,19.96,.87],[-17.72,9.3,2.1],[13.41,9.95,1.06],[13.15,17.34,1.47],
+    [18.44,10.27,1.87],[20.70,7.02,1.54],[15.89,18.98,2.18],[-17.6,17.1,2.2]
+  ];
+  const stoneMesh=new T.InstancedMesh(rock,boulder,rocks.length);
+  rocks.forEach(([x,z,r],i)=>{
+    transform.rotation.set(.14+random()*.40,random()*Math.PI,.18*random());
+    transform.position.set(x,-.48+r*.24,z);
+    transform.scale.set(r,r*.66,r*.82);
+    transform.updateMatrix();
+    stoneMesh.setMatrixAt(i,transform.matrix);
+  });
+
+  const patches=[[-12.31,11.84,2.0],[-14.4,15.46,2.1],[-11.82,17.96,1.48],[-15.93,20.58,2.8],
+    [-7.03,16.78,1.2],[-8.86,21.38,1.7],[13.41,10.96,2.24],[14.78,18.92,2.1],
+    [19.81,7.45,2.6],[-16.29,8.96,1.9],[12.27,14.95,1.04],[-10.96,12.73,1.06]];
+  const foliage=new T.InstancedMesh(new T.IcosahedronGeometry(1,0),leaf,patches.length*42);
+  const tones=['#52623b','#424e36','#687b42','#817e4a','#344f35'].map(color=>new T.Color(color));
+  patches.forEach(([x,z,r],i)=>{
+    for(let j=0;j<42;j++){
+      const a=random()*2*Math.PI,d=Math.sqrt(random())*r, h=(.16+random()*.43)*(1-d/r*.55);
+      transform.position.set(x+Math.sin(a)*d,-.51+h*.48,z+Math.cos(a)*d);
+      transform.scale.set(.105+random()*.14,h,.045+random()*.076);
+      transform.rotation.set(.34,a,random()*.48);
+      transform.updateMatrix();
+      foliage.setMatrixAt(i*42+j,transform.matrix);
+      foliage.setColorAt(i*42+j,tones[(i+j)%tones.length]);
+    }
+  });
+  foliage.instanceColor.needsUpdate=true;
+  for(const mesh of [blocks,stands,bulbs,stoneMesh,foliage]){
+    mesh.computeBoundingSphere();
+    mesh.receiveShadow=mesh!==bulbs;
+    mesh.castShadow=mesh===blocks||mesh===stoneMesh;
+  }
+  root.add(blocks,stands,stoneMesh,foliage);
+  return {root,lights};
+}
+
 export function buildVillaLandscape(materials){
   const root=new T.Group();
   root.name='Ridges and trees';

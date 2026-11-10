@@ -1,4 +1,4 @@
-name: Mountain villa materials WebGL checks
+name: Reference villa WebGL checks
 on:
   push:
     branches: [verify/liza-webgl]
@@ -17,18 +17,16 @@ jobs:
         run: |
           npm install --no-save --no-package-lock --no-audit --no-fund three@0.160.1 playwright@1.62.1
           npx playwright install --with-deps chromium
-      - name: Exercise surfaces, lighting, mobile quality and terrace
+      - name: Check exterior, rooms and mobile framing
         run: |
           mkdir -p life-qa
           curl -fsSL --max-time 25 https://raw.githubusercontent.com/nikita0071007/office/main/status.json -o life-qa/status.json
           node --test tests/*.test.*
-          node qa/check-rooms.mjs
-          node qa/check-rendering.mjs
-          node qa/realism-browser.cjs
+          node qa/architecture-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: realistic-villa-evidence
-          path: life-qa/realism-*.png
+          name: reference-villa-evidence
+          path: life-qa/villa-reference-*.png
           if-no-files-found: ignore
           retention-days: 14
