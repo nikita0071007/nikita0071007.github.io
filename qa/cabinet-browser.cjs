@@ -40,7 +40,10 @@ const officeDebug = `globalThis.officeQA=(detailed=false)=>{
     workers:people.filter(person=>person.visible&&person.position.y<5.8).length,
     upper:people.filter(person=>person.visible&&person.position.y>=5.8).length,
     occupants:people.filter(person=>person.visible).map(person=>person.userData.id),
-    parts:subject.children.filter(mesh=>mesh.isInstancedMesh).reduce((sum,mesh)=>sum+mesh.count,0)};
+    parts:subject.children.filter(mesh=>mesh.isInstancedMesh).reduce((sum,mesh)=>sum+mesh.count,0),
+    icons:office.children.filter(mesh=>mesh.name.startsWith('Yuri icon ')).map(mesh=>({
+      name:mesh.name,ready:mesh.visible&&!!mesh.material.map?.image?.naturalWidth
+    }))};
   if(detailed){
     const bounds=new T.Box3().setFromObject(subject);
     state.seats=[];
@@ -73,7 +76,7 @@ const server = http.createServer(async(req,res)=>{
     const file = path.join(root,pathname);
     let data = await fs.readFile(file);
     if(pathname==='/life/mountain.html')data=Buffer.from(data.toString().replace('</script></body></html>',debug+officeDebug+'\n</script></body></html>'));
-    res.setHeader('content-type',{'.html':'text/html; charset=utf-8','.js':'text/javascript','.glb':'model/gltf-binary'}[path.extname(file)]||'application/octet-stream');
+    res.setHeader('content-type',{'.html':'text/html; charset=utf-8','.js':'text/javascript','.glb':'model/gltf-binary','.jpg':'image/jpeg'}[path.extname(file)]||'application/octet-stream');
     res.end(data);
   }catch{
     res.writeHead(404);res.end();
@@ -92,7 +95,7 @@ async function configure(page,errors){
   });
   await page.route('https://raw.githubusercontent.com/nikita0071007/office/main/status.json*',route=>
     route.fulfill({path:path.join(out,'status.json'),contentType:'application/json'}));
-  await page.route(url=>['/life/human-character.js','/life/liza-face.js','/life/house-life.js','/life/office-interior.js','/life/villa-decor.js','/life/villa-rooms.js'].includes(url.pathname)&&!url.search,
+  await page.route(url=>['/life/human-character.js','/life/liza-face.js','/life/house-life.js','/life/office-interior.js','/life/villa-decor.js','/life/villa-rooms.js','/life/yuri-cabinet.js'].includes(url.pathname)&&!url.search,
     route=>route.fulfill({status:409,body:'Unversioned module'}));
 }
 async function mobileTest(browser,base,errors){
@@ -414,18 +417,82 @@ async function villaTest(browser,base,errors){
   console.log('Villa mobile: gym deep link, both orientations and return to the social terrace passed');
 }
 
+async function cabinetTest(browser,base,errors){
+  const url=base+'/life/mountain.html';
+  const desktop=await browser.newPage({viewport:{width:1360,height:900},deviceScaleFactor:1});
+  await configure(desktop,errors);
+  await desktop.addInitScript(()=>{
+    localStorage.setItem('gusevmade-mountain-quality','normal');
+    localStorage.setItem('gusevmade-house-meetings-v1',JSON.stringify({version:1,running:false,pairs:{},journal:[]}));
+  });
+  const requested=new Set();
+  desktop.on('request',request=>{
+    if(request.url().includes('/assets/icons/'))requested.add(request.url());
+  });
+  await desktop.goto(url+'?office=editorial');
+  await desktop.waitForFunction(()=>officeQA().models===13&&officeQA().icons.length===2&&officeQA().icons.every(icon=>icon.ready),null,{timeout:40000});
+  assert.equal(await desktop.locator('#officeTitle').textContent(),'Кабинет Юрия');
+  assert.ok((await officeState(desktop)).occupants.includes('critic'));
+  assert.equal(requested.size,2);
+  assert.ok([...requested].every(asset=>asset.startsWith(base+'/life/assets/icons/')));
+  await desktop.screenshot({path:path.join(out,'cabinet-yuri.png')});
+  await desktop.getByRole('button',{name:'Киот',exact:true}).click();
+  assert.equal((await officeState(desktop)).zone,'icons');
+  assert.equal(await desktop.locator('#officeTitle').textContent(),'Киот Юрия');
+  await desktop.screenshot({path:path.join(out,'cabinet-icons.png')});
+  await desktop.locator('[data-office-zone=security]').click();
+  assert.equal(await desktop.locator('#officeTitle').textContent(),'Пост Славика');
+  await desktop.screenshot({path:path.join(out,'cabinet-security.png')});
+  await desktop.locator('#upper').click();
+  assert.equal((await officeState(desktop)).mode,'upstairs');
+  for(const [zone,title] of [['director','Кабинет Никиты'],['therapy','Кабинет Лены'],['studio','Студия Анжелики'],['grandma','Комната бабушки Марины']]){
+    await desktop.locator('[data-office-zone="'+zone+'"]').click();
+    assert.equal(await desktop.locator('#officeTitle').textContent(),title);
+    assert.equal((await officeState(desktop)).zone,zone);
+    await desktop.screenshot({path:path.join(out,'cabinet-'+zone+'.png')});
+  }
+  await desktop.locator('#officeClose').click();
+  assert.deepEqual((await officeState(desktop)).groups,[true,true,true,true]);
+  await desktop.close();
+
+  const phone=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+  await configure(phone,errors);
+  await phone.addInitScript(()=>localStorage.setItem('gusevmade-mountain-quality','economy'));
+  const iconURL='**/life/assets/icons/pantocrator.jpg';
+  await phone.route(iconURL,route=>route.abort());
+  await phone.goto(url+'?office=icons');
+  await phone.waitForFunction(()=>officeQA().icons.some(icon=>icon.ready));
+  assert.equal((await officeState(phone)).icons.filter(icon=>icon.ready).length,1);
+  assert.equal((await officeState(phone)).zone,'icons');
+  await phone.unroute(iconURL);
+  await phone.reload();
+  await phone.waitForFunction(()=>officeQA().icons.length===2&&officeQA().icons.every(icon=>icon.ready));
+  assert.equal((await report(phone)).quality,.65);
+  await phone.getByRole('button',{name:'Юрий',exact:true}).tap();
+  assert.equal(await phone.locator('#officeTitle').textContent(),'Кабинет Юрия');
+  await phone.screenshot({path:path.join(out,'cabinet-yuri-mobile.png')});
+  await phone.getByRole('button',{name:'Обзор',exact:true}).tap();
+  await checkOfficeBounds(phone);
+  await phone.setViewportSize({width:844,height:390});
+  await phone.waitForTimeout(350);
+  await checkOfficeBounds(phone);
+  await phone.locator('#lifeFocus').tap();
+  await phone.locator('#lifePanel').waitFor();
+  assert.equal((await officeState(phone)).mode,null);
+  await phase(phone,'talking');
+  const terrace=await report(phone,true);
+  assert.ok(terrace.meeting.actors.every(actor=>Math.abs(actor.sole-.67)<.03));
+  await phone.close();
+  console.log('Cabinets: local icon textures, fallback, room titles, desktop and rotated mobile views, and terrace passed');
+}
+
 async function run(){
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const base='http://127.0.0.1:'+server.address().port;
   const browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader','--disable-dev-shm-usage']});
   try{
     const errors=[];
-    await villaTest(browser,base,errors);
-    if(!process.env.VILLA_DETAIL_RECHECK){
-      await officeTest(browser,base,errors);
-      await mobileTest(browser,base,errors);
-      await desktopTest(browser,base,errors);
-    }
+    await cabinetTest(browser,base,errors);
     assert.deepEqual(errors,[]);
   }finally{
     await browser.close();

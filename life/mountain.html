@@ -64,14 +64,14 @@ body.human-portrait #names{visibility:hidden}
 <script type="module">
 import * as T from 'three';import{OrbitControls}from'three/addons/controls/OrbitControls.js';
 import {createHouseHistory,createTerraceMeetings,MEETING_AREA} from './house-life.js?v=1';
-import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=rooms';
-import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=1';
+import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=cabinets';
+import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=cabinets';
 const root=document.getElementById('world'),nameRoot=document.getElementById('names'),info=document.getElementById('info');let renderer,scene,camera,controls;
 try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.shadowMap.enabled=false;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
 scene=new T.Scene();scene.background=new T.Color('#758895');
 const houseFog=new T.Fog('#758895',65,145);scene.fog=houseFog;
 const upperLevel=new T.Group(),facade=new T.Group(),grounds=new T.Group(),stairs=new T.Group();
-const officeInterior=buildOffice(),upperInterior=buildUpperFloor();
+const officeInterior=buildOffice(new T.TextureLoader()),upperInterior=buildUpperFloor();
 scene.add(upperLevel,facade,grounds,stairs,officeInterior,upperInterior);
 grounds.add(buildGarden());
 camera=new T.PerspectiveCamera(46,innerWidth/innerHeight,.1,230);camera.position.set(28,20,33);controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,4,0);controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=13;controls.maxDistance=85;controls.minPolarAngle=.12;controls.enablePan=true;controls.update();
@@ -674,7 +674,6 @@ function showRoom(mode,zone='overview'){
     if(mode==='garden')livingArea??=buildLivingArea();
     document.getElementById('rosterPanel').hidden=true;
     document.getElementById('metricsPanel').hidden=true;
-    officeTitle.textContent=title;
     officeTabs.hidden=!nav;
     if(nav)officeTabs.setAttribute('aria-label',nav);
     officeTabs.replaceChildren(...Object.entries(zones).map(([key,{label}])=>{
@@ -688,6 +687,7 @@ function showRoom(mode,zone='overview'){
     queueModels();
   }
   roomZone=zone;
+  officeTitle.textContent=zones[zone].title||title;
   officeNote.textContent=zones[zone].text;
   for(const button of officeTabs.children)button.setAttribute('aria-pressed',String(button.dataset.officeZone===zone));
   focusRoom();

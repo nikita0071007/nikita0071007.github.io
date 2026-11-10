@@ -1,15 +1,25 @@
-name: Mountain villa rooms WebGL checks
+name: Mountain cabinet design WebGL checks
 on:
   push:
     branches: [verify/liza-webgl]
 permissions:
-  contents: read
+  contents: write
 jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+      - id: icons
+        name: Prepare local copies of the two historical icons
+        run: |
+          mkdir -p life/assets/icons
+          curl -fsSL --max-time 35 --retry 1 'https://upload.wikimedia.org/wikipedia/commons/archive/4/4a/20081118003820%21Spas_vsederzhitel_sinay.jpg' -o life/assets/icons/pantocrator.jpg
+          curl -fsSL --max-time 35 --retry 1 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Volokolamskaya_Vladimirskaya_ikona.jpg' -o life/assets/icons/volokolamskaya.jpg
+          for icon in life/assets/icons/*.jpg; do
+            test "$(file -b --mime-type "$icon")" = image/jpeg
+            test "$(wc -c < "$icon")" -lt 150000
+          done
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -17,20 +27,33 @@ jobs:
         run: |
           npm install --no-save --no-package-lock --no-audit --no-fund three@0.160.1 playwright@1.62.1
           npx playwright install --with-deps chromium
-      - name: Exercise rooms, kitchen, garden and terrace
+      - id: browser
+        name: Exercise cabinet layouts, textures and camera controls
         run: |
           mkdir -p life-qa
           curl -fsSL --max-time 25 https://raw.githubusercontent.com/nikita0071007/office/main/status.json -o life-qa/status.json
           node --test tests/*.test.*
           node qa/check-rooms.mjs
-          VILLA_DETAIL_RECHECK=1 node qa/villa-browser.cjs
+          node qa/cabinet-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mountain-villa-evidence
-          path: |
-            life-qa/villa-*.png
-            life-qa/office-security.png
-            life-qa/office-editorial.png
+          name: mountain-cabinet-evidence
+          path: life-qa/cabinet-*.png
           if-no-files-found: ignore
           retention-days: 14
+      - name: Save checked assets and two screenshots in the verification branch
+        if: always() && steps.icons.outcome == 'success'
+        env:
+          CABINET_TEST_RESULT: ${{ steps.browser.outcome }}
+        run: |
+          mkdir -p qa/cabinet-evidence
+          printf '{"run_id":%s,"checked_revision":"%s","result":"%s"}\n' "$GITHUB_RUN_ID" "$GITHUB_SHA" "$CABINET_TEST_RESULT" > qa/cabinet-evidence/run.json
+          for view in yuri director; do
+            if test -s "life-qa/cabinet-$view.png"; then
+              cp "life-qa/cabinet-$view.png" qa/cabinet-evidence/
+            fi
+          done
+          git add life/assets/icons/pantocrator.jpg life/assets/icons/volokolamskaya.jpg qa/cabinet-evidence
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Save verified icon copies and cabinet screenshots'
+          git push origin HEAD:refs/heads/verify/liza-webgl
