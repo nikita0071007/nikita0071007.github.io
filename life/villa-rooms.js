@@ -112,7 +112,9 @@ export function buildUpperFloor() {
 
   // Director.
   roomRug(7.94,6.20,-8.65,-4.97,p.forest);
-  soft(3.46,1.67,.62,-10.45,floor+.85,-7.78,p.walnut);
+  block(3.46,1.67,.11,-10.45,floor+.85,-8.05,p.walnut);
+  for(const x of [-12.11,-8.79])soft(.14,1.67,.62,x,floor+.85,-7.78,p.walnut);
+  for(const y of [.08,1.69])soft(3.46,.105,.64,-10.45,floor+y,-7.78,p.walnut);
   for (const y of [.32,.82,1.32]) {
     block(3.18,.09,.52,-10.45,floor+y,-7.78,p.oak);
     for(let i=0;i<8;i++) {
@@ -232,6 +234,10 @@ export function buildUpperFloor() {
   block(3.37,1.77,.112,10.72,floor+1.39,1.89,p.trim);
   block(3.19,1.57,.038,10.72,floor+1.39,1.959,mirror);
   block(.053,1.57,.05,10.72,floor+1.39,1.982,p.navy);
+  for(const x of [9.17,12.27]) {
+    block(.10,1.30,.12,x,floor+.65,1.83,p.metal);
+    block(.35,.065,.49,x,floor+.035,1.86,p.metal);
+  }
   const treadmill=assembly(10.32,4.45,Math.PI);
   soft(1.16,.18,2.57,0,.154,0,p.navy,treadmill);
   soft(.86,.042,2.03,0,.263,-.10,p.trim,treadmill);
@@ -273,16 +279,19 @@ export function buildUpperFloor() {
 }
 
 export function buildGarden() {
-  const {p,matte,drum,pot,sphere,part,block,soft,tube,assembly,shadow,planter,finish}=
+  const {p,matte,drum,pot,sphere,part,block,soft,tube,assembly,shadow,planter,boards,finish}=
     createDecor('Garden and terraces',-.55);
   const gravel=matte('#898677'), moss=matte('#60784f'), pale=matte('#a39b83');
   const water=new T.MeshStandardMaterial({color:'#579394',roughness:.30,metalness:.10});
   const deck=.67;
 
   // Continuous deck surfaces also serve the manual and social animation routes.
-  block(14.42,.20,4.82,0,deck-.10,10.99,p.walnut);
-  block(8,.18,5.6,0,deck-.09,16.2,p.walnut);
-  block(7.5,.18,5.6,7.75,deck-.09,16.2,p.walnut);
+  block(14.42,.20,4.82,0,deck-.115,10.99,p.walnut);
+  block(8,.18,5.6,0,deck-.105,16.2,p.walnut);
+  block(7.5,.18,5.6,7.75,deck-.105,16.2,p.walnut);
+  boards(-7.21,7.21,8.58,13.40,deck-.0135);
+  boards(-4,4,13.40,19,deck-.0135);
+  boards(4,11.50,13.40,19,deck-.0135);
   for(const [x,z] of [[-6.82,13.12],[6.82,13.12],[-3.72,18.7],[3.72,18.7],[4.25,18.7],[11.23,18.7],[11.23,13.67]]) {
     block(.27,1.13,.27,x,-.04,z,p.base);
   }
@@ -346,7 +355,7 @@ export function buildGarden() {
   for(const [x,z,s] of [[-14.42,12.14,1.37],[-12.89,12.80,.93],[-8.53,11.6,1.05],[-8.28,19.39,.94],[12.5,12.23,1.12],[20.41,11.95,1.37],[20.63,16.79,1.0]]) {
     planter(x,z,s,p.clay);
   }
-  for(const [x,z] of [[-6.59,9.32],[-4.95,9.32],[4.95,9.32],[6.59,9.32]]){
+  for(const [x,z] of [[-6.59,9.32],[-4.95,9.32],[4.95,9.32],[6.59,9.32],[-3.59,18.45],[11.10,18.53]]){
     part(pot,.56,.36,.56,x,deck+.18,z,p.clay);
     part(sphere,.59,.58,.61,x,deck+.51,z,p.leaf);
     part(sphere,.42,.37,.44,x-.17,deck+.65,z,p.leafLight);
