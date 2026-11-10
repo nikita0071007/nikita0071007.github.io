@@ -65,7 +65,7 @@ function soleVertices(model, floor, tolerance) {
   return samples;
 }
 
-export function prepareHuman(gltf) {
+export function prepareHuman(gltf, appearance = null) {
   const model = gltf.scene;
   const clips = new Map(gltf.animations.map(clip => [clip.name, clip]));
   const mixer = new T.AnimationMixer(model);
@@ -87,10 +87,10 @@ export function prepareHuman(gltf) {
   const bounds = new T.Box3().setFromObject(model, true);
   const height = bounds.max.y - bounds.min.y;
   if (!Number.isFinite(height) || height <= 0) throw new Error('Invalid model bounds');
-  const scale = 2.05 / height;
+  const scale = (appearance?.height || 2.05) / height;
   const soles = soleVertices(model, bounds.min.y, .15 / scale);
   if (!soles.length) throw new Error('Model has no skinned feet');
-  const face = createLizaFace(model);
+  const face = createLizaFace(model, appearance);
   const wrapper = new T.Group();
   wrapper.scale.setScalar(scale);
   model.position.y -= bounds.min.y;
@@ -145,6 +145,30 @@ export function prepareHuman(gltf) {
 
   return {
     object: wrapper,
+    seatHeight: appearance?.seatHeight || LIZA_CHAIR.seatHeight,
+    height: appearance?.height || 2.05,
+    enter(host) {
+      mixer.stopAllAction();
+      actions.Idle.reset().setEffectiveWeight(1).play();
+      phase = 'patrol';
+      mode = pose = 'Idle';
+      speed = 0;
+      smiling = false;
+      distance = perimeter - turn / 2;
+      face.reset();
+      face.setDetail(true);
+      this.update(0, host);
+    },
+    rest() {
+      mixer.stopAllAction();
+      actions.Idle.reset().setEffectiveWeight(1).play();
+      mixer.update(0);
+      wrapper.position.y = 0;
+      face.setDetail(false);
+    },
+    updateIdle(dt) {
+      mixer.update(dt);
+    },
     get phase() { return phase; },
     get mode() { return mode; },
     get smiling() { return smiling; },
@@ -228,16 +252,41 @@ export function prepareHuman(gltf) {
   };
 }
 
-export async function loadHuman() {
+export async function loadHuman(appearance = null, signal) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
+  const abort = () => controller.abort();
+  if (signal?.aborted) abort();
+  else signal?.addEventListener('abort', abort, {once: true});
   try {
-    const url = new URL('./assets/liza.glb?v=seating', import.meta.url);
+    const url = new URL(appearance?.model || './assets/liza.glb?v=seating', import.meta.url);
     const response = await fetch(url, {signal: controller.signal});
     if (!response.ok) throw new Error('Model download failed: ' + response.status);
     const gltf = await new GLTFLoader().parseAsync(await response.arrayBuffer(), '');
-    return prepareHuman(gltf);
+    return prepareHuman(gltf, appearance);
   } finally {
     clearTimeout(timeout);
+    signal?.removeEventListener('abort', abort);
   }
+}
+
+const residentLooks = {
+  "analyst": {"model": "./assets/crew/analyst.glb", "height": 2.06, "seatHeight": 0.287, "iris": "#544735", "hair": "#4a3029"},
+  "poster": {"model": "./assets/crew/poster.glb", "height": 2.02, "seatHeight": 0.276, "iris": "#665642", "hair": "#33251e"},
+  "guard": {"model": "./assets/crew/guard.glb", "height": 2.16, "seatHeight": 0.25, "iris": "#5e6653"},
+  "editor": {"model": "./assets/crew/editor.glb", "height": 2.03, "seatHeight": 0.277, "iris": "#536a73", "hair": "#4c3527"},
+  "video": {"model": "./assets/crew/video.glb", "height": 2.08, "seatHeight": 0.284, "iris": "#6a5b46", "hair": "#483025"},
+  "critic": {"model": "./assets/crew/critic.glb", "height": 2.05, "seatHeight": 0.243, "iris": "#596759", "hair": "#a19a8b"},
+  "archivist": {"model": "./assets/crew/archivist.glb", "height": 2.01, "seatHeight": 0.28, "iris": "#606e56", "hair": "#877363"},
+  "producer": {"model": "./assets/crew/producer.glb", "height": 2.1, "seatHeight": 0.261, "iris": "#68553b", "hair": "#332421"},
+  "orders": {"model": "./assets/crew/orders.glb", "height": 1.99, "seatHeight": 0.272, "iris": "#58735b", "hair": "#86493d"},
+  "resident-nikita": {"model": "./assets/crew/resident-nikita.glb", "height": 2.14, "seatHeight": 0.287, "iris": "#6b583f", "hair": "#463028"},
+  "resident-lena": {"model": "./assets/crew/resident-lena.glb", "height": 2, "seatHeight": 0.279, "iris": "#5b6b6c", "hair": "#795638"},
+  "resident-grandma": {"model": "./assets/crew/resident-grandma.glb", "height": 1.86, "seatHeight": 0.22, "iris": "#6d6850", "hair": "#c3b9ab"},
+};
+
+export function loadResident(id, signal) {
+  if (id === 'community') return loadHuman(null, signal);
+  if (!Object.hasOwn(residentLooks, id)) throw new Error('Unknown resident: ' + id);
+  return loadHuman(residentLooks[id], signal);
 }
