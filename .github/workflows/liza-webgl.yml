@@ -1,23 +1,15 @@
-name: Mountain cabinet design WebGL checks
+name: Mountain villa materials WebGL checks
 on:
   push:
     branches: [verify/liza-webgl]
 permissions:
-  contents: write
+  contents: read
 jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - id: icons
-        name: Verify both local icon files
-        run: |
-          mkdir -p life/assets/icons
-          for icon in life/assets/icons/*.jpg; do
-            test "$(file -b --mime-type "$icon")" = image/jpeg
-            test "$(wc -c < "$icon")" -lt 150000
-          done
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -25,61 +17,18 @@ jobs:
         run: |
           npm install --no-save --no-package-lock --no-audit --no-fund three@0.160.1 playwright@1.62.1
           npx playwright install --with-deps chromium
-      - id: browser
-        name: Exercise cabinet layouts, textures and camera controls
+      - name: Exercise surfaces, lighting, mobile quality and terrace
         run: |
           mkdir -p life-qa
           curl -fsSL --max-time 25 https://raw.githubusercontent.com/nikita0071007/office/main/status.json -o life-qa/status.json
           node --test tests/*.test.*
           node qa/check-rooms.mjs
-          node qa/cabinet-browser.cjs
+          node qa/check-rendering.mjs
+          node qa/realism-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mountain-cabinet-evidence
-          path: life-qa/cabinet-*.png
+          name: realistic-villa-evidence
+          path: life-qa/realism-*.png
           if-no-files-found: ignore
           retention-days: 14
-      - name: Save checked assets and screenshots in the verification branch
-        if: always() && steps.icons.outcome == 'success'
-        env:
-          CABINET_TEST_RESULT: ${{ steps.browser.outcome }}
-        run: |
-          mkdir -p qa/cabinet-evidence
-          printf '{"run_id":%s,"checked_revision":"%s","result":"%s"}\n' "$GITHUB_RUN_ID" "$GITHUB_SHA" "$CABINET_TEST_RESULT" > qa/cabinet-evidence/run.json
-          for view in yuri icons director; do
-            if test -s "life-qa/cabinet-$view.png"; then
-              cp "life-qa/cabinet-$view.png" qa/cabinet-evidence/
-            fi
-          done
-          git add life/assets/icons/pantocrator.jpg life/assets/icons/volokolamskaya.jpg qa/cabinet-evidence
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Save verified icon copies and cabinet screenshots'
-          git push origin HEAD:refs/heads/verify/liza-webgl
-      - name: Confirm the published cabinet files on gusevmade.ru
-        if: steps.browser.outcome == 'success'
-        timeout-minutes: 6
-        run: |
-          temp="$(mktemp)"
-          verify_release() {
-            for item in 'mountain.html?office=editorial' 'office-interior.js?v=cabinets' 'villa-rooms.js?v=cabinets' 'yuri-cabinet.js?v=1' 'assets/icons/pantocrator.jpg' 'assets/icons/volokolamskaya.jpg'; do
-              if ! curl -fsSL --max-time 6 -H 'Cache-Control: no-cache' "https://gusevmade.ru/life/$item" -o "$temp"; then
-                return 1
-              fi
-              if ! cmp -s "$temp" "life/${item%%\?*}"; then
-                return 1
-              fi
-            done
-          }
-          outcome=waiting
-          for attempt in $(seq 1 39); do
-            if verify_release; then
-              outcome=success
-              break
-            fi
-            sleep 5
-          done
-          printf '{"run_id":%s,"checked_revision":"%s","result":"%s"}\n' "$GITHUB_RUN_ID" "$GITHUB_SHA" "$outcome" > qa/cabinet-evidence/published.json
-          git add qa/cabinet-evidence/published.json
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Record live cabinet deployment check'
-          git push origin HEAD:refs/heads/verify/liza-webgl
-          test "$outcome" = success

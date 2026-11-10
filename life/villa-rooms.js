@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {createDecor} from './villa-decor.js?v=1';
+import {createDecor} from './villa-decor.js?v=surfaces';
 
 export const UPPER_FLOOR = 6.53;
 export const UPPER_HOMES = {
@@ -23,13 +23,13 @@ export const GARDEN_ZONE = {
   text:'Террасы, дорожки с фонарями, скамейки и пруд.'
 };
 
-export function buildUpperFloor() {
+export function buildUpperFloor(surfaces) {
   const {p,matte,drum,pot,shade,sphere,part,block,soft,tube,assembly,
-    shadow,planter,officeChair,boards,finish} = createDecor('Upper rooms',UPPER_FLOOR);
+    shadow,planter,officeChair,boards,finish} = createDecor('Upper rooms',UPPER_FLOOR,surfaces);
   const floor=UPPER_FLOOR;
-  const lilac=matte('#796882'), rose=matte('#ad8584'), rubber=matte('#4a6263');
+  const lilac=matte('#796882','linen'), rose=matte('#ad8584','linen'), rubber=matte('#4a6263');
   const mirror=new T.MeshStandardMaterial({color:'#8fa9ae',roughness:.28,metalness:.22});
-  const linen=matte('#c8bcad');
+  const linen=matte('#c8bcad','linen');
 
   function strut(a,b,width,material,parent) {
     const start=new T.Vector3(...a), end=new T.Vector3(...b);
@@ -59,6 +59,7 @@ export function buildUpperFloor() {
     for (let i=0;i<3;i++)block(width*.38-i*.08,.026,.016,x-width*.13,1.39-i*.11,z+.064,p.data,parent);
   }
   function chair(x,z,angle,color) {
+    shadow(1.34,1.27,x,z,floor+.058);
     const set=assembly(x,z,angle);
     soft(1.10,.23,.99,0,.325,0,color,set);
     soft(1.1,.65,.24,0,.68,-.42,color,set);
@@ -111,7 +112,7 @@ export function buildUpperFloor() {
   planter(11.73,.35,.88,p.cream);
 
   // Director's office.
-  const leather=matte('#314650'),brass=matte('#bc9559');
+  const leather=matte('#314650',null,{roughness:.49}),brass=matte('#bc9559',null,{metalness:.43,roughness:.36});
   roomRug(7.94,6.20,-8.65,-4.97,p.forest);
   block(7.93,2.49,.085,-8.69,floor+1.245,-8.264,p.teal);
   for(let i=0;i<9;i++)block(.069,2.44,.066,-6.40+i*.178,floor+1.249,-8.173,p.oak);
@@ -234,6 +235,7 @@ export function buildUpperFloor() {
     picture(x,floor+1.087,1.827,w,h,color);
   }
   const bed=assembly(-8.53,4.25);
+  shadow(2.52,3.69,-8.53,4.25,floor+.029);
   soft(2.28,.34,3.42,0,.275,0,p.walnut,bed);
   soft(2.22,.24,3.24,0,.553,0,p.cream,bed);
   soft(2.13,.125,2.12,0,.721,.46,lilac,bed);
@@ -291,6 +293,7 @@ export function buildUpperFloor() {
     block(.35,.065,.49,x,floor+.035,1.86,p.metal);
   }
   const treadmill=assembly(10.32,4.45,Math.PI);
+  shadow(1.46,2.86,10.32,4.45,floor+.034);
   soft(1.16,.18,2.57,0,.154,0,p.navy,treadmill);
   soft(.86,.042,2.03,0,.263,-.10,p.trim,treadmill);
   for (const x of [-.50,.50]) {
@@ -330,11 +333,11 @@ export function buildUpperFloor() {
   return finish();
 }
 
-export function buildGarden() {
+export function buildGarden(surfaces) {
   const {p,matte,drum,pot,sphere,part,block,soft,tube,assembly,shadow,planter,boards,finish}=
-    createDecor('Garden and terraces',-.55);
-  const gravel=matte('#898677'), moss=matte('#60784f'), pale=matte('#a39b83');
-  const water=new T.MeshStandardMaterial({color:'#579394',roughness:.30,metalness:.10});
+    createDecor('Garden and terraces',-.55,surfaces);
+  const gravel=matte('#898677','stone'), moss=matte('#60784f'), pale=matte('#a39b83','stone');
+  const water=surfaces?.water() ?? new T.MeshStandardMaterial({color:'#579394',roughness:.30,metalness:.10});
   const deck=.67;
 
   // Continuous deck surfaces also serve the manual and social animation routes.
