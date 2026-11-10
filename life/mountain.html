@@ -16,9 +16,22 @@
 #officeTabs button{white-space:nowrap;font-size:12px;min-height:34px;padding:7px 9px}
 #officeTabs button[aria-pressed="true"]{background:#735b40;color:#fff7e5;border-color:#f0bd7a}
 body.office-view #info,body.office-view #toast{display:none}
+body.office-view header{display:block;padding:8px 12px}
+body.office-view #toolbar{margin:6px 0 0;flex-wrap:nowrap;overflow:auto;scrollbar-width:thin}
+body.office-view #toolbar>*{flex:none;white-space:nowrap;font-size:13px;padding:7px 9px}
 @media(max-width:750px){
+  body.office-view header{padding:8px}
+  body.office-view #toolbar>*{font-size:12px}
   #officePanel{bottom:max(8px,env(safe-area-inset-bottom));width:calc(100vw - 16px);padding:9px 10px}
   #officePanel p{font-size:12px}
+  #officeTabs{flex-wrap:wrap;gap:4px}
+  #officeTabs button{font-size:11px;padding:7px 6px}
+}
+@media(max-height:520px){
+  body.office-view header>div:first-child,#officeNote{display:none}
+  body.office-view #toolbar{margin:0}
+  #officePanel{bottom:6px;padding:7px 10px}
+  #officePanelHead{margin-bottom:4px}
 }
 body.human-view #toast,body.human-portrait #info,body.life-view #toast,body.life-view #info{display:none}
 body.human-portrait #names{visibility:hidden}

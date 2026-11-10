@@ -298,6 +298,8 @@ async function officeTest(browser,base,errors){
   assert.equal((await officeState(mobile)).zone,'meeting');
   await mobile.getByRole('button',{name:'Обзор',exact:true}).tap();
   await checkOfficeBounds(mobile);
+  const tabWidth=await mobile.locator('#officeTabs').evaluate(tabs=>[tabs.clientWidth,tabs.scrollWidth]);
+  assert.ok(tabWidth[1]<=tabWidth[0]+1,JSON.stringify(tabWidth));
   await mobile.screenshot({path:path.join(out,'office-mobile.png')});
   await mobile.getByRole('button',{name:'Отдых',exact:true}).tap();
   assert.equal((await officeState(mobile)).zone,'lounge');
@@ -306,6 +308,7 @@ async function officeTest(browser,base,errors){
   await mobile.setViewportSize({width:844,height:390});
   await mobile.waitForTimeout(350);
   await checkOfficeBounds(mobile);
+  await mobile.screenshot({path:path.join(out,'office-landscape.png')});
   const economy=await report(mobile);
   assert.equal(economy.quality,.65);
   assert.equal(economy.loaded,0);
