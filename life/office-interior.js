@@ -1,35 +1,39 @@
 import * as T from 'three';
-import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {createDecor} from './villa-decor.js?v=1';
 
 export const OFFICE_FLOOR = .78;
 export const OFFICE_FOV = 34;
 export const OFFICE_DESKS = {
   analyst: [-10.85, -5.65],
-  poster: [-8.25, -5.65],
+  orders: [-8.25, -5.65],
   editor: [-5.65, -5.65],
   video: [-3.05, -5.65],
-  guard: [-10.85, -1.2],
+  archivist: [-10.85, -1.2],
   community: [-8.25, -1.2],
-  producer: [-5.65, -1.2],
-  orders: [-3.05, -1.2],
-  critic: [-8.25, 3.65],
-  archivist: [-5.65, 3.65]
+  poster: [-5.65, -1.2],
+  producer: [-3.05, -1.2],
+  guard: [-8.64, 3.86],
+  critic: [-5.28, 3.86]
 };
 
 export const OFFICE_ZONES = {
-  overview: {center: [0, 1.45, -.04], size: [26.7, 3.6, 17.65], text: 'Первый этаж. Выбери зону, чтобы рассмотреть её.'},
-  work: {center: [-7.3, 1.45, -.45], size: [11.3, 3.2, 15.35], text: 'Десять рабочих мест и тихий кабинет у окна.'},
-  meeting: {center: [7.9, 1.86, -4.92], size: [9.1, 3.1, 6.8], text: 'Стеклянная переговорная с большим столом и экраном.'},
-  kitchen: {center: [9.15, 1.62, 4.05], size: [7.25, 2.95, 8.0], text: 'Кухня с кофейной станцией, островом и барными стульями.'},
-  lounge: {center: [1.55, 1.5, 4.65], size: [7.55, 2.2, 6.3], text: 'Гостиная с диваном, креслом и тёплым торшером.'}
+  overview: {label:'Обзор', center:[0,1.45,-.04], size:[26.7,3.6,17.65], text:'Первый этаж. Выбери зону, чтобы рассмотреть её.'},
+  work: {label:'Работа', center:[-7.34,1.45,-3.20], size:[11.4,3.2,9.95], text:'Общая рабочая зона. Макс и Олег сидят рядом в секторе контента.'},
+  security: {label:'Охрана', center:[-8.65,1.37,5.08], size:[3.02,2.05,5.45], text:'Пост Славика с экранами наблюдения и рацией.'},
+  editorial: {label:'Редактор', center:[-5.32,1.4,5.12], size:[3.69,2.6,5.53], text:'Кабинет Юрия с рабочим столом и полкой для книг.'},
+  meeting: {label:'Переговорная', center:[7.9,1.86,-4.92], size:[9.1,3.1,6.8], text:'Стеклянная переговорная с большим столом и экраном.'},
+  kitchen: {label:'Кухня', center:[9.15,1.62,4.05], size:[7.25,2.95,8.0], text:'Общий стол на шесть человек и отдельная кофейная станция.'},
+  lounge: {label:'Отдых', center:[1.55,1.5,4.65], size:[7.55,2.2,6.3], text:'Гостиная с диваном, креслом и тёплым торшером.'}
 };
+
+export const KITCHEN_SEATS = [7.37,10.08].flatMap((x,side) =>
+  [3.46,4.68,5.90].map(z => ({x,z,heading:side ? -Math.PI/2 : Math.PI/2})));
 
 const diagonal = new T.Vector3(.60, 1.04, 1).normalize();
 const screenRight = new T.Vector3(0, 1, 0).cross(diagonal).normalize();
 const screenUp = new T.Vector3().crossVectors(diagonal, screenRight);
 
-export function officeFrame(zone, width, height, top, bottom) {
-  const {center, size} = OFFICE_ZONES[zone];
+export function roomFrame({center, size}, width, height, top, bottom) {
   const horizontal = Math.tan(T.MathUtils.degToRad(OFFICE_FOV / 2)) * width / height * .94;
   const vertical = Math.tan(T.MathUtils.degToRad(OFFICE_FOV / 2)) *
     Math.max(.24, (height - top - bottom) / height) * .9;
@@ -47,113 +51,25 @@ export function officeFrame(zone, width, height, top, bottom) {
 }
 
 export function buildOffice() {
-  const office = new T.Group();
-  office.name = 'Office interior';
-  const layout = new T.Group();
-  const cube = new T.BoxGeometry(1, 1, 1);
-  const round = new RoundedBoxGeometry(1, 1, 1, 2, .105);
-  const drum = new T.CylinderGeometry(.5, .5, 1, 14);
-  const pot = new T.CylinderGeometry(.5, .36, 1, 12);
-  const shade = new T.CylinderGeometry(.33, .5, 1, 14);
-  const sphere = new T.SphereGeometry(.5, 10, 8);
-  const disc = new T.CircleGeometry(.5, 20);
-  const matte = color => new T.MeshStandardMaterial({color, roughness: .89});
-  const p = {
-    base: matte('#263339'),
-    trim: matte('#45342d'),
-    walnut: matte('#76513a'),
-    oak: matte('#b47f52'),
-    cream: matte('#e6d5bb'),
-    wall: matte('#d2b69a'),
-    forest: matte('#52726a'),
-    jade: matte('#527a6b'),
-    teal: matte('#315c62'),
-    navy: matte('#283b48'),
-    metal: matte('#343b3b'),
-    clay: matte('#ba714e'),
-    amber: matte('#d9994d'),
-    canvas: matte('#e4bb89'),
-    mint: matte('#a8c2a2'),
-    leaf: matte('#628556'),
-    leafLight: matte('#8da66a'),
-    ceramic: matte('#eee5d7'),
-    white: matte('#f3e0b6'),
-    screen: new T.MeshStandardMaterial({color: '#254856', emissive: '#254856', emissiveIntensity: .3}),
-    data: new T.MeshBasicMaterial({color: '#84b5ae'}),
-    lamp: new T.MeshStandardMaterial({color: '#ffe2aa', emissive: '#e6a65a', emissiveIntensity: .65}),
-    glass: new T.MeshStandardMaterial({color: '#a8d2c8', transparent: true, opacity: .115,
-      roughness: .24, depthWrite: false, side: T.DoubleSide}),
-    shadow: new T.MeshBasicMaterial({color: '#2b221c', transparent: true, opacity: .16, depthWrite: false})
-  };
-  const planks = ['#bc8c64', '#c59770', '#c09269', '#ba8860', '#c69a72'].map(matte);
-
-  function part(geometry, w, h, d, x, y, z, material, parent = layout) {
-    const mesh = new T.Mesh(geometry, material);
-    mesh.scale.set(w, h, d);
-    mesh.position.set(x, y, z);
-    parent.add(mesh);
-    return mesh;
-  }
-  const block = (...args) => part(cube, ...args);
-  const soft = (...args) => part(round, ...args);
-  const tube = (diameter, h, x, y, z, material, parent) => part(drum, diameter, h, diameter, x, y, z, material, parent);
-  function assembly(x, z, heading = 0) {
-    const group = new T.Group();
-    group.position.set(x, OFFICE_FLOOR, z);
-    group.rotation.y = heading;
-    layout.add(group);
-    return group;
-  }
-  function shadow(w, d, x, z, y = OFFICE_FLOOR) {
-    part(disc, w, d, 1, x, y + .012, z, p.shadow).rotation.x = -Math.PI / 2;
-  }
-  function planter(x, z, size = 1, material = p.clay) {
-    const plant = assembly(x, z);
-    plant.scale.setScalar(size);
-    part(pot, .66, .52, .66, 0, .26, 0, material, plant);
-    tube(.58, .03, 0, .52, 0, p.trim, plant);
-    tube(.10, .79, 0, .85, 0, p.walnut, plant);
-    for (const [dx, dy, dz, w] of [[-.24,.95,0,.66],[.2,1.12,.13,.67],[.03,1.39,-.07,.71],[.05,.95,-.21,.58]]) {
-      part(sphere, w, w * .8, w, dx, dy, dz, dy > 1.3 ? p.leafLight : p.leaf, plant);
-    }
-  }
-  function officeChair(x, z, heading, color) {
-    const seat = assembly(x, z, heading);
-    soft(.84, .17, .77, 0, .42, 0, color, seat);
-    soft(.83, .61, .15, 0, .77, -.32, color, seat);
-    tube(.12, .35, 0, .24, 0, p.metal, seat);
-    tube(.53, .08, 0, .06, 0, p.metal, seat);
-    for (const dx of [-.41,.41]) {
-      soft(.085, .10, .51, dx, .62, .01, p.trim, seat);
-      block(.064, .19, .064, dx, .53, -.16, p.trim, seat);
-    }
-  }
-
+  const {root:office,p,cube,drum,shade,sphere,part,block,soft,tube,assembly,shadow,
+    planter,officeChair,boards,finish} = createDecor('Office interior', OFFICE_FLOOR);
   // Oak boards sit over the dark edge of the cutaway.
   soft(26.65, .33, 17.62, 0, .47, -.02, p.base);
   block(26.25, .19, 17.26, 0, .66, 0, p.walnut);
-  for (let row = 0; row < 33; row++) {
-    const z = -8.32 + row * .52;
-    let x = -13.02;
-    let board = 0;
-    while (x < 13.01) {
-      const length = Math.min(13.02 - x, board ? 2.85 + ((row + board) % 4) * .37 : 1.0 + (row % 5) * .54);
-      block(Math.max(.006, length - .018), .027, .502, x + length / 2, .765, z, planks[(row * 7 + board) % planks.length]);
-      x += length;
-      board++;
-    }
-  }
+  boards(-13.02, 13.02, -8.58, 8.58, .765);
   block(25.92, 2.62, .16, 0, 2.08, -8.38, p.wall);
   block(.16, 1.32, 16.76, -12.90, 1.43, 0, p.wall);
   block(26, .1, .21, 0, 3.43, -8.38, p.walnut);
   block(.21, .10, 16.80, -12.90, 2.13, 0, p.walnut);
   block(25.7, .14, .2, 0, .89, -8.24, p.trim);
 
-  // Shared workroom and a quieter pair of desks next to the window.
+  // Shared workroom and the two small rooms beside the stair.
   soft(11.2, .033, 8.35, -7.34, .789, -3.23, p.forest);
-  soft(6.72, .033, 4.82, -6.7, .789, 4.91, p.canvas);
+  soft(2.86, .033, 4.94, -8.61, .789, 5.09, p.jade);
+  soft(3.42, .033, 4.94, -5.23, .789, 5.09, p.canvas);
+  soft(4.85, .025, 2.96, -4.37, .816, -.68, p.teal);
   const workSeats = [p.teal, p.jade, p.navy, p.teal];
-  Object.values(OFFICE_DESKS).forEach(([x, z], i) => {
+  Object.entries(OFFICE_DESKS).forEach(([id,[x,z]], i) => {
     const desk = assembly(x, z);
     shadow(2.14, 1.13, x, z, .804);
     soft(2.11, .135, 1.11, 0, .78, 0, p.oak, desk);
@@ -173,6 +89,13 @@ export function buildOffice() {
     soft(.30, .036, .34, .64, .868, .15, i % 2 ? p.canvas : p.clay, desk);
     tube(.128, .15, .71, .93, -.30, p.ceramic, desk);
     officeChair(x, z + 1.10, Math.PI, workSeats[i % workSeats.length]);
+    if (id === 'guard') {
+      block(.65,.37,.076,.61,1.15,-.30,p.navy,desk);
+      block(.56,.285,.014,.61,1.15,-.253,p.screen,desk);
+      for(const dx of [.48,.73])for(const dy of [1.08,1.22])block(.20,.10,.018,dx,dy,-.241,p.data,desk);
+      soft(.13,.23,.11,-.78,.97,.24,p.metal,desk);
+      tube(.028,.18,-.81,1.158,.24,p.metal,desk);
+    }
   });
   soft(4.1, .9, .60, -9.35, 1.23, -7.78, p.walnut);
   for (const x of [-10.98,-10.16,-9.34,-8.52,-7.7]) {
@@ -189,10 +112,12 @@ export function buildOffice() {
   block(.17, .07, 4.04, -3.32, 2.30, 5.55, p.walnut);
   block(.13, 1.39, 4.86, -10.04, 1.475, 4.97, p.cream);
   block(.18, .07, 4.92, -10.04, 2.205, 4.97, p.walnut);
-  soft(3.20, .74, .48, -6.95, 1.16, 2.78, p.walnut);
-  for (const x of [-8.06,-7.32,-6.58,-5.84]) {
-    soft(.66,.54,.034,x,1.16,2.99,p.oak);
-    block(.14,.035,.07,x,1.36,3.035,p.trim);
+  block(.13,1.45,3.64,-7.08,1.51,5.96,p.wall);
+  block(.18,.07,3.69,-7.08,2.267,5.96,p.walnut);
+  soft(2.28,.82,.47,-5.42,1.21,2.72,p.walnut);
+  for(let i=0;i<10;i++){
+    const h=.24+(i%3)*.065;
+    block(.126,h,.24,-6.40+i*.203,1.62+h/2,2.71,[p.teal,p.clay,p.cream,p.navy][i%4]);
   }
   planter(-1.97, -7.25, .94, p.teal);
   planter(-11.85, -7.18, .90, p.cream);
@@ -242,7 +167,7 @@ export function buildOffice() {
   soft(3.94, .065, .18, 8.68, 3.225, -8.04, p.lamp);
   planter(11.75, -7.44, .84, p.cream);
 
-  // Coffee kitchen with tiled floor, oak worktop and a low breakfast island.
+  // Coffee kitchen with a clear aisle between the counter and dining table.
   soft(6.94, .036, 7.65, 9.14, .792, 4.04, p.clay);
   for (let i = 0; i <= 7; i++) block(6.72,.008,.026,9.14,.813,.64 + i * .97,p.canvas);
   for (let i = 0; i <= 6; i++) block(.026,.008,6.79,5.78 + i * 1.12,.813,4.04,p.canvas);
@@ -279,17 +204,22 @@ export function buildOffice() {
   soft(3.6,.12,.88,9.65,2.56,.78,p.walnut);
   soft(3.38,.039,.085,9.65,2.48,1.15,p.lamp);
   for (const x of [8.2,8.52,8.84,10.4,10.75,11.10]) tube(.18,.24,x,2.74,.8,p.cream);
-  soft(1.29, .81, 3.16, 8.83, 1.24, 4.72, p.teal);
-  soft(1.62, .13, 3.28, 8.72, 1.703, 4.72, p.oak);
-  for (const z of [4.05,5.47]) {
-    shadow(.84,.84,7.34,z,.812);
-    tube(.49,.09,7.34,.865,z,p.trim);
-    tube(.10,.52,7.34,1.13,z,p.metal);
-    tube(.64,.12,7.34,1.438,z,p.canvas);
+  shadow(1.71,3.81,8.72,4.68,.815);
+  soft(1.58,.12,3.63,8.72,1.48,4.68,p.oak);
+  for (const z of [3.44,5.92]) {
+    soft(.29,.6,.24,8.72,1.12,z,p.trim);
+    soft(.87,.074,.34,8.72,.853,z,p.teal);
   }
-  part(drum,.49,.041,.49,8.71,1.794,4.68,p.cream);
+  for (const {x,z,heading} of KITCHEN_SEATS) {
+    const seat=assembly(x,z,heading);
+    soft(.74,.087,.64,0,.259,0,p.canvas,seat);
+    soft(.73,.374,.113,0,.444,-.265,p.teal,seat);
+    for(const dx of [-.29,.29])for(const dz of [-.23,.23])block(.07,.24,.07,dx,.138,dz,p.trim,seat);
+    tube(.245,.021,x<8?8.18:9.26,1.552,z,p.ceramic);
+  }
+  part(drum,.49,.041,.49,8.72,1.575,4.68,p.cream);
   for (const [x,z] of [[8.58,4.68],[8.83,4.75],[8.73,4.56]]) {
-    part(sphere,.15,.16,.15,x,1.883,z,p.amber);
+    part(sphere,.15,.16,.15,x,1.675,z,p.amber);
   }
   planter(10.62,7.26,.74,p.cream);
 
@@ -334,21 +264,5 @@ export function buildOffice() {
   planter(-1.64,6.95,.94,p.cream);
   planter(4.71,7.14,.85,p.cream);
 
-  // Batch static detail by geometry and finish. Glass panes stay independent for sorting.
-  layout.updateMatrixWorld(true);
-  const batches = new Map();
-  layout.traverse(mesh => {
-    if (!mesh.isMesh) return;
-    const key = mesh.geometry.id + ':' + mesh.material.id;
-    if (!batches.has(key)) batches.set(key,{geometry:mesh.geometry,material:mesh.material,matrices:[]});
-    batches.get(key).matrices.push(mesh.matrixWorld);
-  });
-  for (const {geometry,material,matrices} of batches.values()) {
-    const mesh = new T.InstancedMesh(geometry,material,matrices.length);
-    matrices.forEach((matrix,i)=>mesh.setMatrixAt(i,matrix));
-    mesh.instanceMatrix.needsUpdate = true;
-    mesh.computeBoundingSphere();
-    office.add(mesh);
-  }
-  return office;
+  return finish();
 }

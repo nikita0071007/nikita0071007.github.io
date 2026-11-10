@@ -28,18 +28,33 @@ globalThis.lifeQA = (details = false) => {
 };`;
 const officeDebug = `globalThis.officeQA=(detailed=false)=>{
   const office=scene.getObjectByName('Office interior');
+  const subject=roomMode==='upstairs'?upperInterior:roomMode==='garden'?grounds.getObjectByName('Garden and terraces'):office;
   const project=point=>{
     const projected=point.project(camera);
     return [(projected.x+1)*innerWidth/2,(1-projected.y)*innerHeight/2];
   };
-  const state={zone:officeZone,draws:renderer.info.render.calls,
+  const state={zone:roomZone,mode:roomMode,draws:renderer.info.render.calls,
     models:models.size,fov:camera.fov,camera:camera.position.toArray(),target:controls.target.toArray(),
-    background:scene.background.getHex(),groups:[upperLevel,facade,grounds,stairs].map(group=>group.visible),
-    workers:people.filter(person=>person.visible&&!person.userData.upper).length,
-    upper:people.filter(person=>person.visible&&person.userData.upper).length,
-    parts:office.children.filter(mesh=>mesh.isInstancedMesh).reduce((sum,mesh)=>sum+mesh.count,0)};
+    background:scene.background.getHex(),fog:!!scene.fog,groups:[upperLevel,facade,grounds,stairs].map(group=>group.visible),
+    interiors:[officeInterior.visible,upperInterior.visible],
+    workers:people.filter(person=>person.visible&&person.position.y<5.8).length,
+    upper:people.filter(person=>person.visible&&person.position.y>=5.8).length,
+    occupants:people.filter(person=>person.visible).map(person=>person.userData.id),
+    parts:subject.children.filter(mesh=>mesh.isInstancedMesh).reduce((sum,mesh)=>sum+mesh.count,0)};
   if(detailed){
-    const bounds=new T.Box3().setFromObject(office);
+    const bounds=new T.Box3().setFromObject(subject);
+    state.seats=[];
+    const mat=new T.Matrix4(),position=new T.Vector3();
+    for(const mesh of office.children){
+      if(!mesh.isInstancedMesh)continue;
+      for(let i=0;i<mesh.count;i++){
+        mesh.getMatrixAt(i,mat);
+        position.setFromMatrixPosition(mat);
+        if(Math.abs(position.y-1.039)<.0001&&position.x>7&&position.x<10.6&&position.z>3&&position.z<6){
+          state.seats.push([position.x,position.z]);
+        }
+      }
+    }
     state.corners=[];
     for(const x of [bounds.min.x,bounds.max.x])for(const y of [bounds.min.y,bounds.max.y])for(const z of [bounds.min.z,bounds.max.z]){
       state.corners.push(project(new T.Vector3(x,y,z)));
@@ -77,7 +92,7 @@ async function configure(page,errors){
   });
   await page.route('https://raw.githubusercontent.com/nikita0071007/office/main/status.json*',route=>
     route.fulfill({path:path.join(out,'status.json'),contentType:'application/json'}));
-  await page.route(url=>['/life/human-character.js','/life/liza-face.js','/life/house-life.js','/life/office-interior.js'].includes(url.pathname)&&!url.search,
+  await page.route(url=>['/life/human-character.js','/life/liza-face.js','/life/house-life.js','/life/office-interior.js','/life/villa-decor.js','/life/villa-rooms.js'].includes(url.pathname)&&!url.search,
     route=>route.fulfill({status:409,body:'Unversioned module'}));
 }
 async function mobileTest(browser,base,errors){
@@ -242,19 +257,19 @@ async function officeTest(browser,base,errors){
   const overview=await officeState(desktop);
   assert.equal(overview.zone,'overview');
   assert.deepEqual(overview.groups,[false,false,false,false]);
-  assert.equal(overview.workers,10);
+  assert.equal(overview.workers,9);
   assert.equal(overview.upper,0);
   assert.equal(overview.fov,34);
   assert.ok(overview.parts>700&&overview.draws<250,JSON.stringify(overview));
   await desktop.screenshot({path:path.join(out,'office-overview.png')});
-  for(const name of ['work','meeting','kitchen','lounge']){
+  for(const name of ['work','security','editorial','meeting','kitchen','lounge']){
     const tab=desktop.locator('[data-office-zone="'+name+'"]');
     await tab.click();
     assert.equal(await tab.getAttribute('aria-pressed'),'true');
     const state=await officeState(desktop);
     assert.equal(state.zone,name);
     assert.notDeepEqual(state.target,overview.target);
-    if(name==='kitchen'||name==='meeting')await desktop.screenshot({path:path.join(out,'office-'+name+'.png')});
+    if(['security','editorial','kitchen','meeting'].includes(name))await desktop.screenshot({path:path.join(out,'office-'+name+'.png')});
   }
   const beforeNight=await officeState(desktop);
   await desktop.locator('#night').click();
@@ -321,12 +336,86 @@ async function officeTest(browser,base,errors){
   console.log('Office mobile: portrait and landscape framing, taps, economy mode and mobile 2D canvas passed');
 }
 
+async function villaTest(browser,base,errors){
+  const url=base+'/life/mountain.html';
+  const desktop=await browser.newPage({viewport:{width:1360,height:900},deviceScaleFactor:1});
+  await configure(desktop,errors);
+  await desktop.addInitScript(()=>{
+    localStorage.setItem('gusevmade-mountain-quality','normal');
+    localStorage.setItem('gusevmade-house-meetings-v1',JSON.stringify({version:1,running:false,pairs:{},journal:[]}));
+  });
+  await desktop.goto(url+'?upstairs=1');
+  await desktop.locator('#officePanel').waitFor();
+  await desktop.waitForFunction(()=>officeQA().models===13,null,{timeout:35000});
+  await checkOfficeBounds(desktop);
+  const upstairs=await officeState(desktop);
+  assert.equal(upstairs.mode,'upstairs');
+  assert.equal(upstairs.zone,'overview');
+  assert.deepEqual(upstairs.groups,[false,false,false,false]);
+  assert.deepEqual(upstairs.interiors,[false,true]);
+  assert.deepEqual(upstairs.occupants.sort(),['resident-grandma','resident-lena','resident-nikita','video']);
+  assert.ok(upstairs.draws>35&&upstairs.draws<220,JSON.stringify(upstairs));
+  await desktop.screenshot({path:path.join(out,'villa-upstairs.png')});
+  for(const zone of ['director','therapy','studio','grandma','gym']){
+    const tab=desktop.locator('[data-office-zone="'+zone+'"]');
+    await tab.click();
+    assert.equal((await officeState(desktop)).zone,zone);
+    assert.equal(await tab.getAttribute('aria-pressed'),'true');
+    assert.notDeepEqual((await officeState(desktop)).target,upstairs.target);
+    await desktop.screenshot({path:path.join(out,'villa-'+zone+'.png')});
+  }
+  await desktop.locator('#ground').click();
+  await desktop.locator('[data-office-zone=kitchen]').click();
+  const kitchen=await officeState(desktop,true);
+  assert.deepEqual(kitchen.interiors,[true,false]);
+  assert.equal(kitchen.seats.length,6);
+  assert.equal(new Set(kitchen.seats.map(point=>point.join(','))).size,6);
+  await desktop.screenshot({path:path.join(out,'villa-kitchen.png')});
+  await desktop.locator('#garden').click();
+  await checkOfficeBounds(desktop);
+  const garden=await officeState(desktop);
+  assert.equal(garden.mode,'garden');
+  assert.deepEqual(garden.groups,[true,true,true,true]);
+  assert.deepEqual(garden.interiors,[true,true]);
+  await desktop.screenshot({path:path.join(out,'villa-garden.png')});
+  await desktop.locator('#officeClose').click();
+  assert.equal((await officeState(desktop)).mode,null);
+  assert.equal(await desktop.locator('#garden').evaluate(element=>element===document.activeElement),true);
+  await desktop.close();
+  console.log('Villa desktop: upper residents, five separate room views, six real kitchen chairs, garden and house passed');
+
+  const phone=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+  await configure(phone,errors);
+  await phone.addInitScript(()=>localStorage.setItem('gusevmade-mountain-quality','economy'));
+  await phone.goto(url+'?upstairs=gym');
+  await phone.locator('#officePanel').waitFor();
+  assert.equal((await officeState(phone)).zone,'gym');
+  await phone.screenshot({path:path.join(out,'villa-gym-mobile.png')});
+  await phone.getByRole('button',{name:'Обзор',exact:true}).tap();
+  await checkOfficeBounds(phone);
+  await phone.locator('#garden').tap();
+  await checkOfficeBounds(phone);
+  assert.equal((await officeState(phone)).fog,false);
+  await phone.locator('#upper').tap();
+  await phone.setViewportSize({width:844,height:390});
+  await phone.waitForTimeout(350);
+  await checkOfficeBounds(phone);
+  await phone.screenshot({path:path.join(out,'villa-upstairs-landscape.png')});
+  await phone.locator('#lifeFocus').tap();
+  await phone.locator('#lifePanel').waitFor();
+  assert.equal((await officeState(phone)).mode,null);
+  assert.deepEqual((await officeState(phone)).interiors,[true,true]);
+  await phone.close();
+  console.log('Villa mobile: gym deep link, both orientations and return to the social terrace passed');
+}
+
 async function run(){
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const base='http://127.0.0.1:'+server.address().port;
   const browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader','--disable-dev-shm-usage']});
   try{
     const errors=[];
+    await villaTest(browser,base,errors);
     await officeTest(browser,base,errors);
     await mobileTest(browser,base,errors);
     await desktopTest(browser,base,errors);
