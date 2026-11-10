@@ -187,6 +187,13 @@ export function buildOffice() {
   }
   block(.12, 1.49, 4.02, -3.32, 1.52, 5.55, p.cream);
   block(.17, .07, 4.04, -3.32, 2.30, 5.55, p.walnut);
+  block(.13, 1.39, 4.86, -10.04, 1.475, 4.97, p.cream);
+  block(.18, .07, 4.92, -10.04, 2.205, 4.97, p.walnut);
+  soft(3.20, .74, .48, -6.95, 1.16, 2.78, p.walnut);
+  for (const x of [-8.06,-7.32,-6.58,-5.84]) {
+    soft(.66,.54,.034,x,1.16,2.99,p.oak);
+    block(.14,.035,.07,x,1.36,3.035,p.trim);
+  }
   planter(-1.97, -7.25, .94, p.teal);
   planter(-11.85, -7.18, .90, p.cream);
   planter(-4.05, 7.65, .78, p.clay);
