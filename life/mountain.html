@@ -6,13 +6,14 @@
 #humanActions button{font-size:12px;min-height:40px}
 #humanActions button[aria-pressed="true"]{background:#80633c}
 #humanPanel button:disabled{opacity:.5;cursor:wait}
-#ground,#lifeFocus,#humanFocus,#roster{order:-1}
+#ground,#upper,#garden,#lifeFocus,#humanFocus,#roster{order:-1}
 #officePanel{position:absolute;z-index:6;bottom:12px;left:50%;transform:translateX(-50%);width:min(630px,calc(100vw - 24px));padding:11px 12px;background:#182933f5;border:1px solid #a78966;border-radius:13px;box-shadow:0 8px 26px #0005}
 #officePanel p{font-size:13px;margin:5px 0 8px;color:#dce5e5}
 #officeTitle{color:#ffe0a6;font-size:16px}
 #officePanelHead{display:flex;align-items:center;justify-content:space-between;gap:8px}
 #officeClose{padding:5px 10px}
 #officeTabs{display:flex;gap:5px;overflow:auto;scrollbar-width:thin;padding-bottom:2px}
+#officeTabs[hidden]{display:none}
 #officeTabs button{white-space:nowrap;font-size:12px;min-height:34px;padding:7px 9px}
 #officeTabs button[aria-pressed="true"]{background:#735b40;color:#fff7e5;border-color:#f0bd7a}
 body.office-view #info,body.office-view #toast{display:none}
@@ -46,7 +47,7 @@ body.human-portrait #names{visibility:hidden}
 }
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script></head><body>
-<div id="world"></div><div id="names"><span id="lifeBubble" class="life-bubble" aria-hidden="true" hidden></span></div><header><div><h1>🏔️ Gusevmade Life · Дом агентов</h1><small>Двухэтажная вилла в горах · интерактивный 3D</small></div><div id="toolbar"><button id="ground" aria-controls="officePanel" aria-expanded="false">🏢 Офис</button><button id="lifeFocus" aria-controls="lifePanel" aria-expanded="false">☕ Жизнь дома</button><button id="humanFocus" aria-controls="humanPanel" aria-expanded="false">👤 Лиза 3D</button><button id="front">🏡 Весь дом</button><button id="upper">🛋️ Второй этаж</button><button id="night">🌙 Вечер / день</button><button id="labels">🏷️ Имена</button><button id="roster" aria-controls="rosterPanel">👥 Жители 3D</button><button id="refresh">🔄 Статусы</button><button id="quality">⚡ Качество: авто</button><button id="metrics">📊 FPS</button><a class="btn" href="./mobile.html">📱 2D</a><a class="btn" href="./index.html?3d=1">⚙️ Старый 3D</a></div></header>
+<div id="world"></div><div id="names"><span id="lifeBubble" class="life-bubble" aria-hidden="true" hidden></span></div><header><div><h1>🏔️ Gusevmade Life · Дом агентов</h1><small>Двухэтажная вилла в горах · интерактивный 3D</small></div><div id="toolbar"><button id="ground" aria-controls="officePanel" aria-expanded="false">🏢 Офис</button><button id="upper" aria-controls="officePanel" aria-label="Второй этаж" aria-expanded="false">🛋️ 2 этаж</button><button id="garden" aria-controls="officePanel" aria-expanded="false">🌿 Сад</button><button id="lifeFocus" aria-controls="lifePanel" aria-expanded="false">☕ Жизнь дома</button><button id="humanFocus" aria-controls="humanPanel" aria-expanded="false">👤 Лиза 3D</button><button id="front">🏡 Весь дом</button><button id="night">🌙 Вечер / день</button><button id="labels">🏷️ Имена</button><button id="roster" aria-controls="rosterPanel">👥 Жители 3D</button><button id="refresh">🔄 Статусы</button><button id="quality">⚡ Качество: авто</button><button id="metrics">📊 FPS</button><a class="btn" href="./mobile.html">📱 2D</a><a class="btn" href="./index.html?3d=1">⚙️ Старый 3D</a></div></header>
 <section id="info"><h2 id="who">🏡 Дом агентов в горах</h2><p id="detail">Поверните дом пальцем или мышью. Приблизьте двумя пальцами. Нажмите на персонажа, чтобы узнать его роль.</p><p id="status">⏳ Проверяем статусы реальных агентов…</p><p style="color:#b9c8d0">Движения персонажей — игровая симуляция. Команды на сервер и публикации не отправляются.</p></section><div id="metricsPanel" hidden style="position:absolute;left:12px;top:112px;z-index:6;background:#101e2bef;border:1px solid #aa906c;border-radius:10px;padding:12px;font-size:12px;max-width:min(340px,calc(100vw - 24px))"><b>📊 Производительность 3D</b><div id="metricsText" style="line-height:1.65;margin-top:7px">Замер FPS…</div><p style="color:#b9c8d0;margin-bottom:0">FPS — измерение только на этом устройстве. Данные о памяти браузер может не предоставлять.</p></div><div id="rosterPanel" hidden style="position:absolute;right:10px;top:110px;z-index:6;max-height:60vh;overflow:auto;width:min(350px,calc(100vw - 20px));background:#101e2bee;border:1px solid #aa906c;border-radius:12px;padding:12px"><h2 style="margin:0 0 8px;font-size:17px">📋 Кто живёт в доме</h2><p id="crewStatus" style="margin:4px 0 8px;font-size:12px;color:#bfd1dd"></p><div id="rosterContent"></div><button id="closeRoster">Закрыть</button></div><div id="toast">🌄 Панорамные горы · тёплый свет · стеклянные фасады</div><div id="fallback"><h2>3D не запустился на этом устройстве</h2><p>Откройте <a href="./mobile.html">мобильный офис</a> — он продолжает работать.</p></div>
 <aside id="humanPanel" hidden aria-labelledby="humanName"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b id="humanName">Лиза · Комментарии</b><button id="closeHuman" aria-label="Закрыть панель персонажа">✕</button></div><p id="humanStatus" role="status">Подготавливаем 3D-модель…</p><div id="humanActions"><button data-human-state="Idle" disabled aria-pressed="true">🧍 Стоять</button><button data-human-state="Walk" disabled aria-pressed="false">🚶 Ходить</button><button data-human-state="Run" disabled aria-pressed="false">🏃 Бежать</button><button data-human-state="Sit" disabled aria-pressed="false">🪑 Сесть</button><button data-human-state="Victory" disabled aria-pressed="false">🙌 Радость</button><button id="humanSmile" disabled aria-pressed="false">😊 Улыбка</button><button id="retryHuman" hidden>Повторить загрузку</button></div></aside>
 <aside id="lifePanel" hidden aria-labelledby="lifeHeading">
@@ -56,26 +57,23 @@ body.human-portrait #names{visibility:hidden}
   <details><summary>Журнал встреч</summary><p id="lifeSave"></p><ol id="lifeJournal"></ol></details>
 </aside>
 <aside id="officePanel" hidden aria-labelledby="officeTitle">
-  <div id="officePanelHead"><b id="officeTitle">🏢 Офис · Первый этаж</b><button id="officeClose" aria-label="Закрыть вид офиса">✕</button></div>
+  <div id="officePanelHead"><b id="officeTitle">🏢 Офис · Первый этаж</b><button id="officeClose" aria-label="Закрыть планировку">✕</button></div>
   <p id="officeNote" aria-live="polite"></p>
-  <nav id="officeTabs" aria-label="Зоны офиса">
-    <button data-office-zone="overview" aria-pressed="true">Обзор</button>
-    <button data-office-zone="work" aria-pressed="false">Работа</button>
-    <button data-office-zone="meeting" aria-pressed="false">Переговорная</button>
-    <button data-office-zone="kitchen" aria-pressed="false">Кухня</button>
-    <button data-office-zone="lounge" aria-pressed="false">Отдых</button>
-  </nav>
+  <nav id="officeTabs" aria-label="Зоны офиса"></nav>
 </aside>
 <script type="module">
 import * as T from 'three';import{OrbitControls}from'three/addons/controls/OrbitControls.js';
 import {createHouseHistory,createTerraceMeetings,MEETING_AREA} from './house-life.js?v=1';
-import {buildOffice,officeFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=1';
+import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=rooms';
+import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=1';
 const root=document.getElementById('world'),nameRoot=document.getElementById('names'),info=document.getElementById('info');let renderer,scene,camera,controls;
 try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.shadowMap.enabled=false;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
 scene=new T.Scene();scene.background=new T.Color('#758895');
 const houseFog=new T.Fog('#758895',65,145);scene.fog=houseFog;
 const upperLevel=new T.Group(),facade=new T.Group(),grounds=new T.Group(),stairs=new T.Group();
-scene.add(upperLevel,facade,grounds,stairs,buildOffice());
+const officeInterior=buildOffice(),upperInterior=buildUpperFloor();
+scene.add(upperLevel,facade,grounds,stairs,officeInterior,upperInterior);
+grounds.add(buildGarden());
 camera=new T.PerspectiveCamera(46,innerWidth/innerHeight,.1,230);camera.position.set(28,20,33);controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,4,0);controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=13;controls.maxDistance=85;controls.minPolarAngle=.12;controls.enablePan=true;controls.update();
 const hemi=new T.HemisphereLight('#d5e8ff','#3e3430',2.0);scene.add(hemi);const sun=new T.DirectionalLight('#ffca8a',2.3);sun.position.set(-20,35,14);scene.add(sun);
 const mat=(c,r=1,m=0)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m});const wood=mat('#745039'),floorMat=mat('#a77a52'),stone=mat('#4d5050'),metal=mat('#252b2b',.5,.6),glass=new T.MeshStandardMaterial({color:'#9dd3dd',transparent:true,opacity:.18,roughness:.13,metalness:.15,side:T.DoubleSide,depthWrite:false}),warm=mat('#ffcf85'),dark=mat('#17242a'),plant=mat('#375e41'),leaf=mat('#4b704d');
@@ -85,98 +83,80 @@ function cylinder(rt,rb,h,x,y,z,m,parent=scene){const o=new T.Mesh(new T.Cylinde
 const rng=(seed=>()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296})(251);
 box(180,.3,180,0,-.7,0,mat('#385044'),grounds);
 box(28,1.2,19,0,-.1,0,stone,grounds);
-box(26,.32,17,0,6.35,0,floorMat,upperLevel);
-const roof=box(27,.45,18,0,12.35,0,dark,upperLevel);
+box(27,.45,18,0,12.35,0,dark,upperLevel);
 for(const y of [3.5,9.3]){
-  const storey=y>6?upperLevel:facade;
-  for(const x of [-12.7,0,12.7]){
-    box(.17,5.6,.19,x,y,8.35,metal,storey);
-    box(.17,5.6,.19,x,y,-8.35,metal,storey);
-  }
+  const upper=y>6,storey=upper?upperLevel:facade;
   for(const z of [-8.35,8.35]){
     box(25.4,.13,.16,0,y+2.72,z,metal,storey);
-    box(25.4,.13,.16,0,y-2.72,z,metal,storey);
-    box(25.3,5.3,.045,0,y,z,glass,storey);
+    if(z<0){
+      box(25.4,.13,.16,0,y-2.72,z,metal,storey);
+      box(25.3,5.3,.045,0,y,z,glass,storey);
+      for(const x of [-12.7,0,12.7])box(.17,5.6,.19,x,y,z,metal,storey);
+    }else{
+      const entry=upper?7.28:0;
+      const left=entry-1.14,right=entry+1.14;
+      for(const [a,b] of [[-12.65,left],[right,12.65]]){
+        box(b-a,5.3,.045,(a+b)/2,y,z,glass,storey);
+        box(b-a,.13,.16,(a+b)/2,y-2.72,z,metal,storey);
+      }
+      for(const x of [-12.7,left,right,12.7])box(.15,5.6,.18,x,y,z,metal,storey);
+      if(upper)box(.15,5.6,.18,0,y,z,metal,storey);
+      box(2.27,2.74,.045,entry,y+1.28,z,glass,storey);
+      box(2.33,.116,.18,entry,y-.118,z,metal,storey);
+    }
   }
   for(const x of [-12.8,12.8])box(.045,5.3,16.7,x,y,0,glass,storey);
 }
-for(const x of [-8.5,-3,3,8.5])box(.12,5.2,10,x,9.35,-2.6,mat('#79583c'),upperLevel);
-for(const z of [-3.7,2.5])box(25,.1,.14,0,6.25,z,metal,upperLevel);
-for(let i=0;i<6;i++){
-  const x=-10+i*4.0;
-  box(2.1,.12,1.2,x,7.5,-5.6,wood,upperLevel);
-  box(1,.72,.08,x,8,-5.9,dark,upperLevel);
-  box(.8,.12,.6,x,7.15,-4.6,mat('#506168'),upperLevel);
-}
-box(7,.45,2.7,-6,7.15,3.6,mat('#486269'),upperLevel);
-box(1.7,.35,1.8,-6,6.7,5.6,wood,upperLevel);
-box(5.2,2.7,.25,5,8.4,2.4,mat('#8b674b'),upperLevel);
-box(3.6,.25,1.5,5,7.4,5,wood,upperLevel);
 for(let i=0;i<12;i++){
   const z=7.63-i*.43,y=.9+i*.49;
   box(1.8,.18,.46,-11.66,y,z,wood,stairs);
   box(.07,.5,.07,-10.80,y+.25,z,metal,stairs);
 }
-for(const x of [-11,11]){
-  ball(.30,x,2.1,7.3,warm,facade);
-  ball(.30,x,8,7.3,warm,upperLevel);
-}
-for(let i=0;i<26;i++){const x=(rng()-.5)*30,z=(rng()-.5)*24;if(Math.abs(x)<12.5&&Math.abs(z)<9)continue;cylinder(.14,.23,1.5,x,.65,z,wood,grounds);ball(.7+rng()*.55,x,1.7,z,plant,grounds)}
+for(const x of [-1.49,1.49])ball(.19,x,2.69,8.46,warm,facade);
+for(let i=0;i<26;i++){const x=(rng()-.5)*30,z=(rng()-.5)*24;if((Math.abs(x)<12.5&&Math.abs(z)<9)||(x>-16&&x<21&&z>8.6))continue;cylinder(.14,.23,1.5,x,.65,z,wood,grounds);ball(.7+rng()*.55,x,1.7,z,plant,grounds)}
 for(let i=0;i<8;i++){const x=-10+i*2.8;box(1.3,.15,.65,x,12.65,-8.1,mat('#435b40'),upperLevel)}
 function mountain(cx,cz,r,h,c){const geo=new T.ConeGeometry(r,h,5,1);const mesh=new T.Mesh(geo,mat(c));mesh.position.set(cx,h/2-2,cz);mesh.rotation.y=rng()*6.28;grounds.add(mesh);const snow=new T.Mesh(new T.ConeGeometry(r*.24,h*.22,5),mat('#b7c0bd'));snow.position.set(cx,h-2-h*.1,cz);grounds.add(snow)}
 for(let i=0;i<35;i++){let a=i/35*Math.PI*1.4+Math.PI*.1,rad=60+rng()*30;mountain(Math.cos(a)*rad-12,-Math.sin(a)*rad-20,7+rng()*12,18+rng()*27,i%3===0?'#506271':'#66727a')}
-for(let i=0;i<90;i++){const a=rng()*Math.PI*2,r=22+rng()*48,x=Math.cos(a)*r,z=Math.sin(a)*r;if(z>19)continue;cylinder(.12,.2,1.4,x,.1,z,wood,grounds);ball(.65+rng()*.6,x,1.3,z,leaf,grounds)}
+for(let i=0;i<90;i++){const a=rng()*Math.PI*2,r=22+rng()*48,x=Math.cos(a)*r,z=Math.sin(a)*r;if(z>21||(x>-16&&x<21&&z>8.6))continue;cylinder(.12,.2,1.4,x,.1,z,wood,grounds);ball(.65+rng()*.6,x,1.3,z,leaf,grounds)}
 
-/* Дополнительное наполнение виллы: балкон, сад, мебель и свет. */
-const railing=mat('#b9c3c4',.35,.6),cushion=mat('#c7a98a'),rug=mat('#aa8c70'),water=mat('#4b9bad',.18,.25),snowmat=mat('#e0e6df'),lightGold=mat('#f7c17c'),redwood=mat('#754b37');
-function chair(x,y,z,angle=0){const g=new T.Group();g.position.set(x,y,z);g.rotation.y=angle;upperLevel.add(g);box(.85,.15,.8,0,.5,0,cushion,g);box(.85,.85,.13,0,.96,-.37,wood,g);for(const dx of [-.32,.32])for(const dz of [-.3,.3])box(.1,.55,.1,dx,.22,dz,metal,g)}
-function lamp(x,y,z){cylinder(.05,.08,1.45,x,y+.73,z,metal,upperLevel);ball(.25,x,y+1.48,z,lightGold,upperLevel)}
-function flowerpot(x,y,z,parent=upperLevel){cylinder(.38,.28,.55,x,y+.28,z,stone,parent);cylinder(.07,.09,.65,x,y+.86,z,plant,parent);for(let i=0;i<5;i++)ball(.25,x+Math.cos(i*1.26)*.25,y+1.2+Math.sin(i)*.1,z+Math.sin(i*1.26)*.25,leaf,parent)}
-// Балкон с безопасным ограждением
-box(11,.24,2.8,6.9,6.43,9.65,wood,upperLevel);
-for(let i=0;i<=10;i++)box(.07,1.1,.07,1.55+i*1.06,7.1,10.94,railing,upperLevel);
-box(10.7,.07,.07,6.9,7.67,10.94,railing,upperLevel);
-chair(4.5,6.65,9.4,Math.PI);chair(6,6.65,9.4,Math.PI);
-flowerpot(10.7,6.6,9.7);flowerpot(2.3,6.6,9.7);
-// Терраса, дорожка, пруд
-box(14,.16,5,0,.55,11.3,wood,grounds);
-for(let i=0;i<12;i++)box(2,.08,1.2,-1.1,.5,14+i*1.4,stone,grounds);
-const pond=cylinder(3.5,3.5,.14,17,-.4,12,water,grounds);pond.scale.z=.65;
-for(let i=0;i<9;i++){const a=i*2.4;ball(.4,17+Math.cos(a)*3.2,-.2,12+Math.sin(a)*2.2,stone,grounds)}
-for(let i=0;i<9;i++)flowerpot(-11+i*2.6,.55,11.1,grounds);
-// Гостиная: диваны, журнальный столик, ковёр
-box(5,.035,3,-5,6.55,4.5,rug,upperLevel);
-box(3.7,.42,1.2,-5.5,7.02,3.9,cushion,upperLevel);
-box(3.7,1.0,.24,-5.5,7.48,3.3,mat('#476373'),upperLevel);
-box(2.1,.22,1.1,-5.5,7.1,5.6,redwood,upperLevel);
-chair(-2.7,6.6,5.1,Math.PI/2);
-// Студия Анжелики: два экрана, микрофон, мягкий свет
-box(3,.12,1.3,8.7,7.4,-5.3,redwood,upperLevel);
-for(const dx of [-.7,.7]){box(1.12,.72,.09,8.7+dx,7.96,-5.6,dark,upperLevel);box(.96,.53,.02,8.7+dx,7.96,-5.53,mat('#315b78'),upperLevel)}
-cylinder(.045,.045,.85,10.25,7.85,-5.0,metal,upperLevel);ball(.13,10.25,8.3,-5,metal,upperLevel);
-chair(8.7,6.7,-3.9,Math.PI);
-lamp(11.5,6.7,-5.7);
-// Кабинет директора и переговорная
-box(3.7,.17,1.4,-8.5,7.55,-5.6,redwood,upperLevel);chair(-8.5,6.7,-4.1,Math.PI);
-box(3.2,.15,1.4,1.5,7.55,4.3,wood,upperLevel);
-for(let i=0;i<6;i++)chair(.3+(i%3)*1.2,6.7,3.2+Math.floor(i/3)*2.1,i<3?0:Math.PI);
-// Кабинет психолога и комната бабушки
-box(2.6,.3,1.4,3.8,6.85,-1.3,cushion,upperLevel);
-chair(2.3,6.65,-.1,.6);lamp(5.7,6.7,-1.1);
-box(2.9,.35,1.65,9.5,6.92,4.3,cushion,upperLevel);
-box(2.9,.8,.16,9.5,7.4,3.5,wood,upperLevel);flowerpot(11.2,6.65,4.2);
+const cushion=mat('#c7a98a'),lightGold=mat('#f7c17c');
 for(const x of [-11,-7,-3,3,7,11]){
   ball(.15,x,5.95,8.55,lightGold,facade);
   ball(.15,x,11.9,8.55,lightGold,upperLevel);
 }
 
-const defs=[['analyst','Вера','Аналитика',-10,-4],['poster','Макс','Контент',-6,-4],['guard','Славик','Охрана',-2,-4],['editor','Артём','Монтаж',2,-4],['video','Анжелика','YouTube',6,-4],['critic','Юрий','Редактор',10,-4],['community','Лиза','Комментарии',-6,1],['archivist','Михалыч','Архив',-2,1],['producer','Олег','Продюсер',2,1],['orders','Марина','Заказы',6,1],['resident-nikita','Никита','Директор',-7,3.4],['resident-lena','Лена','Психолог',2,3.4],['resident-grandma','Бабушка Марина','Отдыхает с питомцами',8,3.4]];
-const people=[],skin=[mat('#edbb94'),mat('#dca781'),mat('#b78264')],clothes=['#3b6e84','#9c6658','#566c53','#78629a','#b17b54','#4e668a','#5e8c80'];
-for(let i=0;i<defs.length;i++){const [id,name,role,homeX,homeZ]=defs[i],upper=id.startsWith('resident-');
-  const desk=OFFICE_DESKS[id];
-  const x=desk?desk[0]+.82:homeX,z=desk?desk[1]+2.01:homeZ,y=upper?6.65:OFFICE_FLOOR+.026;
-  const g=new T.Group();g.position.set(x,y,z);scene.add(g);const cloth=mat(clothes[i%clothes.length]);cylinder(.35,.29,1.05,0,.8,0,cloth,g);ball(.34,0,1.59,0,skin[i%3],g);const hair=ball(.36,0,1.82,-.045,mat(id==='resident-grandma'?'#c4c6c4':id==='video'||id==='resident-lena'?'#342b29':'#3d332c'),g);hair.scale.set(1,.55,1);for(let d of [-.22,.22]){cylinder(.11,.12,.65,d,upper ? .2 : .33,0,mat('#343f48'),g);cylinder(.1,.1,.65,d*.95,1.0,0,cloth,g)}const label=document.createElement('span');label.textContent=name;nameRoot.appendChild(label);g.userData={id,name,role,label,baseX:x,baseY:y,baseZ:z,phase:i*2.1,upper};people.push(g)}
-const pet1=ball(.25,8.8,6.85,4.2,mat('#bfa78d'),upperLevel),pet2=ball(.38,7.5,6.9,4.5,mat('#d0aa73'),upperLevel);
+const defs=[
+  ['analyst','Вера','Аналитика'],['poster','Макс','Контент'],['guard','Славик','Охрана'],
+  ['editor','Артём','Монтаж'],['video','Анжелика','YouTube'],['critic','Юрий','Редактор'],
+  ['community','Лиза','Комментарии'],['archivist','Михалыч','Архив'],['producer','Олег','Продюсер'],
+  ['orders','Марина','Заказы'],['resident-nikita','Никита','Директор'],
+  ['resident-lena','Лена','Психолог'],['resident-grandma','Бабушка Марина','Отдыхает с питомцами']
+];
+const people=[],skin=[mat('#edbb94'),mat('#dca781'),mat('#b78264')];
+const clothes=['#3b6e84','#9c6658','#566c53','#78629a','#b17b54','#4e668a','#5e8c80'];
+for(let i=0;i<defs.length;i++){
+  const [id,name,role]=defs[i];
+  const home=UPPER_HOMES[id],desk=OFFICE_DESKS[id];
+  const [x,z]=home||[desk[0]+.82,desk[1]+2.01];
+  const y=home?UPPER_FLOOR+.026:OFFICE_FLOOR+.026;
+  const g=new T.Group();
+  g.position.set(x,y,z);
+  scene.add(g);
+  const cloth=mat(clothes[i%clothes.length]);
+  cylinder(.35,.29,1.05,0,.8,0,cloth,g);
+  ball(.34,0,1.59,0,skin[i%3],g);
+  const hair=ball(.36,0,1.82,-.045,mat(id==='resident-grandma'?'#c4c6c4':id==='video'||id==='resident-lena'?'#342b29':'#3d332c'),g);
+  hair.scale.set(1,.55,1);
+  for(const d of [-.22,.22]){
+    cylinder(.11,.12,.65,d,.33,0,mat('#343f48'),g);
+    cylinder(.1,.1,.65,d*.95,1.0,0,cloth,g);
+  }
+  const label=document.createElement('span');
+  label.textContent=name;
+  nameRoot.appendChild(label);
+  g.userData={id,name,role,label,baseX:x,baseY:y,baseZ:z,phase:i*2.1};
+  people.push(g);
+}
 let human=null,activePerson=null,humanClock=null,followHuman=false,portrait=false;
 const liza=people.find(person=>person.userData.id==='community');
 const humanFocus=document.getElementById('humanFocus');
@@ -193,10 +173,14 @@ const models=new Map();
 const failedModels=new Set();
 let pendingModel=null,modelTimer=0,crewModule=null,patio=null;
 let idleCursor=0,humanPanelState='',returnFocus=humanFocus;
-const officeButton=document.getElementById('ground'),officePanel=document.getElementById('officePanel');
-const officeNote=document.getElementById('officeNote');
-const officeTabs=[...officePanel.querySelectorAll('[data-office-zone]')];
-let officeZone=null,officeLabels=false;
+const officePanel=document.getElementById('officePanel'),officeTitle=document.getElementById('officeTitle');
+const officeNote=document.getElementById('officeNote'),officeTabs=document.getElementById('officeTabs');
+const roomViews={
+  office:{button:document.getElementById('ground'),title:'🏢 Офис · Первый этаж',nav:'Зоны офиса',zones:OFFICE_ZONES},
+  upstairs:{button:document.getElementById('upper'),title:'🛋️ Второй этаж',nav:'Комнаты второго этажа',zones:UPPER_ZONES},
+  garden:{button:document.getElementById('garden'),title:'🌿 Сад и террасы',zones:{overview:GARDEN_ZONE}}
+};
+let roomMode=null,roomZone=null,roomLabels=false;
 const lifeFocus=document.getElementById('lifeFocus'),lifePanel=document.getElementById('lifePanel');
 const lifeNow=document.getElementById('lifeNow'),lifePause=document.getElementById('lifePause');
 const lifeJournal=document.getElementById('lifeJournal'),lifeSave=document.getElementById('lifeSave');
@@ -284,7 +268,7 @@ function closeHuman(){
   controls.minDistance=13;
 }
 function focusHuman(showPortrait=false){
-  closeOffice();
+  closeRoomView();
   closeLife();
   portrait=showPortrait&&!!human;
   humanPanel.hidden=false;
@@ -330,14 +314,11 @@ function terraceChair(x,z,floor,seatHeight,heading=0){
 function buildPatio(){
   const {PATROL,LIZA_CHAIR}=crewModule;
   const {x,z,seatHeight}=LIZA_CHAIR;
-  box(8,.18,5.6,0,PATROL.floor-.09,PATROL.centerZ,wood,grounds);
   return terraceChair(x,z,PATROL.floor,seatHeight);
 }
 
 function buildLivingArea(){
   const {x,z,floor,seats}=MEETING_AREA;
-  box(7.5,.18,5.6,x,floor-.09,z,wood,grounds);
-  for(const dx of [-3.4,3.4])for(const dz of [-2.45,2.45])box(.25,1.1,.25,x+dx,floor-.7,z+dz,stone,grounds);
   box(.93,.08,1.05,x,floor+.56,z,floorMat,grounds);
   for(const dz of [-.39,.39])box(.12,.53,.12,x,floor+.265,z+dz,metal,grounds);
   for(const dx of [-.24,.24])cylinder(.072,.055,.11,x+dx,floor+.655,z+.14,cushion,grounds);
@@ -408,7 +389,7 @@ function focusLife(){
   view(x+.4,3.65+lift,z+distance,x,1.15+lift,z);
 }
 function showLife(){
-  closeOffice();
+  closeRoomView();
   closeHuman();
   if(human)parkPerson(activePerson,human);
   activePerson=human=null;
@@ -546,12 +527,12 @@ renderer.domElement.addEventListener('pointerup',e=>{
   if(!pointerStart||Math.hypot(e.clientX-pointerStart[0],e.clientY-pointerStart[1])>8)return;
   pointer.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);
   ray.setFromCamera(pointer,camera);
-  const hits=ray.intersectObjects(officeZone?people.filter(isInOffice):people,true);
+  const hits=ray.intersectObjects(roomMode?people.filter(isInViewedArea):people,true);
   if(!hits.length)return;
   let hit=hits[0].object;
   while(hit.parent&&!hit.userData.id)hit=hit.parent;
   if(hit.userData.id){
-    returnFocus=officeZone?officeButton:document.getElementById('roster');
+    returnFocus=roomMode?roomViews[roomMode].button:document.getElementById('roster');
     selectPerson(hit.userData);
   }
 });
@@ -632,26 +613,34 @@ function view(x,y,z,tx=0,ty=4,tz=0){
 }
 let evening=true,showLabels=true;
 const labelsButton=document.getElementById('labels');
+function isCutaway(){
+  return roomMode==='office'||roomMode==='upstairs';
+}
 function applyLighting(){
-  const sky=evening?'#758895':'#a9d5ed';
-  scene.background.set(officeZone?(evening?'#293d48':'#78939a'):sky);
+  const cutaway=isCutaway(),sky=evening?'#758895':'#a9d5ed';
+  scene.background.set(cutaway?(evening?'#293d48':'#78939a'):sky);
   houseFog.color.set(sky);
-  scene.fog=officeZone?null:houseFog;
-  sun.intensity=officeZone?(evening?2.1:2.75):(evening?2.3:3.2);
+  scene.fog=roomMode?null:houseFog;
+  sun.intensity=cutaway?(evening?2.1:2.75):(evening?2.3:3.2);
   hemi.intensity=evening?2:2.6;
 }
 function applyLabels(){
-  const shown=officeZone?officeLabels:showLabels;
+  const shown=roomMode?roomLabels:showLabels;
   nameRoot.style.display=shown?'block':'none';
   labelsButton.setAttribute('aria-pressed',String(shown));
 }
-function isInOffice(person){
-  return !person.userData.upper&&Math.abs(person.position.x)<13.2&&Math.abs(person.position.z)<8.6;
+function isInViewedArea(person){
+  if(!isCutaway())return true;
+  const {x,y,z}=person.position,upper=y>5.8;
+  return upper===(roomMode==='upstairs')&&Math.abs(x)<13.24&&z>-8.66&&z<(upper?11.06:8.62);
 }
-function setOfficeView(open){
-  for(const group of [upperLevel,facade,grounds,stairs])group.visible=!open;
+function applyRoomView(){
+  const open=!!roomMode,cutaway=isCutaway();
+  for(const group of [upperLevel,facade,grounds,stairs])group.visible=!cutaway;
+  officeInterior.visible=roomMode!=='upstairs';
+  upperInterior.visible=roomMode!=='office';
   officePanel.hidden=!open;
-  officeButton.setAttribute('aria-expanded',String(open));
+  for(const [mode,{button}] of Object.entries(roomViews))button.setAttribute('aria-expanded',String(roomMode===mode));
   document.body.classList.toggle('office-view',open);
   controls.minDistance=open?4:13;
   controls.maxDistance=open?210:85;
@@ -660,46 +649,82 @@ function setOfficeView(open){
   applyLighting();
   applyLabels();
 }
-function focusOffice(){
+function focusRoom(){
   const header=document.querySelector('header');
   const top=header.getBoundingClientRect().bottom+6;
   const bottom=innerHeight-officePanel.getBoundingClientRect().top+6;
-  const {position,target}=officeFrame(officeZone,innerWidth,innerHeight,top,bottom);
+  const {position,target}=roomFrame(roomViews[roomMode].zones[roomZone],innerWidth,innerHeight,top,bottom);
   view(...position.toArray(),...target.toArray());
 }
-function closeOffice(){
-  if(!officeZone)return;
-  officeZone=null;
-  setOfficeView(false);
+function closeRoomView(){
+  if(!roomMode)return;
+  roomMode=roomZone=null;
+  applyRoomView();
 }
-function showOffice(zone='overview'){
-  if(!officeZone){
-    closeHuman();
-    closeLife();
-    if(human)parkPerson(activePerson,human);
-    activePerson=human=null;
+function showRoom(mode,zone='overview'){
+  const {title,nav,zones}=roomViews[mode];
+  if(mode!==roomMode){
+    if(!roomMode){
+      closeHuman();
+      closeLife();
+      if(human)parkPerson(activePerson,human);
+      activePerson=human=null;
+    }
+    roomMode=mode;
+    if(mode==='garden')livingArea??=buildLivingArea();
     document.getElementById('rosterPanel').hidden=true;
     document.getElementById('metricsPanel').hidden=true;
-    officeZone=zone;
-    setOfficeView(true);
+    officeTitle.textContent=title;
+    officeTabs.hidden=!nav;
+    if(nav)officeTabs.setAttribute('aria-label',nav);
+    officeTabs.replaceChildren(...Object.entries(zones).map(([key,{label}])=>{
+      const button=document.createElement('button');
+      button.dataset.officeZone=key;
+      button.textContent=label;
+      button.onclick=()=>showRoom(mode,key);
+      return button;
+    }));
+    applyRoomView();
     queueModels();
   }
-  officeZone=zone;
-  officeNote.textContent=OFFICE_ZONES[zone].text;
-  for(const button of officeTabs)button.setAttribute('aria-pressed',String(button.dataset.officeZone===zone));
-  focusOffice();
+  roomZone=zone;
+  officeNote.textContent=zones[zone].text;
+  for(const button of officeTabs.children)button.setAttribute('aria-pressed',String(button.dataset.officeZone===zone));
+  focusRoom();
 }
 function showHouse(){
-  closeHuman();closeLife();closeOffice();roof.visible=true;view(28,20,33);
+  closeHuman();closeLife();closeRoomView();view(28,20,33);
 }
-officeButton.onclick=()=>showOffice();
-for(const button of officeTabs)button.onclick=()=>showOffice(button.dataset.officeZone);
-document.getElementById('officeClose').onclick=()=>{showHouse();officeButton.focus()};
+for(const [mode,{button}] of Object.entries(roomViews))button.onclick=()=>showRoom(mode);
+document.getElementById('officeClose').onclick=()=>{
+  const opener=roomViews[roomMode].button;
+  showHouse();
+  opener.focus();
+};
 document.getElementById('front').onclick=showHouse;
-document.getElementById('upper').onclick=()=>{closeHuman();closeLife();closeOffice();roof.visible=false;view(18,16,23,0,9,0)};
 document.getElementById('night').onclick=()=>{evening=!evening;applyLighting()};
-labelsButton.onclick=()=>{if(officeZone)officeLabels=!officeLabels;else showLabels=!showLabels;applyLabels()};
+labelsButton.onclick=()=>{if(roomMode)roomLabels=!roomLabels;else showLabels=!showLabels;applyLabels()};
 applyLabels();
+function launchView(){
+  const params=new URLSearchParams(location.search);
+  const person=peopleById.get(params.get('resident'));
+  if(person||params.get('liza')==='1'){
+    selectPerson((person||liza).userData);
+    return;
+  }
+  if(params.get('life')==='1'){
+    showLife();
+    return;
+  }
+  for(const [mode,{zones}] of Object.entries(roomViews)){
+    const param=params.get(mode);
+    if(param==='1'||Object.hasOwn(zones,param)){
+      showRoom(mode,param==='1'?'overview':param);
+      return;
+    }
+  }
+  renderLife();
+}
 // Keep the user's choice separate from the temporary automatic render scale.
 const qualityModes=['авто','эконом','обычное'];
 const qualityValues=['auto','economy','normal'];
@@ -768,13 +793,7 @@ function samplePerformance(t){
   renderMetrics();
 }
 applyQuality();
-const launchParams=new URLSearchParams(location.search);
-const requested=peopleById.get(launchParams.get('resident'));
-const requestedOffice=launchParams.get('office');
-if(requested||launchParams.get('liza')==='1')selectPerson((requested||liza).userData);
-else if(launchParams.get('life')==='1')showLife();
-else if(requestedOffice==='1'||Object.hasOwn(OFFICE_ZONES,requestedOffice))showOffice(requestedOffice==='1'?'overview':requestedOffice);
-else renderLife();
+launchView();
 const labelTarget=new T.Vector3();
 function tick(t){
   requestAnimationFrame(tick);
@@ -806,7 +825,7 @@ function tick(t){
       p.rotation.y=Math.sin(t*.0004+d.phase)*.35;
     }
     const inMeeting=houseMeetings.has(p);
-    p.visible=!officeZone||isInOffice(p);
+    p.visible=isInViewedArea(p);
     if(!p.visible||(!lifePanel.hidden&&!inMeeting)){
       d.label.style.display='none';
       continue;
@@ -837,6 +856,6 @@ addEventListener('resize',()=>{
   camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();applyQuality();
   if(human&&portrait&&followHuman)focusHuman(true);
   if(!lifePanel.hidden)focusLife();
-  if(officeZone)focusOffice();
+  if(roomMode)focusRoom();
 });
 </script></body></html>
