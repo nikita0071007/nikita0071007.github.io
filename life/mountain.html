@@ -1,25 +1,37 @@
 <!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gusevmade Life — Дом в горах</title>
 <style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1b2a;color:#f9f1df;font-family:system-ui,-apple-system,sans-serif}#world{position:fixed;inset:0}canvas{display:block}header{position:absolute;z-index:5;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:linear-gradient(#0a1724ee,#0a1724a8);pointer-events:none}header>*{pointer-events:auto}h1{font-size:19px;margin:0;color:#ffe1a4}small{color:#d2e0e8}button,a.btn{border:1px solid #a58a62;background:#253a49df;color:#fff0d6;border-radius:9px;padding:10px 12px;font:inherit;cursor:pointer;text-decoration:none}button:hover,a.btn:hover{background:#496174}button:focus-visible{outline:3px solid #ffcf80}#toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}#info{position:absolute;bottom:12px;left:12px;max-width:min(390px,calc(100vw - 24px));background:#0a1826e8;border:1px solid #7b735e;border-radius:14px;padding:13px 15px;z-index:5;box-shadow:0 10px 30px #0007}#info h2{font-size:18px;margin:0 0 5px;color:#ffe0a6}#info p{font-size:13px;line-height:1.5;margin:5px 0}#status{color:#bdd4dd}#toast{position:absolute;right:12px;bottom:12px;padding:9px 12px;background:#142638db;border-radius:9px;font-size:12px;max-width:250px}#fallback{display:none;position:absolute;inset:0;background:#132436;z-index:7;place-content:center;text-align:center;padding:20px}#fallback a{color:#ffdda3}#names{position:absolute;inset:0;pointer-events:none;overflow:hidden}#names span{position:absolute;transform:translate(-50%,-100%);font-size:11px;background:#152431c9;color:#fff0d3;border:1px solid #bda47799;border-radius:8px;padding:3px 6px;white-space:nowrap}#names span.dim{opacity:.55}@media(max-width:750px){header{padding:8px;gap:5px}h1{font-size:16px}#toolbar{width:100%;margin:0;overflow:auto;flex-wrap:nowrap}button,a.btn{padding:8px 10px;font-size:12px;white-space:nowrap}#info{bottom:8px;left:8px;max-width:calc(100vw - 16px);padding:9px 11px}#info p{font-size:12px}#toast{display:none}}
-#humanPanel{position:absolute;right:12px;bottom:12px;z-index:6;width:min(370px,calc(100vw - 24px));max-height:48vh;overflow:auto;background:#101e2bf5;border:1px solid #aa906c;border-radius:14px;padding:12px;box-shadow:0 8px 24px #0006}
-#humanPanel p{font-size:13px;line-height:1.4;margin:6px 0 9px}
+#humanPanel,#lifePanel{position:absolute;right:12px;bottom:12px;z-index:6;width:min(370px,calc(100vw - 24px));max-height:48vh;overflow:auto;background:#101e2bf5;border:1px solid #aa906c;border-radius:14px;padding:12px;box-shadow:0 8px 24px #0006}
+#humanPanel p,#lifePanel p{font-size:13px;line-height:1.4;margin:6px 0 9px}
 #humanActions{display:flex;flex-wrap:wrap;gap:5px}
 #humanActions button{font-size:12px;min-height:40px}
 #humanActions button[aria-pressed="true"]{background:#80633c}
 #humanPanel button:disabled{opacity:.5;cursor:wait}
-#humanFocus,#roster{order:-1}
-body.human-view #toast,body.human-portrait #info{display:none}
+#lifeFocus,#humanFocus,#roster{order:-1}
+body.human-view #toast,body.human-portrait #info,body.life-view #toast,body.life-view #info{display:none}
 body.human-portrait #names{visibility:hidden}
+#lifePanel details{margin-top:9px;font-size:13px}
+#lifePanel summary{cursor:pointer;padding:4px 0;color:#ffdda3}
+#lifeJournal{padding-left:20px;margin:5px 0 0;line-height:1.55}
+#lifeSave{color:#c2d5df}
+#names .life-bubble{z-index:1;width:max-content;max-width:min(214px,calc(100vw - 24px));white-space:normal;font-size:13px;line-height:1.35;padding:7px 9px;background:#fff3d9;color:#2d251b;border-color:#ad8c60;box-shadow:0 3px 10px #0006}
 @media(max-width:750px){
-  #humanPanel{bottom:max(8px,env(safe-area-inset-bottom));right:8px;width:calc(100vw - 16px);max-height:38dvh}
+  #humanPanel,#lifePanel{bottom:max(8px,env(safe-area-inset-bottom));right:8px;width:calc(100vw - 16px);max-height:38dvh}
   body.human-view #info{display:none}
 }
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script></head><body>
-<div id="world"></div><div id="names"></div><header><div><h1>🏔️ Gusevmade Life · Дом агентов</h1><small>Двухэтажная вилла в горах · интерактивный 3D</small></div><div id="toolbar"><button id="humanFocus" aria-controls="humanPanel" aria-expanded="false">👤 Лиза 3D</button><button id="front">🏡 Весь дом</button><button id="ground">💻 Рабочий этаж</button><button id="upper">🛋️ Второй этаж</button><button id="night">🌙 Вечер / день</button><button id="labels">🏷️ Имена</button><button id="roster" aria-controls="rosterPanel">👥 Жители 3D</button><button id="refresh">🔄 Статусы</button><button id="quality">⚡ Качество: авто</button><button id="metrics">📊 FPS</button><a class="btn" href="./mobile.html">📱 2D</a><a class="btn" href="./index.html?3d=1">⚙️ Старый 3D</a></div></header>
+<div id="world"></div><div id="names"><span id="lifeBubble" class="life-bubble" aria-hidden="true" hidden></span></div><header><div><h1>🏔️ Gusevmade Life · Дом агентов</h1><small>Двухэтажная вилла в горах · интерактивный 3D</small></div><div id="toolbar"><button id="lifeFocus" aria-controls="lifePanel" aria-expanded="false">☕ Жизнь дома</button><button id="humanFocus" aria-controls="humanPanel" aria-expanded="false">👤 Лиза 3D</button><button id="front">🏡 Весь дом</button><button id="ground">💻 Рабочий этаж</button><button id="upper">🛋️ Второй этаж</button><button id="night">🌙 Вечер / день</button><button id="labels">🏷️ Имена</button><button id="roster" aria-controls="rosterPanel">👥 Жители 3D</button><button id="refresh">🔄 Статусы</button><button id="quality">⚡ Качество: авто</button><button id="metrics">📊 FPS</button><a class="btn" href="./mobile.html">📱 2D</a><a class="btn" href="./index.html?3d=1">⚙️ Старый 3D</a></div></header>
 <section id="info"><h2 id="who">🏡 Дом агентов в горах</h2><p id="detail">Поверните дом пальцем или мышью. Приблизьте двумя пальцами. Нажмите на персонажа, чтобы узнать его роль.</p><p id="status">⏳ Проверяем статусы реальных агентов…</p><p style="color:#b9c8d0">Движения персонажей — игровая симуляция. Команды на сервер и публикации не отправляются.</p></section><div id="metricsPanel" hidden style="position:absolute;left:12px;top:112px;z-index:6;background:#101e2bef;border:1px solid #aa906c;border-radius:10px;padding:12px;font-size:12px;max-width:min(340px,calc(100vw - 24px))"><b>📊 Производительность 3D</b><div id="metricsText" style="line-height:1.65;margin-top:7px">Замер FPS…</div><p style="color:#b9c8d0;margin-bottom:0">FPS — измерение только на этом устройстве. Данные о памяти браузер может не предоставлять.</p></div><div id="rosterPanel" hidden style="position:absolute;right:10px;top:110px;z-index:6;max-height:60vh;overflow:auto;width:min(350px,calc(100vw - 20px));background:#101e2bee;border:1px solid #aa906c;border-radius:12px;padding:12px"><h2 style="margin:0 0 8px;font-size:17px">📋 Кто живёт в доме</h2><p id="crewStatus" style="margin:4px 0 8px;font-size:12px;color:#bfd1dd"></p><div id="rosterContent"></div><button id="closeRoster">Закрыть</button></div><div id="toast">🌄 Панорамные горы · тёплый свет · стеклянные фасады</div><div id="fallback"><h2>3D не запустился на этом устройстве</h2><p>Откройте <a href="./mobile.html">мобильный офис</a> — он продолжает работать.</p></div>
 <aside id="humanPanel" hidden aria-labelledby="humanName"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b id="humanName">Лиза · Комментарии</b><button id="closeHuman" aria-label="Закрыть панель персонажа">✕</button></div><p id="humanStatus" role="status">Подготавливаем 3D-модель…</p><div id="humanActions"><button data-human-state="Idle" disabled aria-pressed="true">🧍 Стоять</button><button data-human-state="Walk" disabled aria-pressed="false">🚶 Ходить</button><button data-human-state="Run" disabled aria-pressed="false">🏃 Бежать</button><button data-human-state="Sit" disabled aria-pressed="false">🪑 Сесть</button><button data-human-state="Victory" disabled aria-pressed="false">🙌 Радость</button><button id="humanSmile" disabled aria-pressed="false">😊 Улыбка</button><button id="retryHuman" hidden>Повторить загрузку</button></div></aside>
+<aside id="lifePanel" hidden aria-labelledby="lifeHeading">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b id="lifeHeading">☕ Жизнь дома</b><button id="closeLife" aria-label="Закрыть панель жизни дома">✕</button></div>
+  <p id="lifeNow" role="status"></p>
+  <button id="lifePause">⏸ Пауза</button>
+  <details><summary>Журнал встреч</summary><p id="lifeSave"></p><ol id="lifeJournal"></ol></details>
+</aside>
 <script type="module">
 import * as T from 'three';import{OrbitControls}from'three/addons/controls/OrbitControls.js';
+import {createHouseHistory,createTerraceMeetings,MEETING_AREA} from './house-life.js?v=1';
 const root=document.getElementById('world'),nameRoot=document.getElementById('names'),info=document.getElementById('info');let renderer,scene,camera,controls;
 try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.shadowMap.enabled=false;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
 scene=new T.Scene();scene.background=new T.Color('#758895');scene.fog=new T.Fog('#758895',65,145);
@@ -108,6 +120,32 @@ const models=new Map();
 const failedModels=new Set();
 let pendingModel=null,modelTimer=0,crewModule=null,patio=null;
 let idleCursor=0,humanPanelState='',returnFocus=humanFocus;
+const lifeFocus=document.getElementById('lifeFocus'),lifePanel=document.getElementById('lifePanel');
+const lifeNow=document.getElementById('lifeNow'),lifePause=document.getElementById('lifePause');
+const lifeJournal=document.getElementById('lifeJournal'),lifeSave=document.getElementById('lifeSave');
+const lifeBubble=document.getElementById('lifeBubble'),bubbleTarget=new T.Vector3();
+const peopleById=new Map(people.map(person=>[person.userData.id,person]));
+const meetingLoadOrder=[liza,...people.filter(person=>person!==liza)];
+let lifeStorage,livingArea,shownJournal;
+try{lifeStorage=localStorage}catch{}
+const houseHistory=createHouseHistory(peopleById.keys(),lifeStorage);
+const meetingStatus={arriving:'идут к столу',turning:'подходят к стульям',sitting:'садятся',talking:'разговаривают',rising:'встают',leaving:'уходят с террасы'};
+const houseMeetings=createTerraceMeetings({
+  history:houseHistory,
+  available:()=>[...models].filter(([person])=>person!==activePerson).map(([person,avatar])=>({person,avatar})),
+  onEnter:({person,avatar,side})=>{
+    livingArea??=buildLivingArea();
+    const {chair,shadow}=livingArea[side];
+    chair.scale.y=avatar.seatHeight/.265;
+    person.add(shadow);
+    avatar.startScene();
+  },
+  onLeave:({person,avatar,side})=>{
+    person.remove(livingArea[side].shadow);
+    parkPerson(person,avatar);
+  },
+  onChange:renderLife
+});
 const phaseMessages={
   'to-chair':'идёт к стулу…',
   sitting:'садится…',
@@ -169,6 +207,7 @@ function closeHuman(){
   controls.minDistance=13;
 }
 function focusHuman(showPortrait=false){
+  closeLife();
   portrait=showPortrait&&!!human;
   humanPanel.hidden=false;
   humanFocus.setAttribute('aria-expanded',String(activePerson===liza));
@@ -189,12 +228,10 @@ function focusHuman(showPortrait=false){
   followHuman=true;
 }
 
-function buildPatio(){
-  const {PATROL,LIZA_CHAIR}=crewModule;
-  const {x,z,seatHeight}=LIZA_CHAIR;
-  box(8,.18,5.6,0,PATROL.floor-.09,PATROL.centerZ,wood);
+function terraceChair(x,z,floor,seatHeight,heading=0){
   const chair=new T.Group();
-  chair.position.set(x,PATROL.floor,z);
+  chair.position.set(x,floor,z);
+  chair.rotation.y=heading;
   scene.add(chair);
   const frame=mat('#4f3a32'), fabric=mat('#567882');
   box(.76,.08,.55,0,seatHeight-.04,0,fabric,chair);
@@ -211,6 +248,106 @@ function buildPatio(){
   shadow.position.y=.004;
   return {chair,shadow,seatHeight};
 }
+
+function buildPatio(){
+  const {PATROL,LIZA_CHAIR}=crewModule;
+  const {x,z,seatHeight}=LIZA_CHAIR;
+  box(8,.18,5.6,0,PATROL.floor-.09,PATROL.centerZ,wood);
+  return terraceChair(x,z,PATROL.floor,seatHeight);
+}
+
+function buildLivingArea(){
+  const {x,z,floor,seats}=MEETING_AREA;
+  box(7.5,.18,5.6,x,floor-.09,z,wood);
+  for(const dx of [-3.4,3.4])for(const dz of [-2.45,2.45])box(.25,1.1,.25,x+dx,floor-.7,z+dz,stone);
+  box(.93,.08,1.05,x,floor+.56,z,floorMat);
+  for(const dz of [-.39,.39])box(.12,.53,.12,x,floor+.265,z+dz,metal);
+  for(const dx of [-.24,.24])cylinder(.072,.055,.11,x+dx,floor+.655,z+.14,cushion);
+  return seats.map(seat=>terraceChair(
+    seat.x-.34*Math.sin(seat.heading),seat.z-.34*Math.cos(seat.heading),floor,.265,seat.heading
+  ));
+}
+
+function renderLife(){
+  const meeting=houseMeetings.meeting;
+  const talking=meeting?.phase==='talking';
+  const speaker=talking?meeting.actors[meeting.line%2].person.userData.name:'';
+  const line=talking?speaker+' · «'+meeting.lines[meeting.line]+'»':'';
+  const names=(a,b)=>peopleById.get(a).userData.name+' и '+peopleById.get(b).userData.name;
+  lifePause.textContent=houseHistory.running?'⏸ Пауза':'▶ Продолжить';
+  if(!houseHistory.running){
+    lifeNow.textContent='Встречи на паузе.';
+  }else if(meeting){
+    lifeNow.textContent=talking?line:names(meeting.a,meeting.b)+' '+meetingStatus[meeting.phase]+'.';
+  }else{
+    lifeNow.textContent=models.size>=2?'Ждём следующую встречу на террасе.':
+      meetingLoadOrder.some(waitingForModel)?'Встречи начнутся после загрузки двух жителей.':'Для встречи нужны две загруженные 3D-модели.';
+  }
+  lifeBubble.textContent=line;
+  if(!houseHistory.running||!talking)lifeBubble.hidden=true;
+  lifeSave.textContent=houseHistory.saved===false?'Хранится до закрытия страницы.':
+    houseHistory.journal.length?'Журнал сохранён в этом браузере.':'Здесь появятся завершённые встречи.';
+  if(shownJournal===houseHistory.journal)return;
+  shownJournal=houseHistory.journal;
+  lifeJournal.replaceChildren(...shownJournal.map(({a,b,count})=>{
+    const row=document.createElement('li');
+    const event=count===1?'познакомились':count===4?'подружились':'встретились снова';
+    row.textContent=names(a,b)+' '+event+' · встреч '+count;
+    return row;
+  }));
+}
+
+function updateLifeBubble(){
+  const meeting=houseMeetings.meeting;
+  if(!houseHistory.running||meeting?.phase!=='talking'||!humanPanel.hidden){
+    lifeBubble.hidden=true;
+    return;
+  }
+  const {avatar}=meeting.actors[meeting.line%2];
+  const point=avatar.portraitTarget(bubbleTarget);
+  point.y+=.43;
+  point.project(camera);
+  lifeBubble.hidden=point.z>1||Math.abs(point.x)>1||Math.abs(point.y)>1;
+  if(lifeBubble.hidden)return;
+  const margin=Math.min(114,innerWidth/2);
+  lifeBubble.style.left=T.MathUtils.clamp((point.x*.5+.5)*innerWidth,margin,innerWidth-margin)+'px';
+  lifeBubble.style.top=(-point.y*.5+.5)*innerHeight+'px';
+}
+
+function closeLife(){
+  if(lifePanel.hidden)return;
+  lifePanel.hidden=true;
+  lifeFocus.setAttribute('aria-expanded','false');
+  document.body.classList.remove('life-view');
+  controls.minDistance=13;
+}
+function focusLife(){
+  const tangent=Math.tan(camera.fov*Math.PI/360);
+  const distance=Math.max(6.7,2.65/(tangent*camera.aspect));
+  const headerHeight=document.querySelector('header').offsetHeight;
+  const lift=Math.max(0,headerHeight-86)*2*distance*tangent/innerHeight;
+  const {x,z}=MEETING_AREA;
+  view(x+.4,3.65+lift,z+distance,x,1.15+lift,z);
+}
+function showLife(){
+  closeHuman();
+  if(human)parkPerson(activePerson,human);
+  activePerson=human=null;
+  document.getElementById('metricsPanel').hidden=true;
+  document.getElementById('rosterPanel').hidden=true;
+  lifePanel.hidden=false;
+  lifeFocus.setAttribute('aria-expanded','true');
+  document.body.classList.add('life-view');
+  livingArea??=buildLivingArea();
+  controls.minDistance=2;
+  focusLife();
+  renderLife();
+  queueModels(0);
+}
+
+lifeFocus.onclick=showLife;
+document.getElementById('closeLife').onclick=()=>{closeLife();queueModels();lifeFocus.focus()};
+lifePause.onclick=()=>{houseHistory.setRunning(!houseHistory.running);renderLife();queueModels(0)};
 
 function parkPerson(person,avatar){
   if(patio?.shadow.parent===person)person.remove(patio.shadow);
@@ -230,23 +367,27 @@ function enterPatio(avatar){
 
 function updateCrewStatus(){
   crewStatus.textContent='Модели готовы: '+models.size+' из '+people.length;
+  renderLife();
+}
+const waitingForModel=person=>person&&!models.has(person)&&!failedModels.has(person);
+function priorityModel(){
+  if(!humanPanel.hidden&&waitingForModel(activePerson))return activePerson;
+  if(!lifePanel.hidden&&houseHistory.running&&models.size<2)return meetingLoadOrder.find(waitingForModel);
 }
 function queueModels(delay=240){
   clearTimeout(modelTimer);
-  if(pendingModel&&(document.hidden||(qualityMode===1&&pendingModel.person!==activePerson)))pendingModel.controller.abort();
+  if(pendingModel&&(document.hidden||(qualityMode===1&&pendingModel.person!==priorityModel())))pendingModel.controller.abort();
   if(!document.hidden)modelTimer=setTimeout(loadNextModel,delay);
 }
 async function loadNextModel(){
   if(pendingModel||document.hidden)return;
-  const waiting=person=>person&&!models.has(person)&&!failedModels.has(person);
-  const selected=humanPanel.hidden?null:activePerson;
   const preload=qualityMode!==1&&!autoReduced&&!navigator.connection?.saveData;
-  const person=waiting(selected)?selected:preload?people.find(waiting):null;
+  const person=priorityModel()||(preload?people.find(waitingForModel):null);
   if(!person)return;
   const controller=new AbortController();
   pendingModel={person,controller};
   try{
-    crewModule??=await import('./human-character.js?v=crew-1');
+    crewModule??=await import('./human-character.js?v=meetings');
     const avatar=await crewModule.loadResident(person.userData.id,controller.signal);
     if(controller.signal.aborted)return;
     parkPerson(person,avatar);
@@ -268,18 +409,19 @@ async function loadNextModel(){
     if(!controller.signal.aborted){
       failedModels.add(person);
       if(activePerson===person)syncHumanPanel();
+      renderLife();
       console.warn('Resident model:',person.userData.id,error);
     }
   }finally{
     pendingModel=null;
-    const foreground=waiting(activePerson)&&!humanPanel.hidden;
-    queueModels(foreground?0:240);
+    queueModels(priorityModel()?0:240);
   }
 }
 
 function selectPerson(data){
   const person=people.find(candidate=>candidate.userData===data);
   if(!person)return;
+  houseMeetings.cancelIfInvolved(person);
   showPerson(data);
   if(activePerson!==person){
     if(human)parkPerson(activePerson,human);
@@ -357,6 +499,7 @@ document.getElementById('roster').onclick=()=>{
   const open=panel.hidden;
   if(open){
     closeHuman();
+    closeLife();
     updateCrewStatus();
     renderRoster();
   }
@@ -394,12 +537,9 @@ function view(x,y,z,tx=0,ty=4,tz=0){
   controls.target.set(tx,ty,tz);
   controls.update();
 }
-document.getElementById('front').onclick=()=>{closeHuman();roof.visible=true;view(28,20,33)};
-document.getElementById('ground').onclick=()=>{closeHuman();roof.visible=false;view(18,10,24,0,2,0)};
-document.getElementById('upper').onclick=()=>{closeHuman();roof.visible=false;view(18,16,23,0,9,0)};
-const launchParams=new URLSearchParams(location.search);
-const requested=people.find(person=>person.userData.id===launchParams.get('resident'));
-if(requested||launchParams.get('liza')==='1')selectPerson((requested||liza).userData);
+document.getElementById('front').onclick=()=>{closeHuman();closeLife();roof.visible=true;view(28,20,33)};
+document.getElementById('ground').onclick=()=>{closeHuman();closeLife();roof.visible=false;view(18,10,24,0,2,0)};
+document.getElementById('upper').onclick=()=>{closeHuman();closeLife();roof.visible=false;view(18,16,23,0,9,0)};
 let evening=true;document.getElementById('night').onclick=()=>{evening=!evening;scene.background.set(evening?'#758895':'#a9d5ed');scene.fog.color.set(evening?'#758895':'#a9d5ed');sun.intensity=evening?2.3:3.2;hemi.intensity=evening?2:2.6};let showLabels=true;document.getElementById('labels').onclick=()=>{showLabels=!showLabels;nameRoot.style.display=showLabels?'block':'none'};
 // Keep the user's choice separate from the temporary automatic render scale.
 const qualityModes=['авто','эконом','обычное'];
@@ -469,6 +609,12 @@ function samplePerformance(t){
   renderMetrics();
 }
 applyQuality();
+const launchParams=new URLSearchParams(location.search);
+const requested=peopleById.get(launchParams.get('resident'));
+if(requested||launchParams.get('liza')==='1')selectPerson((requested||liza).userData);
+else if(launchParams.get('life')==='1')showLife();
+else renderLife();
+const labelTarget=new T.Vector3();
 function tick(t){
   requestAnimationFrame(tick);
   if(document.hidden){humanClock=null;return;}
@@ -477,10 +623,11 @@ function tick(t){
     human.update(humanDt,activePerson);
     syncHumanPanel();
   }
+  houseMeetings.update(humanDt);
   if(models.size){
     const idlePerson=people[idleCursor];
     idleCursor=(idleCursor+1)%people.length;
-    if(idlePerson!==activePerson)models.get(idlePerson)?.updateIdle(Math.min(.16,humanDt*people.length));
+    if(idlePerson!==activePerson&&!houseMeetings.has(idlePerson))models.get(idlePerson)?.updateIdle(Math.min(.16,humanDt*people.length));
   }
   if(followHuman){
     locateHumanTarget(cameraShift).sub(humanTarget);
@@ -490,8 +637,32 @@ function tick(t){
   }
   controls.update();
   camera.updateMatrixWorld();
+  for(const p of people){
+    const d=p.userData;
+    if(!d.detailedHuman){
+      p.position.x=d.baseX+Math.sin(t*.00028+d.phase)*.32;
+      p.position.z=d.baseZ+Math.cos(t*.00023+d.phase)*.25;
+      p.rotation.y=Math.sin(t*.0004+d.phase)*.35;
+    }
+    const inMeeting=houseMeetings.has(p);
+    if(!lifePanel.hidden&&!inMeeting){
+      d.label.style.display='none';
+      continue;
+    }
+    if(inMeeting){
+      models.get(p).portraitTarget(labelTarget);
+      labelTarget.y+=.14;
+    }else{
+      labelTarget.copy(p.position);
+      labelTarget.y+=2.4;
+    }
+    const v=labelTarget.project(camera);
+    d.label.style.left=(v.x*.5+.5)*innerWidth+'px';
+    d.label.style.top=(-v.y*.5+.5)*innerHeight+'px';
+    d.label.style.display=v.z>1||Math.abs(v.x)>1.2||Math.abs(v.y)>1.2?'none':'block';
+  }
+  updateLifeBubble();
   // Read diagnostics after this frame has rendered, so its scale and draw calls agree.
-  for(let i=0;i<people.length;i++){const p=people[i],d=p.userData;if(!d.detailedHuman){p.position.x=d.baseX+Math.sin(t*.00028+d.phase)*.32;p.position.z=d.baseZ+Math.cos(t*.00023+d.phase)*.25;p.rotation.y=Math.sin(t*.0004+d.phase)*.35;}const v=p.position.clone().add(new T.Vector3(0,2.4,0)).project(camera);d.label.style.left=(v.x*.5+.5)*innerWidth+'px';d.label.style.top=(-v.y*.5+.5)*innerHeight+'px';d.label.style.display=v.z>1||v.x < -1.2||v.x>1.2||v.y < -1.2||v.y>1.2?'none':'block'}
   renderer.render(scene,camera);samplePerformance(t);
 }
 requestAnimationFrame(tick);
@@ -503,5 +674,6 @@ document.addEventListener('visibilitychange',()=>{
 addEventListener('resize',()=>{
   camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();applyQuality();
   if(human&&portrait&&followHuman)focusHuman(true);
+  if(!lifePanel.hidden)focusLife();
 });
 </script></body></html>
