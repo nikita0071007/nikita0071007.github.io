@@ -7,6 +7,11 @@ export function buildYuriCabinet(decor, floor, textureLoader) {
   const x = -5.87, z = 3.06;
   const shrine = assembly(x,z);
 
+  block(4.70,2.29,.132,-4.70,floor+1.145,2.408,p.wall);
+  block(4.75,.08,.178,-4.70,floor+2.33,2.408,p.walnut);
+  block(4.67,.73,.09,-4.70,floor+.365,2.492,p.oak);
+  block(4.70,.065,.103,-4.70,floor+.752,2.502,p.walnut);
+
   soft(1.89,.094,.77,0,.071,.02,p.trim,shrine);
   soft(1.63,.69,.64,0,.455,-.018,p.walnut,shrine);
   for (const dx of [-.395,.395]) {

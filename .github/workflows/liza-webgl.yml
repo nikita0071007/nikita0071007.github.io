@@ -11,11 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: icons
-        name: Prepare local copies of the two historical icons
+        name: Verify both local icon files
         run: |
           mkdir -p life/assets/icons
-          curl -fsSL --max-time 35 --retry 1 'https://upload.wikimedia.org/wikipedia/commons/archive/4/4a/20081118003820%21Spas_vsederzhitel_sinay.jpg' -o life/assets/icons/pantocrator.jpg
-          curl -fsSL --max-time 35 --retry 1 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Volokolamskaya_Vladimirskaya_ikona.jpg' -o life/assets/icons/volokolamskaya.jpg
           for icon in life/assets/icons/*.jpg; do
             test "$(file -b --mime-type "$icon")" = image/jpeg
             test "$(wc -c < "$icon")" -lt 150000
@@ -42,14 +40,14 @@ jobs:
           path: life-qa/cabinet-*.png
           if-no-files-found: ignore
           retention-days: 14
-      - name: Save checked assets and two screenshots in the verification branch
+      - name: Save checked assets and screenshots in the verification branch
         if: always() && steps.icons.outcome == 'success'
         env:
           CABINET_TEST_RESULT: ${{ steps.browser.outcome }}
         run: |
           mkdir -p qa/cabinet-evidence
           printf '{"run_id":%s,"checked_revision":"%s","result":"%s"}\n' "$GITHUB_RUN_ID" "$GITHUB_SHA" "$CABINET_TEST_RESULT" > qa/cabinet-evidence/run.json
-          for view in yuri director; do
+          for view in yuri icons director; do
             if test -s "life-qa/cabinet-$view.png"; then
               cp "life-qa/cabinet-$view.png" qa/cabinet-evidence/
             fi
@@ -57,3 +55,31 @@ jobs:
           git add life/assets/icons/pantocrator.jpg life/assets/icons/volokolamskaya.jpg qa/cabinet-evidence
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Save verified icon copies and cabinet screenshots'
           git push origin HEAD:refs/heads/verify/liza-webgl
+      - name: Confirm the published cabinet files on gusevmade.ru
+        if: steps.browser.outcome == 'success'
+        timeout-minutes: 6
+        run: |
+          temp="$(mktemp)"
+          verify_release() {
+            for item in 'mountain.html?office=editorial' 'office-interior.js?v=cabinets' 'villa-rooms.js?v=cabinets' 'yuri-cabinet.js?v=1' 'assets/icons/pantocrator.jpg' 'assets/icons/volokolamskaya.jpg'; do
+              if ! curl -fsSL --max-time 6 -H 'Cache-Control: no-cache' "https://gusevmade.ru/life/$item" -o "$temp"; then
+                return 1
+              fi
+              if ! cmp -s "$temp" "life/${item%%\?*}"; then
+                return 1
+              fi
+            done
+          }
+          outcome=waiting
+          for attempt in $(seq 1 39); do
+            if verify_release; then
+              outcome=success
+              break
+            fi
+            sleep 5
+          done
+          printf '{"run_id":%s,"checked_revision":"%s","result":"%s"}\n' "$GITHUB_RUN_ID" "$GITHUB_SHA" "$outcome" > qa/cabinet-evidence/published.json
+          git add qa/cabinet-evidence/published.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Record live cabinet deployment check'
+          git push origin HEAD:refs/heads/verify/liza-webgl
+          test "$outcome" = success

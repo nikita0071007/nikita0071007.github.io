@@ -235,6 +235,7 @@ async function desktopTest(browser,base,errors){
 }
 const officeState=(page,detailed=false)=>page.evaluate(detail=>officeQA(detail),detailed);
 async function checkOfficeBounds(page){
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   const {corners}=await officeState(page,true);
   const {width,height}=page.viewportSize();
   const header=await page.locator('header').boundingBox();
@@ -472,6 +473,7 @@ async function cabinetTest(browser,base,errors){
   assert.equal(await phone.locator('#officeTitle').textContent(),'Кабинет Юрия');
   await phone.screenshot({path:path.join(out,'cabinet-yuri-mobile.png')});
   await phone.getByRole('button',{name:'Обзор',exact:true}).tap();
+  await phone.waitForFunction(()=>officeQA().zone==='overview');
   await checkOfficeBounds(phone);
   await phone.setViewportSize({width:844,height:390});
   await phone.waitForTimeout(350);

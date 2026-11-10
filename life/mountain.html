@@ -610,6 +610,7 @@ function view(x,y,z,tx=0,ty=4,tz=0){
   camera.position.set(x,y,z);
   controls.target.set(tx,ty,tz);
   controls.update();
+  camera.updateMatrixWorld(true);
 }
 let evening=true,showLabels=true;
 const labelsButton=document.getElementById('labels');
