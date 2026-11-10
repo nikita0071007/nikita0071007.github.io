@@ -2,8 +2,8 @@ import * as T from 'three';
 
 export function buildYuriCabinet(decor, floor, textureLoader) {
   const {root,p,matte,sphere,part,block,soft,tube,assembly} = decor;
-  const brass = matte('#bd924f');
-  const velvet = matte('#814c44');
+  const brass = matte('#bd924f',null,{metalness:.47,roughness:.34});
+  const velvet = matte('#814c44','linen');
   const x = -5.87, z = 3.06;
   const shrine = assembly(x,z);
 
@@ -56,7 +56,7 @@ export function buildYuriCabinet(decor, floor, textureLoader) {
     part(sphere,w*.65,h*.37,.017,dx,y+h*.21,depth+.055,brass,shrine);
     part(sphere,w*.35,h*.25,.018,dx,y+h*.20,depth+.062,p.canvas,shrine);
     part(sphere,w*.79,h*.42,.018,dx,y-h*.158,depth+.06,velvet,shrine);
-    const paint = new T.MeshBasicMaterial({color:0xffffff});
+    const paint = new T.MeshBasicMaterial({color:0xffffff,toneMapped:false});
     const icon = part(panel,w,h,1,x+dx,floor+y,z+depth+.078,paint,root);
     icon.name='Yuri icon '+name;
     icon.visible=false;

@@ -64,26 +64,42 @@ body.human-portrait #names{visibility:hidden}
 <script type="module">
 import * as T from 'three';import{OrbitControls}from'three/addons/controls/OrbitControls.js';
 import {createHouseHistory,createTerraceMeetings,MEETING_AREA} from './house-life.js?v=1';
-import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=cabinets';
-import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=cabinets';
+import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=surfaces';
+import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=surfaces';
+import {createVillaMaterials,installVillaLighting} from './villa-rendering.js?v=1';
+import {buildVillaLandscape} from './villa-landscape.js?v=1';
 const root=document.getElementById('world'),nameRoot=document.getElementById('names'),info=document.getElementById('info');let renderer,scene,camera,controls;
-try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.shadowMap.enabled=false;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
-scene=new T.Scene();scene.background=new T.Color('#758895');
+try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
+scene=new T.Scene();
+const lighting=installVillaLighting(renderer,scene);
+const textureLoader=new T.TextureLoader();
+const surfaces=createVillaMaterials(textureLoader,Math.min(4,renderer.capabilities.getMaxAnisotropy()));
 const houseFog=new T.Fog('#758895',65,145);scene.fog=houseFog;
 const upperLevel=new T.Group(),facade=new T.Group(),grounds=new T.Group(),stairs=new T.Group();
-const officeInterior=buildOffice(new T.TextureLoader()),upperInterior=buildUpperFloor();
+const officeInterior=buildOffice(textureLoader,surfaces),upperInterior=buildUpperFloor(surfaces);
 scene.add(upperLevel,facade,grounds,stairs,officeInterior,upperInterior);
-grounds.add(buildGarden());
+grounds.add(buildGarden(surfaces),buildVillaLandscape(surfaces));
 camera=new T.PerspectiveCamera(46,innerWidth/innerHeight,.1,230);camera.position.set(28,20,33);controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,4,0);controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=13;controls.maxDistance=85;controls.minPolarAngle=.12;controls.enablePan=true;controls.update();
-const hemi=new T.HemisphereLight('#d5e8ff','#3e3430',2.0);scene.add(hemi);const sun=new T.DirectionalLight('#ffca8a',2.3);sun.position.set(-20,35,14);scene.add(sun);
-const mat=(c,r=1,m=0)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m});const wood=mat('#745039'),floorMat=mat('#a77a52'),stone=mat('#4d5050'),metal=mat('#252b2b',.5,.6),glass=new T.MeshStandardMaterial({color:'#9dd3dd',transparent:true,opacity:.18,roughness:.13,metalness:.15,side:T.DoubleSide,depthWrite:false}),warm=mat('#ffcf85'),dark=mat('#17242a'),plant=mat('#375e41'),leaf=mat('#4b704d');
-function box(w,h,d,x,y,z,m,parent=scene){const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);parent.add(o);return o}
-function ball(r,x,y,z,m,parent=scene){const o=new T.Mesh(new T.SphereGeometry(r,9,7),m);o.position.set(x,y,z);parent.add(o);return o}
-function cylinder(rt,rb,h,x,y,z,m,parent=scene){const o=new T.Mesh(new T.CylinderGeometry(rt,rb,h,8),m);o.position.set(x,y,z);parent.add(o);return o}
-const rng=(seed=>()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296})(251);
-box(180,.3,180,0,-.7,0,mat('#385044'),grounds);
+const mat=(color,roughness=.82,metalness=0,kind=null)=>surfaces.matte(color,kind,{roughness,metalness});
+const wood=mat('#745039',.59,0,'wood'),floorMat=mat('#a77a52',.57,0,'wood');
+const stone=mat('#4d5050',.89,0,'stone'),metal=mat('#252b2b',.46,.6),glass=surfaces.glass(.17);
+const warm=mat('#ffcf85'),dark=mat('#242b33',.81,.20,'stone');
+function placeMesh(geometry,m,x,y,z,parent,casts=true){
+  const mesh=new T.Mesh(geometry,m);
+  mesh.position.set(x,y,z);
+  mesh.castShadow=casts&&!m.transparent;
+  mesh.receiveShadow=!m.transparent;
+  parent.add(mesh);
+  return mesh;
+}
+function box(w,h,d,x,y,z,m,parent=scene){return placeMesh(new T.BoxGeometry(w,h,d),m,x,y,z,parent,h>.082)}
+function ball(r,x,y,z,m,parent=scene){return placeMesh(new T.SphereGeometry(r,9,7),m,x,y,z,parent)}
+function cylinder(rt,rb,h,x,y,z,m,parent=scene){return placeMesh(new T.CylinderGeometry(rt,rb,h,8),m,x,y,z,parent)}
+const lawn=box(180,.3,180,0,-.7,0,mat('#647752',.98,0,'grass'),grounds);
+lawn.castShadow=false;
 box(28,1.2,19,0,-.1,0,stone,grounds);
 box(27,.45,18,0,12.35,0,dark,upperLevel);
+for(let x=-12.6;x<=12.8;x+=1.4)box(.048,.031,17.90,x,12.59,0,metal,upperLevel);
 for(const y of [3.5,9.3]){
   const upper=y>6,storey=upper?upperLevel:facade;
   for(const z of [-8.35,8.35]){
@@ -91,7 +107,7 @@ for(const y of [3.5,9.3]){
     if(z<0){
       box(25.4,.13,.16,0,y-2.72,z,metal,storey);
       box(25.3,5.3,.045,0,y,z,glass,storey);
-      for(const x of [-12.7,0,12.7])box(.17,5.6,.19,x,y,z,metal,storey);
+      for(const x of [-12.7,-8.47,-4.24,0,4.24,8.47,12.7])box(.12,5.6,.16,x,y,z,metal,storey);
     }else{
       const entry=upper?7.28:0;
       const left=entry-1.14,right=entry+1.14;
@@ -100,12 +116,17 @@ for(const y of [3.5,9.3]){
         box(b-a,.13,.16,(a+b)/2,y-2.72,z,metal,storey);
       }
       for(const x of [-12.7,left,right,12.7])box(.15,5.6,.18,x,y,z,metal,storey);
-      if(upper)box(.15,5.6,.18,0,y,z,metal,storey);
+      for(const x of [-8.48,-4.24,0,4.24,8.48]){
+        if(x<left-.19||x>right+.19)box(.105,5.43,.145,x,y,z,metal,storey);
+      }
       box(2.27,2.74,.045,entry,y+1.28,z,glass,storey);
       box(2.33,.116,.18,entry,y-.118,z,metal,storey);
     }
   }
-  for(const x of [-12.8,12.8])box(.045,5.3,16.7,x,y,0,glass,storey);
+  for(const x of [-12.8,12.8]){
+    box(.045,5.3,16.7,x,y,0,glass,storey);
+    for(const z of [-8.34,-4.18,0,4.18,8.34])box(.154,5.43,.108,x,y,z,metal,storey);
+  }
 }
 for(let i=0;i<12;i++){
   const z=7.63-i*.43,y=.9+i*.49;
@@ -113,13 +134,9 @@ for(let i=0;i<12;i++){
   box(.07,.5,.07,-10.80,y+.25,z,metal,stairs);
 }
 for(const x of [-1.49,1.49])ball(.19,x,2.69,8.46,warm,facade);
-for(let i=0;i<26;i++){const x=(rng()-.5)*30,z=(rng()-.5)*24;if((Math.abs(x)<12.5&&Math.abs(z)<9)||(x>-16&&x<21&&z>8.6))continue;cylinder(.14,.23,1.5,x,.65,z,wood,grounds);ball(.7+rng()*.55,x,1.7,z,plant,grounds)}
 for(let i=0;i<8;i++){const x=-10+i*2.8;box(1.3,.15,.65,x,12.65,-8.1,mat('#435b40'),upperLevel)}
-function mountain(cx,cz,r,h,c){const geo=new T.ConeGeometry(r,h,5,1);const mesh=new T.Mesh(geo,mat(c));mesh.position.set(cx,h/2-2,cz);mesh.rotation.y=rng()*6.28;grounds.add(mesh);const snow=new T.Mesh(new T.ConeGeometry(r*.24,h*.22,5),mat('#b7c0bd'));snow.position.set(cx,h-2-h*.1,cz);grounds.add(snow)}
-for(let i=0;i<35;i++){let a=i/35*Math.PI*1.4+Math.PI*.1,rad=60+rng()*30;mountain(Math.cos(a)*rad-12,-Math.sin(a)*rad-20,7+rng()*12,18+rng()*27,i%3===0?'#506271':'#66727a')}
-for(let i=0;i<90;i++){const a=rng()*Math.PI*2,r=22+rng()*48,x=Math.cos(a)*r,z=Math.sin(a)*r;if(z>21||(x>-16&&x<21&&z>8.6))continue;cylinder(.12,.2,1.4,x,.1,z,wood,grounds);ball(.65+rng()*.6,x,1.3,z,leaf,grounds)}
 
-const cushion=mat('#c7a98a'),lightGold=mat('#f7c17c');
+const cushion=mat('#c7a98a',.93,0,'linen'),lightGold=mat('#f7c17c');
 for(const x of [-11,-7,-3,3,7,11]){
   ball(.15,x,5.95,8.55,lightGold,facade);
   ball(.15,x,11.9,8.55,lightGold,upperLevel);
@@ -134,6 +151,8 @@ const defs=[
 ];
 const people=[],skin=[mat('#edbb94'),mat('#dca781'),mat('#b78264')];
 const clothes=['#3b6e84','#9c6658','#566c53','#78629a','#b17b54','#4e668a','#5e8c80'];
+const contactShape=new T.PlaneGeometry(1.35,.99).rotateX(-Math.PI/2);
+const residentShade=surfaces.contact(.49);
 for(let i=0;i<defs.length;i++){
   const [id,name,role]=defs[i];
   const home=UPPER_HOMES[id],desk=OFFICE_DESKS[id];
@@ -142,7 +161,7 @@ for(let i=0;i<defs.length;i++){
   const g=new T.Group();
   g.position.set(x,y,z);
   scene.add(g);
-  const cloth=mat(clothes[i%clothes.length]);
+  const cloth=mat(clothes[i%clothes.length],.93,0,'linen');
   cylinder(.35,.29,1.05,0,.8,0,cloth,g);
   ball(.34,0,1.59,0,skin[i%3],g);
   const hair=ball(.36,0,1.82,-.045,mat(id==='resident-grandma'?'#c4c6c4':id==='video'||id==='resident-lena'?'#342b29':'#3d332c'),g);
@@ -151,6 +170,12 @@ for(let i=0;i<defs.length;i++){
     cylinder(.11,.12,.65,d,.33,0,mat('#343f48'),g);
     cylinder(.1,.1,.65,d*.95,1.0,0,cloth,g);
   }
+  g.traverse(mesh=>{mesh.castShadow=false});
+  const shade=new T.Mesh(contactShape,residentShade);
+  shade.position.y=.007;
+  shade.userData.groundContact=true;
+  shade.raycast=()=>{};
+  g.add(shade);
   const label=document.createElement('span');
   label.textContent=name;
   nameRoot.appendChild(label);
@@ -194,17 +219,13 @@ const meetingStatus={arriving:'идут к столу',turning:'подходят
 const houseMeetings=createTerraceMeetings({
   history:houseHistory,
   available:()=>[...models].filter(([person])=>person!==activePerson).map(([person,avatar])=>({person,avatar})),
-  onEnter:({person,avatar,side})=>{
+  onEnter:({avatar,side})=>{
     livingArea??=buildLivingArea();
-    const {chair,shadow}=livingArea[side];
-    chair.scale.y=avatar.seatHeight/.265;
-    person.add(shadow);
+    livingArea[side].chair.scale.y=avatar.seatHeight/.265;
+    lighting.invalidate();
     avatar.startScene();
   },
-  onLeave:({person,avatar,side})=>{
-    person.remove(livingArea[side].shadow);
-    parkPerson(person,avatar);
-  },
+  onLeave:({person,avatar})=>parkPerson(person,avatar),
   onChange:renderLife
 });
 const phaseMessages={
@@ -295,20 +316,15 @@ function terraceChair(x,z,floor,seatHeight,heading=0){
   chair.position.set(x,floor,z);
   chair.rotation.y=heading;
   grounds.add(chair);
-  const frame=mat('#4f3a32'), fabric=mat('#567882');
+  const frame=mat('#4f3a32',.62,0,'wood'),fabric=mat('#567882',.93,0,'linen');
   box(.76,.08,.55,0,seatHeight-.04,0,fabric,chair);
   box(.74,.35,.08,0,seatHeight+.25,-.25,fabric,chair);
   for(const dx of [-.32,.32]){
     box(.065,seatHeight+.41,.065,dx,(seatHeight+.41)/2,-.23,frame,chair);
     box(.065,seatHeight-.06,.065,dx,(seatHeight-.06)/2,.22,frame,chair);
   }
-  const shadow=new T.Mesh(new T.CircleGeometry(1,24),new T.MeshBasicMaterial({
-    color:0x241812,transparent:true,opacity:.22,depthWrite:false
-  }));
-  shadow.rotation.x=-Math.PI/2;
-  shadow.scale.set(.52,.32,1);
-  shadow.position.y=.004;
-  return {chair,shadow,seatHeight};
+  lighting.invalidate();
+  return {chair,seatHeight};
 }
 
 function buildPatio(){
@@ -410,7 +426,6 @@ document.getElementById('closeLife').onclick=()=>{closeLife();queueModels();life
 lifePause.onclick=()=>{houseHistory.setRunning(!houseHistory.running);renderLife();queueModels(0)};
 
 function parkPerson(person,avatar){
-  if(patio?.shadow.parent===person)person.remove(patio.shadow);
   const {baseX,baseY,baseZ}=person.userData;
   person.position.set(baseX,baseY,baseZ);
   person.rotation.y=0;
@@ -419,7 +434,7 @@ function parkPerson(person,avatar){
 function enterPatio(avatar){
   patio??=buildPatio();
   patio.chair.scale.y=avatar.seatHeight/patio.seatHeight;
-  activePerson.add(patio.shadow);
+  lighting.invalidate();
   human=avatar;
   humanPanelState='';
   avatar.enter(activePerson);
@@ -453,10 +468,12 @@ async function loadNextModel(){
     parkPerson(person,avatar);
     // Keep the original figure until the complete model is ready.
     for(const child of [...person.children]){
+      if(child.userData.groundContact)continue;
       person.remove(child);
       child.traverse(object=>{if(object.isMesh)object.geometry.dispose()});
     }
     models.set(person,avatar);
+    avatar.object.traverse(mesh=>{if(mesh.isMesh)mesh.receiveShadow=true});
     person.add(avatar.object);
     person.userData.detailedHuman=true;
     if(activePerson===person){
@@ -618,12 +635,9 @@ function isCutaway(){
   return roomMode==='office'||roomMode==='upstairs';
 }
 function applyLighting(){
-  const cutaway=isCutaway(),sky=evening?'#758895':'#a9d5ed';
-  scene.background.set(cutaway?(evening?'#293d48':'#78939a'):sky);
-  houseFog.color.set(sky);
+  houseFog.color.set(evening?'#838a92':'#bbcbd1');
   scene.fog=roomMode?null:houseFog;
-  sun.intensity=cutaway?(evening?2.1:2.75):(evening?2.3:3.2);
-  hemi.intensity=evening?2:2.6;
+  lighting.setView(roomMode,roomZone,evening);
 }
 function applyLabels(){
   const shown=roomMode?roomLabels:showLabels;
@@ -664,6 +678,7 @@ function closeRoomView(){
 }
 function showRoom(mode,zone='overview'){
   const {title,nav,zones}=roomViews[mode];
+  roomZone=zone;
   if(mode!==roomMode){
     if(!roomMode){
       closeHuman();
@@ -686,8 +701,7 @@ function showRoom(mode,zone='overview'){
     }));
     applyRoomView();
     queueModels();
-  }
-  roomZone=zone;
+  }else applyLighting();
   officeTitle.textContent=zones[zone].title||title;
   officeNote.textContent=zones[zone].text;
   for(const button of officeTabs.children)button.setAttribute('aria-pressed',String(button.dataset.officeZone===zone));
@@ -706,6 +720,7 @@ document.getElementById('front').onclick=showHouse;
 document.getElementById('night').onclick=()=>{evening=!evening;applyLighting()};
 labelsButton.onclick=()=>{if(roomMode)roomLabels=!roomLabels;else showLabels=!showLabels;applyLabels()};
 applyLabels();
+applyLighting();
 function launchView(){
   const params=new URLSearchParams(location.search);
   const person=peopleById.get(params.get('resident'));
@@ -758,6 +773,7 @@ function applyQuality(t=performance.now()){
     qualityMode===2?Math.min(devicePixelRatio||1,1.4):autoReduced?Math.min(base,.7):base;
   renderer.setPixelRatio(ratio);
   renderer.setSize(innerWidth,innerHeight);
+  surfaces.setDetail(lighting.setQuality(qualityMode,autoReduced,innerWidth));
   qualityButton.textContent='⚡ Качество: '+qualityModes[qualityMode]+(qualityMode===0&&autoReduced?' ↓':'');
   resetPerformanceWindow(t);
   queueModels();
