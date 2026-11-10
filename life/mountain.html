@@ -620,7 +620,7 @@ function applyLighting(){
   const cutaway=isCutaway(),sky=evening?'#758895':'#a9d5ed';
   scene.background.set(cutaway?(evening?'#293d48':'#78939a'):sky);
   houseFog.color.set(sky);
-  scene.fog=cutaway?null:houseFog;
+  scene.fog=roomMode?null:houseFog;
   sun.intensity=cutaway?(evening?2.1:2.75):(evening?2.3:3.2);
   hemi.intensity=evening?2:2.6;
 }
@@ -671,6 +671,7 @@ function showRoom(mode,zone='overview'){
       activePerson=human=null;
     }
     roomMode=mode;
+    if(mode==='garden')livingArea??=buildLivingArea();
     document.getElementById('rosterPanel').hidden=true;
     document.getElementById('metricsPanel').hidden=true;
     officeTitle.textContent=title;
