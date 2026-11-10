@@ -39,6 +39,9 @@ const server=http.createServer(async(req,res)=>{
 });
 async function metrics(page){return await page.evaluate(()=>globalThis.lifeQA())}
 async function config(page,violations){
+ await page.route(url=>url.pathname==='/life/liza-face.js'&&!url.search,route=>route.fulfill({
+   status:409,body:'Unversioned cached face module'
+ }));
  await page.route('https://cdn.jsdelivr.net/npm/three@0.160.1/**',async route=>{
   const rel=new URL(route.request().url()).pathname.replace('/npm/three@0.160.1/','');
   await route.fulfill({path:path.join(vendor,rel),contentType:'text/javascript'});
