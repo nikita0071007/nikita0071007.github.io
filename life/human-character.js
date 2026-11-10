@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {createLizaFace} from './liza-face.js?v=crew';
+import {createLizaFace} from './liza-face.js?v=meetings';
 
 export const PATROL = {centerZ: 16.2, floor: .67, halfStraight: 1.65, radius: 1.12};
 // The cushion meets the lowest point of the seated trousers at the end of SitDown.
@@ -108,6 +108,34 @@ export function prepareHuman(gltf, appearance = null) {
     pose = next;
   }
 
+  function resetPose() {
+    mixer.stopAllAction();
+    actions.Idle.reset().setEffectiveWeight(1).play();
+    pose = 'Idle';
+    face.reset();
+  }
+
+  function updatePose(step, blend, host, expressive, speaking = false) {
+    for (const [name, action] of Object.entries(actions)) {
+      if (!action.isScheduled()) continue;
+      const target = name === pose ? 1 : 0;
+      const weight = T.MathUtils.lerp(action.getEffectiveWeight(), target, blend);
+      action.setEffectiveWeight(weight);
+      if (!target && weight < .003) action.stop();
+    }
+    mixer.update(step);
+    face.update(step, expressive, speaking);
+    wrapper.position.y = 0;
+    host.updateMatrixWorld(true);
+    let lowest = Infinity;
+    for (const {mesh, index} of soles) {
+      mesh.getVertexPosition(index, point).applyMatrix4(mesh.matrixWorld);
+      lowest = Math.min(lowest, point.y);
+    }
+    // Correct penetration during blends while preserving the run's flight phase.
+    wrapper.position.y = Math.max(0, PATROL.floor - lowest);
+  }
+
   function approach(host, x, z, dt) {
     const dx = x - host.position.x, dz = z - host.position.z;
     const remaining = Math.hypot(dx, dz);
@@ -148,23 +176,33 @@ export function prepareHuman(gltf, appearance = null) {
     seatHeight: appearance?.seatHeight || LIZA_CHAIR.seatHeight,
     height: appearance?.height || 2.05,
     enter(host) {
-      mixer.stopAllAction();
-      actions.Idle.reset().setEffectiveWeight(1).play();
+      resetPose();
       phase = 'patrol';
-      mode = pose = 'Idle';
+      mode = 'Idle';
       speed = 0;
       smiling = false;
       distance = perimeter - turn / 2;
-      face.reset();
       face.setDetail(true);
       this.update(0, host);
     },
     rest() {
-      mixer.stopAllAction();
-      actions.Idle.reset().setEffectiveWeight(1).play();
+      resetPose();
       mixer.update(0);
       wrapper.position.y = 0;
       face.setDetail(false);
+    },
+    startScene() {
+      resetPose();
+      phase = 'scene';
+      mixer.update(0);
+      face.setDetail(true);
+    },
+    faceTowards: turnTowards,
+    duration(name) { return clips.get(name).duration; },
+    updateScene(dt, host, nextPose, speaking) {
+      selectPose(nextPose);
+      const step = T.MathUtils.clamp(dt, 0, .06);
+      updatePose(step, 1 - Math.exp(-step * 15), host, false, speaking);
     },
     updateIdle(dt) {
       mixer.update(dt);
@@ -230,24 +268,7 @@ export function prepareHuman(gltf, appearance = null) {
         }
       }
 
-      for (const [name, action] of Object.entries(actions)) {
-        if (!action.isScheduled()) continue;
-        const target = name === pose ? 1 : 0;
-        const weight = T.MathUtils.lerp(action.getEffectiveWeight(), target, blend);
-        action.setEffectiveWeight(weight);
-        if (!target && weight < .003) action.stop();
-      }
-      mixer.update(step);
-      face.update(step, smiling || phase === 'celebrating');
-      wrapper.position.y = 0;
-      host.updateMatrixWorld(true);
-      let lowest = Infinity;
-      for (const {mesh, index} of soles) {
-        mesh.getVertexPosition(index, point).applyMatrix4(mesh.matrixWorld);
-        lowest = Math.min(lowest, point.y);
-      }
-      // Correct penetration during blends while preserving the run's flight phase.
-      wrapper.position.y = Math.max(0, PATROL.floor - lowest);
+      updatePose(step, blend, host, smiling || phase === 'celebrating');
     }
   };
 }
