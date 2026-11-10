@@ -1,5 +1,6 @@
 import * as T from 'three';
 import {createDecor} from './villa-decor.js?v=1';
+import {buildYuriCabinet} from './yuri-cabinet.js?v=1';
 
 export const OFFICE_FLOOR = .78;
 export const OFFICE_FOV = 34;
@@ -13,14 +14,15 @@ export const OFFICE_DESKS = {
   poster: [-5.65, -1.2],
   producer: [-3.05, -1.2],
   guard: [-8.64, 3.86],
-  critic: [-5.28, 3.86]
+  critic: [-3.97, 4.58]
 };
 
 export const OFFICE_ZONES = {
   overview: {label:'Обзор', center:[0,1.45,-.04], size:[26.7,3.6,17.65], text:'Первый этаж. Выбери зону, чтобы рассмотреть её.'},
   work: {label:'Работа', center:[-7.34,1.45,-3.20], size:[11.4,3.2,9.95], text:'Общая рабочая зона. Макс и Олег сидят рядом в секторе контента.'},
-  security: {label:'Охрана', center:[-8.65,1.37,5.08], size:[3.02,2.05,5.45], text:'Пост Славика с экранами наблюдения и рацией.'},
-  editorial: {label:'Редактор', center:[-5.32,1.4,5.12], size:[3.69,2.6,5.53], text:'Кабинет Юрия с рабочим столом и полкой для книг.'},
+  security: {label:'Охрана', title:'Пост Славика', center:[-8.65,1.64,5.08], size:[3.02,2.38,5.45], angle:[.27,.69,1], text:'Пульт наблюдения, рация и шкафчик у входа.'},
+  editorial: {label:'Юрий', title:'Кабинет Юрия', center:[-4.70,1.99,5.13], size:[4.94,3.14,5.64], angle:[.27,.64,1], text:'ПК для работы, книжные полки и отдельный уголок с иконами.'},
+  icons: {label:'Киот', title:'Киот Юрия', center:[-5.87,2.04,3.14], size:[2.08,2.95,1.35], angle:[.12,.32,1], text:'Деревянный киот в форме маленькой часовни с двумя иконами.'},
   meeting: {label:'Переговорная', center:[7.9,1.86,-4.92], size:[9.1,3.1,6.8], text:'Стеклянная переговорная с большим столом и экраном.'},
   kitchen: {label:'Кухня', center:[9.15,1.62,4.05], size:[7.25,2.95,8.0], text:'Общий стол на шесть человек и отдельная кофейная станция.'},
   lounge: {label:'Отдых', center:[1.55,1.5,4.65], size:[7.55,2.2,6.3], text:'Гостиная с диваном, креслом и тёплым торшером.'}
@@ -29,11 +31,10 @@ export const OFFICE_ZONES = {
 export const KITCHEN_SEATS = [7.37,10.08].flatMap((x,side) =>
   [3.46,4.68,5.90].map(z => ({x,z,heading:side ? -Math.PI/2 : Math.PI/2})));
 
-const diagonal = new T.Vector3(.60, 1.04, 1).normalize();
-const screenRight = new T.Vector3(0, 1, 0).cross(diagonal).normalize();
-const screenUp = new T.Vector3().crossVectors(diagonal, screenRight);
-
-export function roomFrame({center, size}, width, height, top, bottom) {
+export function roomFrame({center, size, angle = [.60,1.04,1]}, width, height, top, bottom) {
+  const diagonal = new T.Vector3(...angle).normalize();
+  const screenRight = new T.Vector3(0,1,0).cross(diagonal).normalize();
+  const screenUp = new T.Vector3().crossVectors(diagonal,screenRight);
   const horizontal = Math.tan(T.MathUtils.degToRad(OFFICE_FOV / 2)) * width / height * .94;
   const vertical = Math.tan(T.MathUtils.degToRad(OFFICE_FOV / 2)) *
     Math.max(.24, (height - top - bottom) / height) * .9;
@@ -55,9 +56,10 @@ export function officeFrame(zone, width, height, top, bottom) {
   return roomFrame(OFFICE_ZONES[zone], width, height, top, bottom);
 }
 
-export function buildOffice() {
+export function buildOffice(textureLoader) {
+  const decor = createDecor('Office interior', OFFICE_FLOOR);
   const {root:office,p,cube,drum,shade,sphere,part,block,soft,tube,assembly,shadow,
-    planter,officeChair,boards,finish} = createDecor('Office interior', OFFICE_FLOOR);
+    planter,officeChair,boards,finish} = decor;
   // Oak boards sit over the dark edge of the cutaway.
   soft(26.65, .33, 17.62, 0, .47, -.02, p.base);
   block(26.25, .19, 17.26, 0, .66, 0, p.walnut);
@@ -71,7 +73,7 @@ export function buildOffice() {
   // Shared workroom and the two small rooms beside the stair.
   soft(11.2, .033, 8.35, -7.34, .789, -3.23, p.forest);
   soft(2.86, .033, 4.94, -8.61, .789, 5.09, p.jade);
-  soft(3.42, .033, 4.94, -5.23, .789, 5.09, p.canvas);
+  soft(4.58, .033, 5.19, -4.70, .789, 5.12, p.canvas);
   soft(4.85, .025, 2.96, -4.37, .816, -.68, p.teal);
   const workSeats = [p.teal, p.jade, p.navy, p.teal];
   Object.entries(OFFICE_DESKS).forEach(([id,[x,z]], i) => {
@@ -101,6 +103,15 @@ export function buildOffice() {
       soft(.13,.23,.11,-.78,.97,.24,p.metal,desk);
       tube(.028,.18,-.81,1.158,.24,p.metal,desk);
     }
+    if (id === 'critic') {
+      soft(.37,.54,.49,.765,1.115,-.15,p.navy,desk);
+      block(.295,.474,.035,.765,1.12,.104,p.metal,desk);
+      for(let row=0;row<5;row++)block(.186,.021,.023,.765,1.02+row*.044,.131,p.trim,desk);
+      part(sphere,.046,.046,.029,.765,1.298,.134,p.data,desk);
+      tube(.215,.046,-.81,.875,-.28,p.trim,desk);
+      tube(.046,.395,-.81,1.09,-.28,p.metal,desk);
+      part(shade,.31,.20,.31,-.81,1.31,-.28,p.lamp,desk);
+    }
   });
   soft(4.1, .9, .60, -9.35, 1.23, -7.78, p.walnut);
   for (const x of [-10.98,-10.16,-9.34,-8.52,-7.7]) {
@@ -113,20 +124,27 @@ export function buildOffice() {
     block(.55, .078, .018, x, 2.24, -8.145, p.clay);
     block(.29, .055, .018, x - .07, 2.09, -8.145, p.teal);
   }
-  block(.12, 1.49, 4.02, -3.32, 1.52, 5.55, p.cream);
-  block(.17, .07, 4.04, -3.32, 2.30, 5.55, p.walnut);
+  block(.12, 1.43, 4.08, -2.30, 1.495, 5.65, p.cream);
+  block(.17, .07, 4.12, -2.30, 2.247, 5.65, p.walnut);
   block(.13, 1.39, 4.86, -10.04, 1.475, 4.97, p.cream);
   block(.18, .07, 4.92, -10.04, 2.205, 4.97, p.walnut);
   block(.13,1.45,3.64,-7.08,1.51,5.96,p.wall);
   block(.18,.07,3.69,-7.08,2.267,5.96,p.walnut);
-  soft(2.28,.82,.47,-5.42,1.21,2.72,p.walnut);
-  for(let i=0;i<10;i++){
-    const h=.24+(i%3)*.065;
-    block(.126,h,.24,-6.40+i*.203,1.62+h/2,2.71,[p.teal,p.clay,p.cream,p.navy][i%4]);
+  // Small security desk wall. The graphics are decorative status tiles.
+  soft(2.47,1.76,.12,-8.63,1.66,2.61,p.navy);
+  soft(2.10,.77,.091,-8.63,1.95,2.715,p.metal);
+  for(const x of [-9.29,-8.63,-7.97]){
+    block(.592,.61,.023,x,1.95,2.778,p.screen);
+    block(.18,.10,.027,x-.16,2.107,2.793,p.data);
+    for(let i=0;i<3;i++)block(.035,.15+i*.08,.019,x-.12+i*.109,1.78+i*.04,2.798,p.forest);
   }
+  for(const x of [-9.35,-9.19,-9.03])part(sphere,.055,.055,.035,x,1.45,2.746,p.lamp);
+  soft(.66,.84,.44,-9.57,1.21,7.18,p.navy);
+  block(.35,.052,.036,-9.57,1.36,7.42,p.amber);
+  buildYuriCabinet(decor,OFFICE_FLOOR,textureLoader);
   planter(-1.97, -7.25, .94, p.teal);
   planter(-11.85, -7.18, .90, p.cream);
-  planter(-4.05, 7.65, .78, p.clay);
+  planter(-2.79, 7.43, .76, p.clay);
 
   // Dark mullions and a wide open doorway make the glass readable at a distance.
   const paneY = 2.18;
