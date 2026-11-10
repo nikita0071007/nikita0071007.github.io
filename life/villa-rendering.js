@@ -1,11 +1,11 @@
 import * as T from 'three';
 
 const surfaceTypes = {
-  wood: {roughness:.57,bump:.009,repeat:1},
-  linen: {roughness:.93,bump:.006,repeat:2},
-  plaster: {roughness:.91,bump:.012,repeat:2},
-  stone: {roughness:.84,bump:.014,repeat:1},
-  grass: {roughness:.98,bump:0,repeat:76}
+  wood: {roughness:.57,repeat:1},
+  linen: {roughness:.93,repeat:2},
+  plaster: {roughness:.91,repeat:2},
+  stone: {roughness:.84,repeat:1},
+  grass: {roughness:.98,repeat:76}
 };
 
 function rgbaTexture(width,height,fill) {
@@ -42,7 +42,6 @@ function makeRippleTexture(){
 }
 
 export function createVillaMaterials(loader,anisotropy=1){
-  let detailed=false;
   const slots=new Map();
   for(const [name,properties] of Object.entries(surfaceTypes)){
     const slot={properties,texture:null,materials:[]};
@@ -53,47 +52,39 @@ export function createVillaMaterials(loader,anisotropy=1){
       texture.repeat.setScalar(properties.repeat);
       texture.anisotropy=anisotropy;
       slot.texture=texture;
-      for(const material of slot.materials)applyMaps(slot,material);
+      for(const material of slot.materials){
+        material.map=texture;
+        material.needsUpdate=true;
+      }
     },undefined,()=>{});
-  }
-  function applyMaps(slot,material){
-    const bumpMap=detailed&&slot.properties.bump?slot.texture:null;
-    if(material.map===slot.texture&&material.bumpMap===bumpMap)return;
-    material.map=slot.texture;
-    material.bumpMap=bumpMap;
-    material.bumpScale=slot.properties.bump;
-    material.needsUpdate=true;
   }
   const contact=makeContactTexture();
   const ripples=makeRippleTexture();
+  const reflection=makeEnvironment();
 
   return {
     matte(color,kind=null,properties={}){
       const slot=slots.get(kind);
       const material=new T.MeshStandardMaterial({color,roughness:slot?.properties.roughness??.82,
         envMapIntensity:.36,...properties});
+      if(material.metalness>=.22||material.roughness<=.36)material.envMap=reflection;
       if(slot){
         slot.materials.push(material);
-        if(slot.texture)applyMaps(slot,material);
+        material.map=slot.texture;
       }
       return material;
     },
     glass(opacity=.14){
       return new T.MeshStandardMaterial({color:'#cbe3ea',opacity,transparent:true,
-        roughness:.16,metalness:.32,envMapIntensity:1.18,side:T.DoubleSide,depthWrite:false});
+        roughness:.16,metalness:.32,envMap:reflection,envMapIntensity:1.18,side:T.DoubleSide,depthWrite:false});
     },
     water(){
       return new T.MeshStandardMaterial({color:'#648e91',roughness:.24,metalness:.23,
-        envMapIntensity:1.04,bumpMap:ripples,bumpScale:.018});
+        envMap:reflection,envMapIntensity:1.04,bumpMap:ripples,bumpScale:.018});
     },
     contact(opacity=.42){
       return new T.MeshBasicMaterial({color:'#2c241f',map:contact,transparent:true,
         opacity,depthWrite:false,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1});
-    },
-    setDetail(enabled){
-      if(detailed===enabled)return;
-      detailed=enabled;
-      for(const slot of slots.values())if(slot.texture)for(const material of slot.materials)applyMaps(slot,material);
     }
   };
 }
@@ -119,17 +110,17 @@ function makeEnvironment(){
 }
 
 const practicalLights={
-  editorial:[[-4.85,2.20,4.44],[-5.88,2.43,3.59]],
-  icons:[[-5.88,2.43,3.59],[-4.85,2.20,4.44]],
-  director:[[-10.27,7.92,-5.19],[-7.55,8.91,-6.71]],
-  therapy:[[2.91,8.34,-6.64],[.12,8.84,-4.87]],
-  studio:[[11.50,8.57,-6.71],[5.89,8.52,-6.72]],
-  grandma:[[-4.56,8.34,2.73],[-8.32,8.64,3.26]],
-  security:[[-8.61,2.80,3.43],[-8.82,2.33,5.64]],
-  meeting:[[8.68,3.23,-7.91],[7.96,3.45,-4.88]],
-  kitchen:[[9.65,2.49,1.21],[8.72,3.28,4.68]],
-  lounge:[[-1.62,2.42,3.07],[2.14,3.31,4.66]],
-  gym:[[10.71,9.13,3.46],[7.24,9.02,6.04]]
+  editorial:[-5.08,2.47,4.20],
+  icons:[-5.88,2.43,3.59],
+  director:[-10.27,8.12,-5.19],
+  therapy:[2.91,8.34,-6.64],
+  studio:[11.50,8.57,-6.71],
+  grandma:[-4.56,8.34,2.73],
+  security:[-8.61,2.80,3.43],
+  meeting:[8.68,3.23,-7.91],
+  kitchen:[9.65,2.49,1.21],
+  lounge:[-1.62,2.42,3.07],
+  gym:[10.71,9.13,3.46]
 };
 
 export function installVillaLighting(renderer,scene){
@@ -137,7 +128,7 @@ export function installVillaLighting(renderer,scene){
   renderer.toneMappingExposure=1.18;
   renderer.shadowMap.enabled=true;
   renderer.shadowMap.autoUpdate=false;
-  renderer.shadowMap.type=T.PCFSoftShadowMap;
+  renderer.shadowMap.type=T.BasicShadowMap;
 
   const hemi=new T.HemisphereLight();
   const sun=new T.DirectionalLight();
@@ -146,9 +137,8 @@ export function installVillaLighting(renderer,scene){
   sun.shadow.camera.updateProjectionMatrix();
   sun.shadow.bias=-.00013;
   sun.shadow.normalBias=.034;
-  const lamps=[new T.PointLight('#ffd4a0',0,12,2),new T.PointLight('#ffe0bf',0,11,2)];
-  scene.add(hemi,sun,...lamps);
-  scene.environment=makeEnvironment();
+  const lamp=new T.PointLight('#ffd4a0',7.8,12,2);
+  scene.add(hemi,sun,lamp);
   const backdrops={
     day:backdrop([139,179,214],[223,229,220]),
     dusk:backdrop([39,60,87],[146,146,135]),
@@ -177,17 +167,14 @@ export function installVillaLighting(renderer,scene){
         (evening?backdrops.dusk:backdrops.day);
       hemi.color.set(evening?'#cad6ee':'#e2eeff');
       hemi.groundColor.set(evening?'#594636':'#9b8169');
-      hemi.intensity=evening?1.32:1.18;
+      hemi.intensity=evening?1.54:1.32;
       sun.color.set(evening?'#bed2ed':'#fff0d6');
       sun.position.set(...(evening?[17,28,10]:[-22,32,17]));
       sun.intensity=evening?.79:2.79;
-      const points=practicalLights[zone]||(mode==='upstairs'?
-        [[-10.27,7.92,-5.19],[3.08,8.4,-5.6]]:
-        mode==='office'?[[-5.87,2.43,3.64],[9.65,2.5,1.22]]:[[1.53,2.8,9.56],[7.79,2.47,16.17]]);
-      for(let i=0;i<lamps.length;i++){
-        lamps[i].position.set(...points[i]);
-        lamps[i].intensity=evening?(interior?(i===0?13.8:8.8):9.0):0;
-      }
+      const point=practicalLights[zone]||(mode==='upstairs'?[-7.74,8.70,-5.21]:
+        mode==='office'?[1.34,3.56,3.91]:[1.53,2.8,9.56]);
+      lamp.position.set(...point);
+      lamp.visible=evening;
       invalidate();
     }
   };

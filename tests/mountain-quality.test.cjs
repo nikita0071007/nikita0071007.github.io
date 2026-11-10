@@ -13,7 +13,7 @@ function setup(saved=null,blocked=false){
   const document={hidden:false,getElementById:id=>elements[id]??={hidden:true,textContent:''},addEventListener:(n,f)=>events[n]=f};
   const context=vm.createContext({human:null,humanClock:null,followHuman:false,activePerson:null,models:new Map(),queueModels(){},liza:{},document,renderer,performance:{now:()=>now},localStorage:{getItem:k=>{if(blocked)throw Error('blocked');return savedValues.get(k)},setItem:(k,v)=>{if(blocked)throw Error('blocked');savedValues.set(k,v)}},devicePixelRatio:2,innerWidth:361,innerHeight:647,people:[],controls:{update(){}},scene:{},camera:{updateProjectionMatrix(){},updateMatrixWorld(){}},requestAnimationFrame(){},addEventListener:(n,f)=>events[n]=f,
     T:{Vector3:class{}},lifePanel:{hidden:true},roomMode:null,launchView(){},
-    surfaces:{setDetail(){}},lighting:{setQuality(){}},
+    lighting:{setQuality(){}},
     houseMeetings:{update(){},has(){return false}},updateLifeBubble(){}});
   vm.runInContext(source,context);
   return {context,elements,savedValues,ratio:()=>ratio,click:()=>elements.quality.onclick(),event:n=>events[n](),hidden:v=>{document.hidden=v;events.visibilitychange()},frames:(count,step)=>{for(let i=0;i<count;i++){now+=step;vm.runInContext('tick('+now+')',context)}},sample:(fps)=>{vm.runInContext('framesInWindow='+ (fps*5-1),context);now+=5000;vm.runInContext('tick('+now+')',context)},advance:ms=>now+=ms};
