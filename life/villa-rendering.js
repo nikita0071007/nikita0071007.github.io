@@ -97,6 +97,20 @@ function backdrop(top,bottom){
   return result;
 }
 
+function sunsetBackdrop(){
+  const result=rgbaTexture(384,128,(x,y)=>{
+    const horizon=Math.exp(-Math.pow((y-.78)/.16,2));
+    const warm=T.MathUtils.smoothstep(x,.40,1)*horizon;
+    const cloud=Math.max(0,Math.sin(y*64+x*6+Math.sin(x*17)*.9)+
+      .38*Math.sin(y*121-x*21)-.43)*Math.pow(T.MathUtils.smoothstep(y,.50,.95),.6);
+    const base=[74,95,108].map((v,i)=>T.MathUtils.lerp(v,[25,39,57][i],y));
+    const color=base.map((v,i)=>T.MathUtils.clamp(Math.round(v+warm*[183,75,15][i]-cloud*[33,24,18][i]),0,255));
+    return [...color,255];
+  });
+  result.colorSpace=T.SRGBColorSpace;
+  return result;
+}
+
 function makeEnvironment(){
   const result=rgbaTexture(128,64,(x,y)=>{
     const sky=T.MathUtils.smoothstep(y,.37,.69);
@@ -112,15 +126,17 @@ function makeEnvironment(){
 const practicalLights={
   editorial:[-5.08,2.47,4.20],
   icons:[-5.88,2.43,3.59],
-  director:[-10.27,8.12,-5.19],
+  director:[-10.27,8.12,4.36],
   therapy:[2.91,8.34,-6.64],
-  studio:[11.50,8.57,-6.71],
-  grandma:[-4.56,8.34,2.73],
+  studio:[11.50,8.57,2.82],
+  grandma:[-4.56,8.34,-7.02],
   security:[-8.61,2.80,3.43],
-  meeting:[8.68,3.23,-7.91],
-  kitchen:[9.65,2.49,1.21],
+  meeting:[-7.32,3.23,-7.91],
+  kitchen:[.85,2.49,-7.44],
   lounge:[-1.62,2.42,3.07],
-  gym:[10.71,9.13,3.46]
+  gym:[10.71,9.13,-6.14],
+  terrace:[16.11,8.58,3.70],
+  work:[7.68,3.24,2.21]
 };
 
 export function installVillaLighting(renderer,scene){
@@ -138,10 +154,14 @@ export function installVillaLighting(renderer,scene){
   sun.shadow.bias=-.00013;
   sun.shadow.normalBias=.034;
   const lamp=new T.PointLight('#ffd4a0',7.8,12,2);
-  scene.add(hemi,sun,lamp);
+  const galleryLamp=new T.PointLight('#ffb873',33,15,2);
+  galleryLamp.position.set(-1.90,9.55,5.90);
+  galleryLamp.visible=false;
+  scene.add(hemi,sun,lamp,galleryLamp);
   const backdrops={
     day:backdrop([139,179,214],[223,229,220]),
     dusk:backdrop([39,60,87],[146,146,135]),
+    sunset:sunsetBackdrop(),
     indoorDay:backdrop([82,110,125],[153,167,168]),
     indoorDusk:backdrop([25,39,57],[75,96,108])
   };
@@ -161,20 +181,22 @@ export function installVillaLighting(renderer,scene){
       }
       return enabled;
     },
-    setView(mode,zone,evening){
+    setView(mode,zone,evening,presentation=false){
       const interior=mode==='office'||mode==='upstairs';
       scene.background=interior?(evening?backdrops.indoorDusk:backdrops.indoorDay):
-        (evening?backdrops.dusk:backdrops.day);
+        (evening?(presentation?backdrops.sunset:backdrops.dusk):backdrops.day);
       hemi.color.set(evening?'#cad6ee':'#e2eeff');
       hemi.groundColor.set(evening?'#594636':'#9b8169');
-      hemi.intensity=evening?1.54:1.32;
+      hemi.intensity=evening?(presentation?1.14:1.54):1.32;
       sun.color.set(evening?'#bed2ed':'#fff0d6');
       sun.position.set(...(evening?[17,28,10]:[-22,32,17]));
-      sun.intensity=evening?.79:2.79;
+      sun.intensity=evening?(presentation?.66:.79):2.79;
       const point=practicalLights[zone]||(mode==='upstairs'?[-7.74,8.70,-5.21]:
         mode==='office'?[1.34,3.56,3.91]:[1.53,2.8,9.56]);
-      lamp.position.set(...point);
+      lamp.position.set(...(presentation?[7.04,3.68,5.50]:point));
+      lamp.intensity=presentation?42:7.8;
       lamp.visible=evening;
+      galleryLamp.visible=presentation&&evening;
       invalidate();
     }
   };

@@ -34,6 +34,12 @@ body.office-view #toolbar>*{flex:none;white-space:nowrap;font-size:13px;padding:
   #officePanel{bottom:6px;padding:7px 10px}
   #officePanelHead{margin-bottom:4px}
 }
+body.architecture-view #toast{display:none}
+body.architecture-view header{display:block;padding:8px 12px}
+body.architecture-view #toolbar{margin:6px 0 0;flex-wrap:nowrap;overflow:auto;scrollbar-width:thin}
+body.architecture-view #toolbar>*{flex:none;white-space:nowrap;font-size:13px;padding:7px 9px}
+body.architecture-view #info{width:min(350px,calc(100vw - 22px));padding:8px 12px}
+body.architecture-view #detail,body.architecture-view #info p:last-child{display:none}
 body.human-view #toast,body.human-portrait #info,body.life-view #toast,body.life-view #info{display:none}
 body.human-portrait #names{visibility:hidden}
 #lifePanel details{margin-top:9px;font-size:13px}
@@ -64,10 +70,11 @@ body.human-portrait #names{visibility:hidden}
 <script type="module">
 import * as T from 'three';import{OrbitControls}from'three/addons/controls/OrbitControls.js';
 import {createHouseHistory,createTerraceMeetings,MEETING_AREA} from './house-life.js?v=1';
-import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=surfaces';
-import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=surfaces';
-import {createVillaMaterials,installVillaLighting} from './villa-rendering.js?v=2';
-import {buildVillaLandscape} from './villa-landscape.js?v=1';
+import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=architecture';
+import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=architecture';
+import {createVillaMaterials,installVillaLighting} from './villa-rendering.js?v=3';
+import {buildVillaLandscape,buildVillaApproach} from './villa-landscape.js?v=3';
+import {buildVillaArchitecture,VILLA_VIEW} from './villa-architecture.js?v=2';
 const root=document.getElementById('world'),nameRoot=document.getElementById('names'),info=document.getElementById('info');let renderer,scene,camera,controls;
 try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
 scene=new T.Scene();
@@ -75,15 +82,15 @@ const lighting=installVillaLighting(renderer,scene);
 const textureLoader=new T.TextureLoader();
 const surfaces=createVillaMaterials(textureLoader,Math.min(4,renderer.capabilities.getMaxAnisotropy()));
 const houseFog=new T.Fog('#758895',65,145);scene.fog=houseFog;
-const upperLevel=new T.Group(),facade=new T.Group(),grounds=new T.Group(),stairs=new T.Group();
+const architecture=buildVillaArchitecture(surfaces);
+const {upperLevel,facade,stairs,glow}=architecture,grounds=new T.Group();
+const approach=buildVillaApproach(surfaces);
 const officeInterior=buildOffice(textureLoader,surfaces),upperInterior=buildUpperFloor(surfaces);
-scene.add(upperLevel,facade,grounds,stairs,officeInterior,upperInterior);
-grounds.add(buildGarden(surfaces),buildVillaLandscape(surfaces));
-camera=new T.PerspectiveCamera(46,innerWidth/innerHeight,.1,230);camera.position.set(28,20,33);controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,4,0);controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=13;controls.maxDistance=85;controls.minPolarAngle=.12;controls.enablePan=true;controls.update();
+scene.add(upperLevel,facade,grounds,stairs,glow,officeInterior,upperInterior);
+grounds.add(buildGarden(surfaces),buildVillaLandscape(surfaces),approach.root);
+camera=new T.PerspectiveCamera(46,innerWidth/innerHeight,.1,315);camera.position.set(28,20,33);controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,4,0);controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=13;controls.maxDistance=85;controls.minPolarAngle=.12;controls.enablePan=true;controls.update();
 const mat=(color,roughness=.82,metalness=0,kind=null)=>surfaces.matte(color,kind,{roughness,metalness});
-const wood=mat('#745039',.59,0,'wood'),floorMat=mat('#a77a52',.57,0,'wood');
-const stone=mat('#4d5050',.89,0,'stone'),metal=mat('#252b2b',.46,.6),glass=surfaces.glass(.17);
-const warm=mat('#ffcf85'),dark=mat('#242b33',.81,.20,'stone');
+const floorMat=mat('#a77a52',.57,0,'wood'),metal=mat('#252b2b',.46,.6);
 function placeMesh(geometry,m,x,y,z,parent,casts=true){
   const mesh=new T.Mesh(geometry,m);
   mesh.position.set(x,y,z);
@@ -95,52 +102,10 @@ function placeMesh(geometry,m,x,y,z,parent,casts=true){
 function box(w,h,d,x,y,z,m,parent=scene){return placeMesh(new T.BoxGeometry(w,h,d),m,x,y,z,parent,h>.082)}
 function ball(r,x,y,z,m,parent=scene){return placeMesh(new T.SphereGeometry(r,9,7),m,x,y,z,parent)}
 function cylinder(rt,rb,h,x,y,z,m,parent=scene){return placeMesh(new T.CylinderGeometry(rt,rb,h,8),m,x,y,z,parent)}
-const lawn=box(180,.3,180,0,-.7,0,mat('#647752',.98,0,'grass'),grounds);
+const lawn=box(296,.3,296,0,-.7,0,mat('#647752',.98,0,'grass'),grounds);
 lawn.castShadow=false;
-box(28,1.2,19,0,-.1,0,stone,grounds);
-box(27,.45,18,0,12.35,0,dark,upperLevel);
-for(let x=-12.6;x<=12.8;x+=1.4)box(.048,.031,17.90,x,12.59,0,metal,upperLevel);
-for(const y of [3.5,9.3]){
-  const upper=y>6,storey=upper?upperLevel:facade;
-  for(const z of [-8.35,8.35]){
-    box(25.4,.13,.16,0,y+2.72,z,metal,storey);
-    if(z<0){
-      box(25.4,.13,.16,0,y-2.72,z,metal,storey);
-      box(25.3,5.3,.045,0,y,z,glass,storey);
-      for(const x of [-12.7,-8.47,-4.24,0,4.24,8.47,12.7])box(.12,5.6,.16,x,y,z,metal,storey);
-    }else{
-      const entry=upper?7.28:0;
-      const left=entry-1.14,right=entry+1.14;
-      for(const [a,b] of [[-12.65,left],[right,12.65]]){
-        box(b-a,5.3,.045,(a+b)/2,y,z,glass,storey);
-        box(b-a,.13,.16,(a+b)/2,y-2.72,z,metal,storey);
-      }
-      for(const x of [-12.7,left,right,12.7])box(.15,5.6,.18,x,y,z,metal,storey);
-      for(const x of [-8.48,-4.24,0,4.24,8.48]){
-        if(x<left-.19||x>right+.19)box(.105,5.43,.145,x,y,z,metal,storey);
-      }
-      box(2.27,2.74,.045,entry,y+1.28,z,glass,storey);
-      box(2.33,.116,.18,entry,y-.118,z,metal,storey);
-    }
-  }
-  for(const x of [-12.8,12.8]){
-    box(.045,5.3,16.7,x,y,0,glass,storey);
-    for(const z of [-8.34,-4.18,0,4.18,8.34])box(.154,5.43,.108,x,y,z,metal,storey);
-  }
-}
-for(let i=0;i<12;i++){
-  const z=7.63-i*.43,y=.9+i*.49;
-  box(1.8,.18,.46,-11.66,y,z,wood,stairs);
-  box(.07,.5,.07,-10.80,y+.25,z,metal,stairs);
-}
-for(const x of [-1.49,1.49])ball(.19,x,2.69,8.46,warm,facade);
-for(let i=0;i<8;i++){const x=-10+i*2.8;box(1.3,.15,.65,x,12.65,-8.1,mat('#435b40'),upperLevel)}
 
-const cushion=mat('#c7a98a',.93,0,'linen'),lightGold=mat('#f7c17c');
-for(const x of [-11,-7,-3,3,7,11]){
-  ball(.15,x,5.95,8.55,lightGold,facade);
-  ball(.15,x,11.9,8.55,lightGold,upperLevel);
-}
+const cushion=mat('#c7a98a',.93,0,'linen');
 
 const defs=[
   ['analyst','Вера','Аналитика'],['poster','Макс','Контент'],['guard','Славик','Охрана'],
@@ -289,6 +254,7 @@ function closeHuman(){
   controls.minDistance=13;
 }
 function focusHuman(showPortrait=false){
+  closeExterior();
   closeRoomView();
   closeLife();
   portrait=showPortrait&&!!human;
@@ -405,6 +371,7 @@ function focusLife(){
   view(x+.4,3.65+lift,z+distance,x,1.15+lift,z);
 }
 function showLife(){
+  closeExterior();
   closeRoomView();
   closeHuman();
   if(human)parkPerson(activePerson,human);
@@ -629,18 +596,24 @@ function view(x,y,z,tx=0,ty=4,tz=0){
   controls.update();
   camera.updateMatrixWorld(true);
 }
-let evening=true,showLabels=true;
+let evening=true,showLabels=true,exteriorLabels=false;
 const labelsButton=document.getElementById('labels');
 function isCutaway(){
   return roomMode==='office'||roomMode==='upstairs';
 }
 function applyLighting(){
-  houseFog.color.set(evening?'#838a92':'#bbcbd1');
+  const exterior=document.body.classList.contains('architecture-view');
+  const presentation=exterior||roomMode==='garden';
+  houseFog.color.set(evening?(presentation?'#435769':'#838a92'):'#bbcbd1');
+  if(!exterior){houseFog.near=65;houseFog.far=145}
   scene.fog=roomMode?null:houseFog;
-  lighting.setView(roomMode,roomZone,evening);
+  architecture.setEvening(evening&&!isCutaway());
+  approach.lights.visible=evening;
+  lighting.setView(roomMode,roomZone,evening,presentation);
+  document.getElementById('night').setAttribute('aria-pressed',String(evening));
 }
 function applyLabels(){
-  const shown=roomMode?roomLabels:showLabels;
+  const shown=roomMode?roomLabels:document.body.classList.contains('architecture-view')?exteriorLabels:showLabels;
   nameRoot.style.display=shown?'block':'none';
   labelsButton.setAttribute('aria-pressed',String(shown));
 }
@@ -677,6 +650,7 @@ function closeRoomView(){
   applyRoomView();
 }
 function showRoom(mode,zone='overview'){
+  closeExterior();
   const {title,nav,zones}=roomViews[mode];
   roomZone=zone;
   if(mode!==roomMode){
@@ -707,8 +681,33 @@ function showRoom(mode,zone='overview'){
   for(const button of officeTabs.children)button.setAttribute('aria-pressed',String(button.dataset.officeZone===zone));
   focusRoom();
 }
+function focusExterior(){
+  camera.fov=OFFICE_FOV;
+  camera.updateProjectionMatrix();
+  controls.minDistance=11;
+  controls.maxDistance=190;
+  const top=document.querySelector('header').getBoundingClientRect().bottom;
+  const {position,target}=roomFrame(VILLA_VIEW,innerWidth,innerHeight,top,innerHeight*.045);
+  const distance=position.distanceTo(target);
+  houseFog.near=Math.max(65,distance+10);
+  houseFog.far=houseFog.near+86;
+  view(...position.toArray(),...target.toArray());
+}
+function closeExterior(){
+  if(!document.body.classList.contains('architecture-view'))return;
+  document.body.classList.remove('architecture-view');
+  camera.fov=46;
+  camera.updateProjectionMatrix();
+  controls.maxDistance=85;
+  applyLighting();
+  applyLabels();
+}
 function showHouse(){
-  closeHuman();closeLife();closeRoomView();view(28,20,33);
+  closeHuman();closeLife();closeRoomView();
+  document.body.classList.add('architecture-view');
+  applyLighting();
+  applyLabels();
+  focusExterior();
 }
 for(const [mode,{button}] of Object.entries(roomViews))button.onclick=()=>showRoom(mode);
 document.getElementById('officeClose').onclick=()=>{
@@ -718,7 +717,12 @@ document.getElementById('officeClose').onclick=()=>{
 };
 document.getElementById('front').onclick=showHouse;
 document.getElementById('night').onclick=()=>{evening=!evening;applyLighting()};
-labelsButton.onclick=()=>{if(roomMode)roomLabels=!roomLabels;else showLabels=!showLabels;applyLabels()};
+labelsButton.onclick=()=>{
+  if(roomMode)roomLabels=!roomLabels;
+  else if(document.body.classList.contains('architecture-view'))exteriorLabels=!exteriorLabels;
+  else showLabels=!showLabels;
+  applyLabels();
+};
 applyLabels();
 applyLighting();
 function launchView(){
@@ -739,6 +743,7 @@ function launchView(){
       return;
     }
   }
+  showHouse();
   renderLife();
 }
 // Keep the user's choice separate from the temporary automatic render scale.
@@ -874,5 +879,6 @@ addEventListener('resize',()=>{
   if(human&&portrait&&followHuman)focusHuman(true);
   if(!lifePanel.hidden)focusLife();
   if(roomMode)focusRoom();
+  if(document.body?.classList.contains('architecture-view'))focusExterior();
 });
 </script></body></html>

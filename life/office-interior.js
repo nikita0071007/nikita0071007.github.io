@@ -1,35 +1,38 @@
 import * as T from 'three';
-import {createDecor} from './villa-decor.js?v=surfaces';
+import {createDecor} from './villa-decor.js?v=architecture';
 import {buildYuriCabinet} from './yuri-cabinet.js?v=surfaces';
 
 export const OFFICE_FLOOR = .78;
 export const OFFICE_FOV = 34;
 export const OFFICE_DESKS = {
-  analyst: [-10.85, -5.65],
-  orders: [-8.25, -5.65],
-  editor: [-5.65, -5.65],
-  video: [-3.05, -5.65],
-  archivist: [-10.85, -1.2],
-  community: [-8.25, -1.2],
-  poster: [-5.65, -1.2],
-  producer: [-3.05, -1.2],
+  analyst: [3.47, -.86],
+  orders: [5.92, -.86],
+  editor: [8.37, -.86],
+  video: [10.82, -.86],
+  archivist: [3.47, 3.89],
+  community: [5.92, 3.89],
+  poster: [8.37, 3.89],
+  producer: [10.82, 3.89],
   guard: [-8.64, 3.86],
   critic: [-3.97, 4.58]
 };
 
 export const OFFICE_ZONES = {
   overview: {label:'Обзор', center:[0,1.45,-.04], size:[26.7,3.6,17.65], text:'Первый этаж. Выбери зону, чтобы рассмотреть её.'},
-  work: {label:'Работа', center:[-7.34,1.45,-3.20], size:[11.4,3.2,9.95], text:'Общая рабочая зона. Макс и Олег сидят рядом в секторе контента.'},
+  work: {label:'Работа', center:[7.14,1.55,2.47], size:[11.53,3.2,10.96], text:'Общий офис у панорамного стекла. Макс и Олег работают рядом в секторе контента.'},
   security: {label:'Охрана', title:'Пост Славика', center:[-8.65,1.64,5.08], size:[3.02,2.38,5.45], angle:[.27,.69,1], text:'Пульт наблюдения, рация и шкафчик у входа.'},
   editorial: {label:'Юрий', title:'Кабинет Юрия', center:[-4.70,1.99,5.13], size:[4.94,3.14,5.64], angle:[.27,.64,1], text:'ПК для работы, книжные полки и отдельный уголок с иконами.'},
   icons: {label:'Киот', title:'Киот Юрия', center:[-5.87,2.04,3.14], size:[2.08,2.95,1.35], angle:[.12,.32,1], text:'Деревянный киот в форме маленькой часовни с двумя иконами.'},
-  meeting: {label:'Переговорная', center:[7.9,1.86,-4.92], size:[9.1,3.1,6.8], text:'Стеклянная переговорная с большим столом и экраном.'},
-  kitchen: {label:'Кухня', center:[9.15,1.62,4.05], size:[7.25,2.95,8.0], text:'Общий стол на шесть человек и отдельная кофейная станция.'},
-  lounge: {label:'Отдых', center:[1.55,1.5,4.65], size:[7.55,2.2,6.3], text:'Гостиная с диваном, креслом и тёплым торшером.'}
+  meeting: {label:'Переговорная', center:[-8.1,1.86,-4.92], size:[9.1,3.1,6.8], text:'Стеклянная переговорная с большим столом и экраном.'},
+  kitchen: {label:'Кухня', center:[.35,1.62,-4.60], size:[7.25,2.95,8.0], text:'Общий стол на шесть человек и отдельная кофейная станция.'},
+  lounge: {label:'Отдых', center:[-.32,1.5,4.65], size:[3.35,2.2,6.3], text:'Уголок отдыха с диваном, креслом и тёплым торшером.'}
 };
 
-export const KITCHEN_SEATS = [7.37,10.08].flatMap((x,side) =>
+const KITCHEN_OFFSET = [-8.80,-8.65];
+const kitchenSeats = [7.37,10.08].flatMap((x,side) =>
   [3.46,4.68,5.90].map(z => ({x,z,heading:side ? -Math.PI/2 : Math.PI/2})));
+export const KITCHEN_SEATS = kitchenSeats.map(({x,z,heading})=>
+  ({x:x+KITCHEN_OFFSET[0],z:z+KITCHEN_OFFSET[1],heading}));
 
 export function roomFrame({center, size, angle = [.60,1.04,1]}, width, height, top, bottom) {
   const diagonal = new T.Vector3(...angle).normalize();
@@ -58,7 +61,7 @@ export function officeFrame(zone, width, height, top, bottom) {
 
 export function buildOffice(textureLoader,surfaces) {
   const decor = createDecor('Office interior', OFFICE_FLOOR, surfaces);
-  const {root:office,p,cube,drum,shade,sphere,part,block,soft,tube,assembly,shadow,
+  const {root:office,layout,p,cube,drum,shade,sphere,part,block,soft,tube,assembly,shadow,
     planter,officeChair,boards,finish} = decor;
   // Oak boards sit over the dark edge of the cutaway.
   soft(26.65, .33, 17.62, 0, .47, -.02, p.base);
@@ -71,15 +74,21 @@ export function buildOffice(textureLoader,surfaces) {
   block(25.7, .14, .2, 0, .89, -8.24, p.trim);
 
   // Shared workroom and the two small rooms beside the stair.
-  soft(11.2, .033, 8.35, -7.34, .789, -3.23, p.forest);
+  const wool=decor.matte('#9c8d7c','linen'),brass=decor.matte('#9c7246',null,{metalness:.36,roughness:.42});
+  const monitor=new T.MeshStandardMaterial({color:'#d0e0db',emissive:'#8babb1',emissiveIntensity:.72,roughness:.42});
+  soft(10.92, .033, 9.87, 7.12, .789, 2.27, wool);
   soft(2.86, .033, 4.94, -8.61, .789, 5.09, p.jade);
   soft(4.58, .033, 5.19, -4.70, .789, 5.12, p.canvas);
-  soft(4.85, .025, 2.96, -4.37, .816, -.68, p.teal);
+  for(const z of [-.86,3.89]){
+    soft(9.90,.14,1.23,7.14,1.558,z,p.oak);
+    for(const x of [2.30,11.98])soft(.115,.765,1.18,x,1.159,z,p.walnut);
+    for(let i=0;i<38;i++)block(.044,.23,.076,2.47+i*.251,1.33,z-.57,p.walnut);
+  }
   const workSeats = [p.teal, p.jade, p.navy, p.teal];
   Object.entries(OFFICE_DESKS).forEach(([id,[x,z]], i) => {
     const desk = assembly(x, z);
     shadow(2.14, 1.13, x, z, .804);
-    soft(2.11, .135, 1.11, 0, .78, 0, p.oak, desk);
+    if(i>=8)soft(2.11, .135, 1.11, 0, .78, 0, p.oak, desk);
     for (const dx of [-.88,.88]) for (const dz of [-.39,.39]) {
       block(.088, .73, .088, dx, .365, dz, p.metal, desk);
     }
@@ -87,7 +96,7 @@ export function buildOffice(textureLoader,surfaces) {
     soft(.34, .06, .26, -.24, .882, -.24, p.metal, desk);
     block(.09, .29, .10, -.24, 1.01, -.27, p.metal, desk);
     soft(.89, .52, .085, -.24, 1.21, -.28, p.navy, desk);
-    block(.79, .414, .014, -.24, 1.22, -.231, p.screen, desk);
+    block(.79, .414, .014, -.24, 1.22, -.231, i<8?monitor:p.screen, desk);
     for (let line = 0; line < 3; line++) {
       block(.32 - .065 * line, .019, .013, -.34, 1.32 - .083 * line, -.220, p.data, desk);
     }
@@ -96,6 +105,12 @@ export function buildOffice(textureLoader,surfaces) {
     soft(.30, .036, .34, .64, .868, .15, i % 2 ? p.canvas : p.clay, desk);
     tube(.128, .15, .71, .93, -.30, p.ceramic, desk);
     officeChair(x, z + 1.10, Math.PI, workSeats[i % workSeats.length]);
+    if(i<8){
+      tube(.27,.046,.73,.872,.32,brass,desk);
+      tube(.048,.36,.73,1.064,.32,brass,desk);
+      part(shade,.38,.18,.38,.73,1.29,.32,brass,desk);
+      part(sphere,.20,.12,.20,.73,1.208,.32,p.lamp,desk);
+    }
     if (id === 'guard') {
       block(.65,.37,.076,.61,1.15,-.30,p.navy,desk);
       block(.56,.285,.014,.61,1.15,-.253,p.screen,desk);
@@ -113,10 +128,10 @@ export function buildOffice(textureLoader,surfaces) {
       part(shade,.31,.20,.31,-.81,1.31,-.28,p.lamp,desk);
     }
   });
-  soft(4.1, .9, .60, -9.35, 1.23, -7.78, p.walnut);
+  soft(4.1, .9, .60, 9.25, 1.23, -3.29, p.walnut);
   for (const x of [-10.98,-10.16,-9.34,-8.52,-7.7]) {
-    block(.74, .69, .035, x, 1.22, -7.461, p.oak);
-    block(.18, .033, .04, x, 1.41, -7.423, p.trim);
+    block(.74, .69, .035, x+18.60, 1.22, -2.971, p.oak);
+    block(.18, .033, .04, x+18.60, 1.41, -2.932, p.trim);
   }
   for (const x of [-5.8,-4.55,-3.30]) {
     soft(.96, .77, .085, x, 2.25, -8.22, p.trim);
@@ -142,11 +157,12 @@ export function buildOffice(textureLoader,surfaces) {
   soft(.66,.84,.44,-9.57,1.21,7.18,p.navy);
   block(.35,.052,.036,-9.57,1.36,7.42,p.amber);
   buildYuriCabinet(decor,OFFICE_FLOOR,textureLoader);
-  planter(-1.97, -7.25, .94, p.teal);
-  planter(-11.85, -7.18, .90, p.cream);
+  planter(2.57, -2.04, 1.31, p.teal);
+  planter(12.08, -1.84, 1.27, p.cream);
   planter(-2.79, 7.43, .76, p.clay);
 
   // Dark mullions and a wide open doorway make the glass readable at a distance.
+  const meetingStart=layout.children.length;
   const paneY = 2.18;
   const frame = (w, h, d, x, y, z) => block(w,h,d,x,y,z,p.metal);
   function windowPanel(x, z, length, side = false) {
@@ -189,8 +205,10 @@ export function buildOffice(textureLoader,surfaces) {
   soft(4.1, .15, .23, 8.68, 3.32, -8.06, p.trim);
   soft(3.94, .065, .18, 8.68, 3.225, -8.04, p.lamp);
   planter(11.75, -7.44, .84, p.cream);
+  for(const object of layout.children.slice(meetingStart))object.position.x-=16;
 
   // Coffee kitchen with a clear aisle between the counter and dining table.
+  const kitchenStart=layout.children.length;
   soft(6.94, .036, 7.65, 9.14, .792, 4.04, p.clay);
   for (let i = 0; i <= 7; i++) block(6.72,.008,.026,9.14,.813,.64 + i * .97,p.canvas);
   for (let i = 0; i <= 6; i++) block(.026,.008,6.79,5.78 + i * 1.12,.813,4.04,p.canvas);
@@ -233,7 +251,7 @@ export function buildOffice(textureLoader,surfaces) {
     soft(.29,.6,.24,8.72,1.12,z,p.trim);
     soft(.87,.074,.34,8.72,.853,z,p.teal);
   }
-  for (const {x,z,heading} of KITCHEN_SEATS) {
+  for (const {x,z,heading} of kitchenSeats) {
     shadow(.96,.88,x,z,.817);
     const seat=assembly(x,z,heading);
     soft(.74,.087,.64,0,.259,0,p.canvas,seat);
@@ -246,8 +264,13 @@ export function buildOffice(textureLoader,surfaces) {
     part(sphere,.15,.16,.15,x,1.675,z,p.amber);
   }
   planter(10.62,7.26,.74,p.cream);
+  for(const object of layout.children.slice(kitchenStart)){
+    object.position.x+=KITCHEN_OFFSET[0];
+    object.position.z+=KITCHEN_OFFSET[1];
+  }
 
   // A corner to take a break, with fabric cushions and soft lighting.
+  const loungeStart=layout.children.length;
   soft(7.06,.045,5.64,1.46,.802,4.73,p.forest);
   for (const z of [2.25,7.21]) {
     block(6.82,.012,.036,1.46,.831,z,p.mint);
@@ -287,6 +310,10 @@ export function buildOffice(textureLoader,surfaces) {
   part(sphere,.28,.25,.28,-1.62,2.36,3.07,p.lamp);
   planter(-1.64,6.95,.94,p.cream);
   planter(4.71,7.14,.85,p.cream);
+  for(const object of layout.children.slice(loungeStart)){
+    object.position.x=(object.position.x-1.46)*.48-.32;
+    object.scale.x*=.48;
+  }
 
   return finish();
 }
