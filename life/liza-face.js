@@ -53,7 +53,7 @@ export function createLizaFace(model, appearance = null) {
     eyes.push({eye, eyebrow, side});
   }
 
-  const positions = [], smiling = [], indices = [];
+  const positions = [], smiling = [], speaking = [], indices = [];
   const segments = 16;
   for (let i = 0; i <= segments; i++) {
     const t = 2 * i / segments - 1;
@@ -62,8 +62,10 @@ export function createLizaFace(model, appearance = null) {
     for (const edge of [-1, 1]) {
       const neutralY = yAt(2.291 + .01 * t * t + edge * .014 * taper);
       const smileY = yAt(2.268 + .089 * t * t + edge * .026 * taper);
+      const speechY = yAt(2.29 + .012 * t * t + edge * .041 * taper);
       positions.push(x, neutralY, surface(x, neutralY) + .012);
       smiling.push(x, smileY, surface(x, smileY) + .012);
+      speaking.push(x, speechY, surface(x, speechY) + .012);
     }
     const a = i * 2;
     if (i < segments) indices.push(a, a + 2, a + 1, a + 1, a + 2, a + 3);
@@ -71,7 +73,9 @@ export function createLizaFace(model, appearance = null) {
   const mouthGeometry = new T.BufferGeometry();
   mouthGeometry.setAttribute('position', new T.Float32BufferAttribute(positions, 3));
   mouthGeometry.setIndex(indices);
-  mouthGeometry.morphAttributes.position = [new T.Float32BufferAttribute(smiling, 3)];
+  mouthGeometry.morphAttributes.position = [
+    new T.Float32BufferAttribute(smiling, 3), new T.Float32BufferAttribute(speaking, 3)
+  ];
   const mouth = new T.Mesh(mouthGeometry, new T.MeshBasicMaterial({color: 0x55272a, side: T.DoubleSide}));
   mouth.name = 'LizaSmile';
   face.add(mouth);
@@ -81,22 +85,25 @@ export function createLizaFace(model, appearance = null) {
   head.attach(face);
   originalFace.visible = false;
 
-  let clock = 0, smile = 0;
+  let clock = 0, smile = 0, speech = 0;
   return {
     anchor,
     reset() {
       clock = 0;
-      smile = 0;
+      smile = speech = 0;
       this.update(0, false);
     },
     setDetail(show) {
       face.visible = show;
       originalFace.visible = !show;
     },
-    update(dt, smiling) {
+    update(dt, smiling, talking = false) {
       clock += dt;
       smile = T.MathUtils.damp(smile, smiling ? 1 : 0, 12, dt);
-      mouth.morphTargetInfluences[0] = smile;
+      const opening = talking ? .30 + .63 * (.5 + .5 * Math.sin(clock * 18)) : 0;
+      speech = T.MathUtils.damp(speech, opening, 18, dt);
+      mouth.morphTargetInfluences[0] = smile * (1 - speech);
+      mouth.morphTargetInfluences[1] = speech;
       const blinkPhase = (clock + 1.1) % 4.2;
       const blink = Math.max(0, 1 - Math.abs(blinkPhase - .11) / .11);
       for (const {eye, eyebrow, side} of eyes) {
