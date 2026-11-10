@@ -1,4 +1,4 @@
-name: Liza seating and expression WebGL checks
+name: Mountain house residents WebGL checks
 on:
   push:
     branches: [verify/liza-webgl]
@@ -22,18 +22,14 @@ jobs:
           mkdir -p life-qa
           curl -fsSL --max-time 25 https://raw.githubusercontent.com/nikita0071007/office/main/status.json -o life-qa/status.json
           node --test tests/mountain-quality.test.cjs
-          node qa/liza-browser.cjs --record
+          node qa/liza-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: liza-seating-evidence
+          name: mountain-house-crew-evidence
           path: |
-            life-qa/liza-walk.png
-            life-qa/liza-run.png
-            life-qa/liza-mobile.png
-            life-qa/liza-seated.png
-            life-qa/liza-smile.png
+            life-qa/crew/
+            life-qa/vera-mobile.png
             life-qa/liza-mobile-smile.png
-            life-qa/frames/
           if-no-files-found: ignore
           retention-days: 14

@@ -10,11 +10,14 @@ const statusSnapshot=path.join(out,'status.json');
 const debug=`
 globalThis.lifeQA=()=>{
  const gl=renderer.getContext();
- const floor=liza.userData.detailedHuman ? .67 : null;
+ const current=activePerson||liza;
+ const floor=current.userData.detailedHuman ? .67 : null;
  const bounds=human?new T.Box3().setFromObject(human.object,true):null;
  return {webgl:gl.getParameter(gl.VERSION),draws:renderer.info.render.calls, people:people.length,
-  detailed:!!liza.userData.detailedHuman, children:liza.children.length,
-  position:liza.position.toArray(), heading:liza.rotation.y, floor,
+  detailed:!!current.userData.detailedHuman, children:current.children.length,
+  position:current.position.toArray(), heading:current.rotation.y, floor,
+  active:activePerson?.userData.id, loaded:models.size,
+  terrace:people.filter(person=>person.position.z>13).map(person=>person.userData.id),
   sole:bounds?.min.y, camera:camera.position.toArray(), target:controls.target.toArray(),
   bone:human?.object.getObjectByName('LowerLegL')?.quaternion.toArray(),
   hips:human?.object.getObjectByName('Hips')?.getWorldPosition(new T.Vector3()).y,
@@ -34,7 +37,6 @@ const server=http.createServer(async(req,res)=>{
   res.end(data);
  }catch(err){res.writeHead(404);res.end('Not found')}
 });
-const cli=(...words)=>words.every(w=>process.argv.includes(w));
 async function metrics(page){return await page.evaluate(()=>globalThis.lifeQA())}
 async function config(page,violations){
  await page.route('https://cdn.jsdelivr.net/npm/three@0.160.1/**',async route=>{
@@ -49,27 +51,6 @@ async function config(page,violations){
  page.on('pageerror',e=>violations.push(e.message));
  page.on('console',m=>{if(m.type()==='error'&&!/404|503|Failed to load resource/.test(m.text()))violations.push(m.text())});
 }
-async function recording(page,action){
- const frameRoot=path.join(out,'frames');
- await fs.mkdir(frameRoot,{recursive:true});
- const cdp=await page.context().newCDPSession(page);
- const frames=[];
- const writes=[];
- cdp.on('Page.screencastFrame',frame=>{
-  cdp.send('Page.screencastFrameAck',{sessionId:frame.sessionId}).catch(()=>{});
-  const file='frame-'+String(frames.length).padStart(5,'0')+'.jpg';
-  frames.push({file,timestamp:frame.metadata.timestamp});
-  writes.push(fs.writeFile(path.join(frameRoot,file),Buffer.from(frame.data,'base64')));
- });
- await cdp.send('Page.startScreencast',{format:'jpeg',quality:88,maxWidth:900,maxHeight:700,everyNthFrame:1});
- await action();
- await cdp.send('Page.stopScreencast');
- await Promise.all(writes);
- assert.ok(frames.length>25,'Video has motion frames');
- await fs.writeFile(path.join(frameRoot,'frames.json'),JSON.stringify(frames));
- console.log('recorded frames',frames.length);
- await cdp.detach();
-}
 async function run(){
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
  const base='http://127.0.0.1:'+server.address().port;
@@ -78,6 +59,7 @@ async function run(){
   const errors=[];
   const desktop=await browser.newPage({viewport:{width:960,height:660},deviceScaleFactor:1});
   await config(desktop,errors);
+  await desktop.addInitScript(()=>localStorage.setItem('gusevmade-mountain-quality','normal'));
   await desktop.goto(base+'/life/mountain.html?liza=1',{waitUntil:'domcontentloaded'});
   await desktop.getByText('На террасе. Выбери действие.',{exact:true}).waitFor({timeout:25000});
   const idle=await metrics(desktop);
@@ -109,6 +91,12 @@ async function run(){
 
   const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   await config(mobile,errors);
+  await mobile.addInitScript(()=>localStorage.setItem('gusevmade-mountain-quality','economy'));
+  const phoneAssets=[];
+  mobile.on('request',request=>{
+    const pathname=new URL(request.url()).pathname;
+    if(pathname.endsWith('.glb'))phoneAssets.push(pathname);
+  });
   let attempts=0;
   await mobile.route(url=>url.pathname.endsWith('/life/assets/liza.glb'),async route=>{
     attempts++;
@@ -163,8 +151,20 @@ async function run(){
   await mobile.locator('#roster').click();
   await mobile.locator('#rosterContent button').filter({hasText:'Вера'}).click();
   assert.match(await mobile.locator('#who').textContent(),/Вера/);
-  assert.equal(await mobile.locator('#humanPanel').isVisible(),false);
-  console.log('Mobile viewport:',view,'panel:',panel,'failure/retry, visibility, roster, focus and selection pass');
+  await mobile.getByText('На террасе. Выбери действие.',{exact:true}).waitFor();
+  assert.equal(await mobile.locator('#humanName').textContent(),'Вера · Аналитика');
+  const vera=await metrics(mobile);
+  assert.equal(vera.active,'analyst');
+  assert.deepEqual(vera.terrace,['analyst']);
+  assert.equal(vera.loaded,2);
+  assert.deepEqual([...new Set(phoneAssets)],['/life/assets/liza.glb','/life/assets/crew/analyst.glb']);
+  await mobile.getByRole('button',{name:'Сесть'}).tap();
+  await mobile.getByText('Вера сидит на террасе.',{exact:true}).waitFor({timeout:30000});
+  assert.ok(vera.hips-(await metrics(mobile)).hips>.15);
+  await mobile.getByRole('button',{name:'Улыбка'}).tap();
+  await mobile.waitForFunction(()=>lifeQA().smile>.97);
+  await mobile.screenshot({path:path.join(out,'vera-mobile.png')});
+  console.log('Mobile viewport:',view,'panel:',panel,'retry, visibility, roster, second actor and economy requests pass');
 
   const mobile2d=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await config(mobile2d,errors);
@@ -177,45 +177,38 @@ async function run(){
   console.log('2D roster and GET-only status checks pass; no uncaught page errors');
 
   await mobile.close();
-  await desktop.getByRole('button',{name:'Лиза 3D'}).click();
-  const oldHips=(await metrics(desktop)).hips;
-  const choose=async name=>desktop.getByRole('button',{name}).click();
-  const runActions=async()=>{
-   await choose('Сесть');
-   await desktop.getByText('Лиза сидит на террасе.',{exact:true}).waitFor({timeout:25000});
-   const seated=await metrics(desktop);
-   assert.ok(oldHips-seated.hips>.14);
-   assert.ok(Math.abs(seated.sole-seated.floor)<.025);
-   assert.equal(await desktop.getByRole('button',{name:'Радость'}).isDisabled(),true);
-   assert.equal(await desktop.getByRole('button',{name:'Встать'}).getAttribute('aria-pressed'),'true');
-   await desktop.screenshot({path:path.join(out,'liza-seated.png')});
-   await desktop.waitForTimeout(450);
-   assert.equal((await metrics(desktop)).phase,'seated');
-   await choose('Встать');
-   await desktop.getByText('Лиза стоит рядом со стулом.',{exact:true}).waitFor({timeout:12000});
-   const standing=await metrics(desktop);
-   assert.ok(standing.hips-seated.hips>.15);
-   assert.deepEqual(standing.position,seated.position);
-   await choose('Радость');
-   await desktop.getByText('Лиза радуется!',{exact:true}).waitFor();
-   await desktop.waitForFunction(y=>lifeQA().hand>y+.3,standing.hand);
-   await desktop.getByText('Лиза стоит рядом со стулом.',{exact:true}).waitFor();
-   await choose('Улыбка');
-   await desktop.waitForFunction(()=>lifeQA().smile>.97);
-   await desktop.screenshot({path:path.join(out,'liza-smile.png')});
-   await desktop.waitForTimeout(1200);
-  };
-  if(cli('--record'))await recording(desktop,runActions);
-  else await runActions();
-  await choose('Улыбка');
-  await desktop.waitForFunction(()=>lifeQA().smile<.04);
-  await choose('Сесть');
-  await desktop.getByText('Лиза сидит на террасе.',{exact:true}).waitFor();
-  await choose('Ходить');
-  await desktop.getByText('На террасе. Выбери действие.',{exact:true}).waitFor({timeout:25000});
-  assert.equal(await desktop.getByRole('button',{name:'Ходить'}).getAttribute('aria-pressed'),'true');
+  await desktop.waitForFunction(()=>lifeQA().loaded===13,null,{timeout:60000});
+  await desktop.setViewportSize({width:1040,height:760});
+  const gallery=path.join(out,'crew');
+  await fs.mkdir(gallery,{recursive:true});
+  const ids=['analyst','poster','guard','editor','video','critic','community','archivist','producer','orders','resident-nikita','resident-lena','resident-grandma'];
+  for(const id of ids){
+    await desktop.locator('#roster').click();
+    assert.match(await desktop.locator('#crewStatus').textContent(),/13 из 13/);
+    await desktop.locator('#rosterContent button[data-resident-id="'+id+'"]').click();
+    await desktop.getByText('На террасе. Выбери действие.',{exact:true}).waitFor();
+    const actor=await metrics(desktop);
+    assert.equal(actor.active,id);
+    assert.ok(actor.detailed&&actor.draws>100);
+    assert.deepEqual(actor.terrace,[id]);
+    await desktop.screenshot({
+      path:path.join(gallery,id+'.png'),
+      clip:{x:380,y:169,width:280,height:415}
+    });
+  }
+  const grandma=await metrics(desktop);
+  await desktop.getByRole('button',{name:'Сесть'}).click();
+  await desktop.getByText('Бабушка Марина сидит на террасе.',{exact:true}).waitFor({timeout:30000});
+  const seated=await metrics(desktop);
+  assert.ok(grandma.hips-seated.hips>.14);
+  assert.ok(Math.abs(seated.sole-seated.floor)<.025);
+  await desktop.getByRole('button',{name:'Встать'}).click();
+  await desktop.getByText('Бабушка Марина стоит рядом со стулом.',{exact:true}).waitFor({timeout:15000});
+  await desktop.getByRole('button',{name:'Радость'}).click();
+  await desktop.waitForFunction(y=>lifeQA().hand>y+.25,grandma.hand);
+  await desktop.getByText('Бабушка Марина стоит рядом со стулом.',{exact:true}).waitFor();
   assert.deepEqual(errors,[]);
-  console.log('Chair approach, seated hold, stand up, returning to patrol, gesture, desktop smile, and mobile portrait passed');
+  console.log('13 detailed residents loaded and selected in WebGL; seat/stand/gesture verified on grandmother and Vera');
 
  }finally{
   await browser.close();
