@@ -1,6 +1,6 @@
 import * as T from 'three';
-import {createDecor} from './villa-decor.js?v=1';
-import {buildYuriCabinet} from './yuri-cabinet.js?v=1';
+import {createDecor} from './villa-decor.js?v=surfaces';
+import {buildYuriCabinet} from './yuri-cabinet.js?v=surfaces';
 
 export const OFFICE_FLOOR = .78;
 export const OFFICE_FOV = 34;
@@ -56,8 +56,8 @@ export function officeFrame(zone, width, height, top, bottom) {
   return roomFrame(OFFICE_ZONES[zone], width, height, top, bottom);
 }
 
-export function buildOffice(textureLoader) {
-  const decor = createDecor('Office interior', OFFICE_FLOOR);
+export function buildOffice(textureLoader,surfaces) {
+  const decor = createDecor('Office interior', OFFICE_FLOOR, surfaces);
   const {root:office,p,cube,drum,shade,sphere,part,block,soft,tube,assembly,shadow,
     planter,officeChair,boards,finish} = decor;
   // Oak boards sit over the dark edge of the cutaway.
@@ -234,6 +234,7 @@ export function buildOffice(textureLoader) {
     soft(.87,.074,.34,8.72,.853,z,p.teal);
   }
   for (const {x,z,heading} of KITCHEN_SEATS) {
+    shadow(.96,.88,x,z,.817);
     const seat=assembly(x,z,heading);
     soft(.74,.087,.64,0,.259,0,p.canvas,seat);
     soft(.73,.374,.113,0,.444,-.265,p.teal,seat);
