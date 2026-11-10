@@ -2,7 +2,7 @@ import * as T from 'three';
 import {createDecor} from './villa-decor.js?v=architecture';
 
 export const VILLA_VIEW = {
-  center:[1.8,5.0,1.8], size:[34.6,13.0,21.2], angle:[-.53,.285,1]
+  center:[1.95,5.44,1.02], size:[34.6,13.52,21.07], angle:[-.46,.248,1]
 };
 
 function lightTexture(){

@@ -99,14 +99,15 @@ export function buildVillaLandscape(materials){
   let seed=251;
   const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
   const mountains=new T.MeshStandardMaterial({vertexColors:true,roughness:1,envMapIntensity:.28});
-  const rock=new T.Color('#566875'),snow=new T.Color('#dbe6e8');
+  const rock=new T.Color('#425b67'),snow=new T.Color('#a7b6ba');
   const shade=new T.Color(),p=new T.Vector3();
 
   for(let i=0;i<30;i++){
-    const angle=.12+i/29*Math.PI*1.42,radius=61+random()*31;
-    const x=Math.cos(angle)*radius-12,z=-Math.sin(angle)*radius-20;
-    const width=9+random()*11,height=20+random()*28;
-    const geometry=new T.PlaneGeometry(width*2,width*2,13,13).rotateX(-Math.PI/2);
+    // Put the three ridge lines behind the villa and clear of the approach camera.
+    const layer=Math.floor(i/10),column=i%10;
+    const x=(column-4.5)*23+layer*8+(random()-.5)*12,z=-48-layer*23+random()*8;
+    const width=13+random()*8,height=13+layer*6+random()*14;
+    const geometry=new T.PlaneGeometry(width*2,width*2,17,17).rotateX(-Math.PI/2);
     const positions=geometry.getAttribute('position'),colors=[];
     const ridge=(random()-.5)*.8;
     for(let j=0;j<positions.count;j++){
@@ -114,12 +115,13 @@ export function buildVillaLandscape(materials){
       const u=p.x/width,v=p.z/width;
       const primary=Math.max(0,1-Math.hypot(u-ridge*v,v*.91));
       const secondary=Math.max(0,.68-Math.hypot(u+.33,v-.19));
-      const grain=Math.sin(u*13+v*11+i)*.10+Math.sin(u*23-v*17+i*.9)*.055;
-      const level=Math.max(0,Math.pow(primary,1.22)+secondary*.19+grain*primary);
+      const grain=Math.sin(u*15+v*11+i)*.15+Math.sin(u*29-v*19+i*.9)*.085;
+      const spine=Math.exp(-Math.abs(u-ridge*v)*9)*primary*.12;
+      const level=Math.max(0,Math.pow(primary,1.20)+secondary*.26+spine+grain*primary);
       positions.setY(j,-1.1+height*level);
-      const snowLine=.57+Math.sin(u*12+v*8+i)*.066;
-      shade.copy(rock).multiplyScalar(.83+.24*level+.11*Math.sin(v*11-u*5+i));
-      shade.lerp(snow,T.MathUtils.smoothstep(level,snowLine,snowLine+.17));
+      const snowLine=.72+Math.sin(u*12+v*8+i)*.086;
+      shade.copy(rock).multiplyScalar(.73+.28*level+.11*Math.sin(v*11-u*5+i));
+      shade.lerp(snow,T.MathUtils.smoothstep(level,snowLine,snowLine+.22)*(layer?.79:.26));
       colors.push(shade.r,shade.g,shade.b);
     }
     geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));

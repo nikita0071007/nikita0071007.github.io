@@ -35,6 +35,9 @@ body.office-view #toolbar>*{flex:none;white-space:nowrap;font-size:13px;padding:
   #officePanelHead{margin-bottom:4px}
 }
 body.architecture-view #toast{display:none}
+body.architecture-view header{display:block;padding:8px 12px}
+body.architecture-view #toolbar{margin:6px 0 0;flex-wrap:nowrap;overflow:auto;scrollbar-width:thin}
+body.architecture-view #toolbar>*{flex:none;white-space:nowrap;font-size:13px;padding:7px 9px}
 body.architecture-view #info{width:min(350px,calc(100vw - 22px));padding:8px 12px}
 body.architecture-view #detail,body.architecture-view #info p:last-child{display:none}
 body.human-view #toast,body.human-portrait #info,body.life-view #toast,body.life-view #info{display:none}
@@ -70,8 +73,8 @@ import {createHouseHistory,createTerraceMeetings,MEETING_AREA} from './house-lif
 import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=architecture';
 import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=architecture';
 import {createVillaMaterials,installVillaLighting} from './villa-rendering.js?v=3';
-import {buildVillaLandscape,buildVillaApproach} from './villa-landscape.js?v=2';
-import {buildVillaArchitecture,VILLA_VIEW} from './villa-architecture.js?v=1';
+import {buildVillaLandscape,buildVillaApproach} from './villa-landscape.js?v=3';
+import {buildVillaArchitecture,VILLA_VIEW} from './villa-architecture.js?v=2';
 const root=document.getElementById('world'),nameRoot=document.getElementById('names'),info=document.getElementById('info');let renderer,scene,camera,controls;
 try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
 scene=new T.Scene();
@@ -99,7 +102,7 @@ function placeMesh(geometry,m,x,y,z,parent,casts=true){
 function box(w,h,d,x,y,z,m,parent=scene){return placeMesh(new T.BoxGeometry(w,h,d),m,x,y,z,parent,h>.082)}
 function ball(r,x,y,z,m,parent=scene){return placeMesh(new T.SphereGeometry(r,9,7),m,x,y,z,parent)}
 function cylinder(rt,rb,h,x,y,z,m,parent=scene){return placeMesh(new T.CylinderGeometry(rt,rb,h,8),m,x,y,z,parent)}
-const lawn=box(180,.3,180,0,-.7,0,mat('#647752',.98,0,'grass'),grounds);
+const lawn=box(296,.3,296,0,-.7,0,mat('#647752',.98,0,'grass'),grounds);
 lawn.castShadow=false;
 
 const cushion=mat('#c7a98a',.93,0,'linen');
@@ -684,7 +687,7 @@ function focusExterior(){
   controls.minDistance=11;
   controls.maxDistance=190;
   const top=document.querySelector('header').getBoundingClientRect().bottom;
-  const {position,target}=roomFrame(VILLA_VIEW,innerWidth,innerHeight,top,innerHeight*.11);
+  const {position,target}=roomFrame(VILLA_VIEW,innerWidth,innerHeight,top,innerHeight*.045);
   const distance=position.distanceTo(target);
   houseFog.near=Math.max(65,distance+10);
   houseFog.far=houseFog.near+86;
