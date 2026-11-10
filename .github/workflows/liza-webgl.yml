@@ -1,4 +1,4 @@
-name: Mountain house terrace WebGL checks
+name: Mountain office WebGL checks
 on:
   push:
     branches: [verify/liza-webgl]
@@ -17,18 +17,16 @@ jobs:
         run: |
           npm install --no-save --no-package-lock --no-audit --no-fund three@0.160.1 playwright@1.62.1
           npx playwright install --with-deps chromium
-      - name: Exercise house meetings and quality controls
+      - name: Exercise the office and terrace
         run: |
           mkdir -p life-qa
           curl -fsSL --max-time 25 https://raw.githubusercontent.com/nikita0071007/office/main/status.json -o life-qa/status.json
           node --test tests/*.test.*
-          node qa/house-browser.cjs
+          node qa/office-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: terrace-meeting-evidence
-          path: |
-            life-qa/terrace-*.png
-            life-qa/terrace-mobile.webm
+          name: mountain-office-evidence
+          path: life-qa/office-*.png
           if-no-files-found: ignore
           retention-days: 14
