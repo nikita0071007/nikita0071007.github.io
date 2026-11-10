@@ -11,11 +11,11 @@ export const UPPER_HOMES = {
 
 export const UPPER_ZONES = {
   overview: {label:'Обзор',center:[0,7.84,1.22],size:[26.75,3.46,19.95],text:'Кабинеты, студия, комната бабушки и общий спортзал.'},
-  director: {label:'Никита',center:[-8.64,7.85,-4.88],size:[8.55,2.78,6.79],text:'Кабинет Никиты со столом, книжными полками и креслами для гостей.'},
-  therapy: {label:'Лена',center:[.00,7.86,-4.88],size:[7.44,2.80,6.79],text:'Кабинет Лены для бесед. Мягкие кресла, диван и тёплый свет.'},
-  studio: {label:'Анжелика',center:[8.65,7.88,-4.88],size:[8.65,2.83,6.79],text:'Студия Анжелики. Два монитора, камера, свет и акустические панели.'},
-  grandma: {label:'Бабушка',center:[-7.19,7.52,5.01],size:[6.8,2.24,6.87],text:'Комната бабушки Марины с креслом, пледом и уголком для питомцев.'},
-  gym: {label:'Спортзал',center:[8.17,7.74,4.98],size:[8.97,2.63,6.93],text:'Общий спортзал с дорожкой, скамьёй, гантелями и ковриками.'}
+  director: {label:'Никита',title:'Кабинет Никиты',center:[-8.66,7.85,-4.88],size:[8.55,2.78,6.79],angle:[.39,.78,1],text:'Стол из тёмного дерева, ноутбук, библиотека и два кресла для гостей.'},
+  therapy: {label:'Лена',title:'Кабинет Лены',center:[.00,7.86,-4.88],size:[7.44,2.80,6.79],angle:[.41,.81,1],text:'Диван, два кресла для бесед, мягкий ковёр и тёплый торшер.'},
+  studio: {label:'Анжелика',title:'Студия Анжелики',center:[8.65,7.88,-4.88],size:[8.65,2.83,6.79],angle:[.38,.77,1],text:'Место монтажа и уголок съёмки с камерой, микрофоном и кольцевым светом.'},
+  grandma: {label:'Бабушка',title:'Комната бабушки Марины',center:[-7.19,7.71,5.01],size:[6.8,2.67,6.87],text:'Кресло, плед, семейные рамки и уголок для питомцев.'},
+  gym: {label:'Спортзал',title:'Общий спортзал',center:[8.17,7.74,4.98],size:[8.97,2.63,6.93],text:'Дорожка, скамья, гантели и коврики.'}
 };
 
 export const GARDEN_ZONE = {
@@ -110,8 +110,12 @@ export function buildUpperFloor() {
   planter(-10.08,.35,.82,p.teal);
   planter(11.73,.35,.88,p.cream);
 
-  // Director.
+  // Director's office.
+  const leather=matte('#314650'),brass=matte('#bc9559');
   roomRug(7.94,6.20,-8.65,-4.97,p.forest);
+  block(7.93,2.49,.085,-8.69,floor+1.245,-8.264,p.teal);
+  for(let i=0;i<9;i++)block(.069,2.44,.066,-6.40+i*.178,floor+1.249,-8.173,p.oak);
+  block(7.72,.091,.116,-8.69,floor+.079,-8.181,p.walnut);
   block(3.46,1.67,.11,-10.45,floor+.85,-8.05,p.walnut);
   for(const x of [-12.11,-8.79])soft(.14,1.67,.62,x,floor+.85,-7.78,p.walnut);
   for(const y of [.08,1.69])soft(3.46,.105,.64,-10.45,floor+y,-7.78,p.walnut);
@@ -122,23 +126,56 @@ export function buildUpperFloor() {
       block(.161,h,.34,-11.77+i*.32,floor+y+.046+h/2,-7.73,[p.clay,p.cream,p.navy,p.mint][i%4]);
     }
   }
-  const director=desk(-8.88,-4.93,3.23);
-  soft(.85,.046,.51,-.32,.914,.05,p.navy,director);
-  soft(.85,.52,.08,-.32,1.16,-.20,p.screen,director).rotation.x=-.17;
-  block(.55,.028,.38,.72,.909,.18,p.cream,director);
-  tube(.30,.036,1.27,.918,-.30,p.trim,director);
-  tube(.046,.43,1.27,1.143,-.30,p.metal,director);
-  part(shade,.34,.226,.34,1.27,1.37,-.30,p.lamp,director);
-  officeChair(-8.90,-6.22,0,p.teal);
-  for(const x of [-10.06,-7.58])chair(x,-3.64,Math.PI,p.clay);
-  picture(-6.24,floor+1.70,-8.27,1.32,.84,p.forest);
-  planter(-5.25,-6.47,.85,p.cream);
+  const director=assembly(-8.94,-4.97);
+  shadow(4.04,2.16,-8.85,-5.35,floor+.034);
+  soft(3.66,.139,1.34,0,.824,0,p.walnut,director);
+  soft(1.06,.132,1.51,1.29,.823,-1.13,p.walnut,director);
+  for(const dx of [-1.42,1.42]){
+    soft(.59,.723,1.10,dx,.384,0,p.oak,director);
+    for(const y of [.219,.414,.609]){
+      soft(.51,.158,.048,dx,y,.563,p.walnut,director);
+      block(.158,.031,.048,dx,y+.024,.6,brass,director);
+    }
+  }
+  soft(.834,.74,.727,1.29,.39,-1.60,p.walnut,director);
+  soft(1.19,.028,.65,-.14,.907,.001,leather,director);
+  soft(.88,.046,.50,-.26,.947,-.13,p.metal,director);
+  const laptop=soft(.88,.50,.072,-.26,1.174,.095,p.navy,director);
+  laptop.rotation.x=.15;
+  const laptopScreen=block(.733,.394,.012,-.26,1.176,.052,p.screen,director);
+  laptopScreen.rotation.x=.15;
+  block(.52,.025,.41,.71,.917,.16,p.cream,director).rotation.y=-.16;
+  block(.021,.017,.28,.84,.947,.20,brass,director).rotation.y=-.16;
+  tube(.30,.041,-1.34,.924,-.23,brass,director);
+  tube(.046,.415,-1.34,1.151,-.23,p.metal,director);
+  part(shade,.384,.249,.384,-1.34,1.372,-.23,p.lamp,director);
+  const executive=assembly(-9.02,-6.29);
+  tube(.52,.080,0,.069,0,p.metal,executive);
+  tube(.13,.35,0,.234,0,p.metal,executive);
+  soft(.83,.165,.76,0,.427,0,leather,executive);
+  soft(.84,.899,.169,0,.895,-.327,leather,executive);
+  for(const x of [-.41,.41])soft(.092,.096,.62,x,.649,-.025,p.trim,executive);
+  for(const x of [-10.12,-7.66])chair(x,-3.59,Math.PI,p.clay);
+  picture(-6.40,floor+1.81,-8.114,1.64,.93,p.forest);
+  soft(1.92,.78,.50,-6.30,floor+.408,-7.75,p.oak);
+  for(const x of [-6.75,-5.85]){
+    block(.78,.571,.045,x,floor+.419,-7.478,p.walnut);
+    block(.21,.033,.053,x,floor+.583,-7.445,brass);
+  }
+  soft(.89,.073,.49,-6.47,floor+.839,-7.71,p.navy);
+  block(.62,.217,.33,-6.47,floor+.984,-7.71,p.cream);
+  block(.69,.079,.37,-6.47,floor+1.133,-7.71,p.teal);
+  planter(-5.19,-5.15,.86,p.cream);
 
   // Lena's quiet room.
   roomRug(7.75,6.10,-.10,-4.97,lilac);
   block(5.99,2.42,.09,-.11,floor+1.25,-8.255,lilac);
   for(let i=0;i<12;i++)block(.06,2.40,.067,-2.97+i*.185,floor+1.25,-8.17,p.oak);
   picture(.65,floor+1.61,-8.14,1.23,.76,rose);
+  block(1.91,1.71,.048,2.62,floor+1.46,-8.158,p.canvas);
+  for(let i=0;i<9;i++)soft(.104,1.67,.111,1.74+i*.220,floor+1.46,-8.098,linen);
+  part(drum,5.19,.022,3.49,.00,floor+.052,-5.00,linen);
+  part(drum,4.91,.016,3.20,.00,floor+.068,-5.00,rose);
   const couch=assembly(.04,-6.51);
   soft(3.22,.31,1.21,0,.325,0,lilac,couch);
   soft(3.2,.63,.30,0,.69,-.50,rose,couch);
@@ -152,6 +189,9 @@ export function buildUpperFloor() {
   tube(.19,.40,0,floor+.212,-4.86,p.trim);
   tube(.17,.17,.36,floor+.555,-4.93,p.ceramic);
   soft(.41,.046,.29,-.24,floor+.496,-4.72,p.cream);
+  soft(.29,.037,.22,-.29,floor+.538,-4.77,p.teal);
+  soft(.64,.72,.43,-3.24,floor+.383,-6.89,p.walnut);
+  for(let i=0;i<4;i++)block(.084,.28,.22,-3.47+i*.13,floor+.897,-6.87,[p.clay,p.cream,p.teal,p.mint][i]);
   lamp(2.91,-6.64);
   planter(-3.22,-2.61,.79,p.cream);
 
@@ -175,12 +215,24 @@ export function buildUpperFloor() {
   const light=assembly(11.51,-6.78,-.52);
   tube(.55,.09,0,.06,0,p.trim,light);
   tube(.064,1.93,0,.98,0,p.metal,light);
-  part(drum,.76,.17,.76,0,2.04,0,p.trim,light).rotation.x=Math.PI/2;
-  part(drum,.62,.056,.62,0,2.04,.094,p.lamp,light).rotation.x=Math.PI/2;
-  planter(5.26,-7.48,.76,p.teal);
+  part(new T.TorusGeometry(.342,.058,8,28),1,1,1,0,2.04,0,p.trim,light);
+  part(new T.TorusGeometry(.342,.034,8,28),1,1,1,0,2.04,.048,p.lamp,light);
+  const softbox=assembly(5.86,-6.85,.49);
+  tube(.55,.08,0,.05,0,p.trim,softbox);
+  tube(.072,1.83,0,.96,0,p.metal,softbox);
+  soft(.76,.62,.203,0,1.94,0,p.navy,softbox).rotation.x=-.16;
+  soft(.659,.525,.044,0,1.944,.113,p.lamp,softbox).rotation.x=-.16;
+  soft(.48,.23,.095,9.48,floor+1.02,-1.61,p.navy);
+  part(sphere,.099,.099,.041,9.48,floor+1.021,-1.551,p.clay);
+  planter(5.24,-7.47,.68,p.teal);
 
   // Grandma's room and pet corner.
   roomRug(6.61,6.44,-7.20,5.01,rose);
+  block(4.52,1.53,.136,-8.11,floor+.765,1.738,p.wall);
+  block(4.59,.084,.18,-8.11,floor+1.57,1.738,p.walnut);
+  for(const [x,w,h,color] of [[-9.19,.51,.61,rose],[-8.36,.70,.53,p.forest],[-7.49,.52,.62,lilac]]){
+    picture(x,floor+1.087,1.827,w,h,color);
+  }
   const bed=assembly(-8.53,4.25);
   soft(2.28,.34,3.42,0,.275,0,p.walnut,bed);
   soft(2.22,.24,3.24,0,.553,0,p.cream,bed);
