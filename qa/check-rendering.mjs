@@ -17,11 +17,9 @@ assert.equal(wood.map,null);
 pending.forEach(resolve=>resolve());
 assert.equal(paths.length,5);
 assert.equal(wood.map.colorSpace,T.SRGBColorSpace);
-assert.equal(wood.bumpMap,null);
-materials.setDetail(true);
-assert.equal(wood.bumpMap,wood.map);
-materials.setDetail(false);
-assert.equal(wood.bumpMap,null);
+assert.equal(wood.envMap,null);
+assert.ok(materials.glass().envMap.isDataTexture);
+assert.ok(materials.water().bumpMap.isDataTexture);
 const contact=materials.contact();
 assert.ok(contact.transparent&&contact.map.isDataTexture&&contact.depthWrite===false);
 
@@ -37,10 +35,10 @@ renderer.shadowMap.needsUpdate=false;
 lights.setView('office','editorial',true);
 assert.equal(renderer.shadowMap.needsUpdate,true);
 const night=scene.background;
-assert.ok(scene.children.some(light=>light.isPointLight&&light.intensity>0));
+assert.ok(scene.children.some(light=>light.isPointLight&&light.visible));
 lights.setView('office','editorial',false);
 assert.notEqual(scene.background,night);
-assert.ok(scene.children.every(light=>!light.isPointLight||light.intensity===0));
+assert.ok(scene.children.every(light=>!light.isPointLight||!light.visible));
 lights.setQuality(0,true,1360);
 assert.equal(sun.castShadow,false);
 

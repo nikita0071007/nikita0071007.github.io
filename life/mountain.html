@@ -66,7 +66,7 @@ import * as T from 'three';import{OrbitControls}from'three/addons/controls/Orbit
 import {createHouseHistory,createTerraceMeetings,MEETING_AREA} from './house-life.js?v=1';
 import {buildOffice,roomFrame,OFFICE_DESKS,OFFICE_FLOOR,OFFICE_FOV,OFFICE_ZONES} from './office-interior.js?v=surfaces';
 import {buildUpperFloor,buildGarden,UPPER_FLOOR,UPPER_HOMES,UPPER_ZONES,GARDEN_ZONE} from './villa-rooms.js?v=surfaces';
-import {createVillaMaterials,installVillaLighting} from './villa-rendering.js?v=1';
+import {createVillaMaterials,installVillaLighting} from './villa-rendering.js?v=2';
 import {buildVillaLandscape} from './villa-landscape.js?v=1';
 const root=document.getElementById('world'),nameRoot=document.getElementById('names'),info=document.getElementById('info');let renderer,scene,camera,controls;
 try{renderer=new T.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.0));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;root.appendChild(renderer.domElement)}catch(e){document.getElementById('fallback').style.display='grid';throw e}
@@ -773,7 +773,7 @@ function applyQuality(t=performance.now()){
     qualityMode===2?Math.min(devicePixelRatio||1,1.4):autoReduced?Math.min(base,.7):base;
   renderer.setPixelRatio(ratio);
   renderer.setSize(innerWidth,innerHeight);
-  surfaces.setDetail(lighting.setQuality(qualityMode,autoReduced,innerWidth));
+  lighting.setQuality(qualityMode,autoReduced,innerWidth);
   qualityButton.textContent='⚡ Качество: '+qualityModes[qualityMode]+(qualityMode===0&&autoReduced?' ↓':'');
   resetPerformanceWindow(t);
   queueModels();

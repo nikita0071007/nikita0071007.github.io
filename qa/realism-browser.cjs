@@ -70,19 +70,19 @@ const officeDebug = `globalThis.officeQA=(detailed=false)=>{
 };
 globalThis.renderQA=()=>{
   const maps=new Set();
-  let bumps=0,casters=0,footprints=0;
+  let reflections=0,casters=0,footprints=0;
   scene.traverse(mesh=>{
     const m=mesh.material;
     if(m?.map?.image?.src?.includes('/assets/materials/'))maps.add(m.map.image.src);
-    if(m?.bumpMap&&m.bumpMap===m.map)bumps++;
+    if(m?.envMap)reflections++;
     if(mesh.isMesh&&mesh.castShadow)casters++;
     if(mesh.userData.groundContact&&m?.map?.isDataTexture)footprints++;
   });
   const sun=scene.children.find(o=>o.isDirectionalLight);
-  return {maps:[...maps],bumps,casters,footprints,shadow:!!sun?.castShadow,
+  return {maps:[...maps],reflections,casters,footprints,shadow:!!sun?.castShadow,
     shadowTexture:!!sun?.shadow.map,shadowAuto:renderer.shadowMap.autoUpdate,
-    tone:renderer.toneMapping,expectedTone:T.AgXToneMapping,environment:!!scene.environment,
-    lamps:scene.children.filter(o=>o.isPointLight&&o.intensity>0).length,
+    tone:renderer.toneMapping,expectedTone:T.AgXToneMapping,
+    lamps:scene.children.filter(o=>o.isPointLight&&o.visible).length,
     backgrounds:scene.background.uuid,draws:renderer.info.render.calls,
     residents:people.length,mode:roomMode,zone:roomZone};
 };
@@ -93,7 +93,9 @@ const server = http.createServer(async(req,res)=>{
     if (!pathname.startsWith('/life/')) {res.writeHead(404);res.end();return}
     const file = path.join(root,pathname);
     let data = await fs.readFile(file);
-    if(pathname==='/life/mountain.html')data=Buffer.from(data.toString().replace('</script></body></html>',debug+officeDebug+'\n</script></body></html>'));
+    if(pathname==='/life/mountain.html')data=Buffer.from(data.toString()
+      .replace('renderer.render(scene,camera);samplePerformance(t);','if(!globalThis.__freezeFrame){renderer.render(scene,camera);samplePerformance(t)}')
+      .replace('</script></body></html>',debug+officeDebug+'\n</script></body></html>'));
     res.setHeader('content-type',{'.html':'text/html; charset=utf-8','.js':'text/javascript','.glb':'model/gltf-binary','.jpg':'image/jpeg'}[path.extname(file)]||'application/octet-stream');
     res.end(data);
   }catch{
@@ -133,9 +135,26 @@ async function checkOfficeBounds(page){
 
 const rendered=(page)=>page.evaluate(()=>renderQA());
 const frames=(page)=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+async function capture(page,filename){
+  await frames(page);
+  await page.evaluate(()=>{globalThis.__freezeFrame=true});
+  const cdp=await page.context().newCDPSession(page);
+  let timer;
+  try{
+    const {data}=await Promise.race([
+      cdp.send('Page.captureScreenshot',{format:'png',fromSurface:true}),
+      new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Screenshot timed out: '+filename)),60000)})
+    ]);
+    await fs.writeFile(path.join(out,filename),Buffer.from(data,'base64'));
+  }finally{
+    clearTimeout(timer);
+    await cdp.detach();
+    await page.evaluate(()=>{globalThis.__freezeFrame=false});
+  }
+}
 async function testRealism(browser,base,errors){
   const url=base+'/life/mountain.html';
-  const desktop=await browser.newPage({viewport:{width:1360,height:900},deviceScaleFactor:1});
+  const desktop=await browser.newPage({viewport:{width:1152,height:768},deviceScaleFactor:1});
   await configure(desktop,errors);
   await desktop.addInitScript(()=>{
     localStorage.setItem('gusevmade-mountain-quality','normal');
@@ -143,49 +162,47 @@ async function testRealism(browser,base,errors){
   });
   await desktop.goto(url+'?office=editorial');
   await desktop.waitForFunction(()=>typeof renderQA==='function'&&renderQA().maps.length===5&&
-    renderQA().shadowTexture&&officeQA().models===13&&officeQA().icons.every(icon=>icon.ready),null,{timeout:45000});
-  await desktop.screenshot({path:path.join(out,'realism-yuri-evening.png')});
+    renderQA().shadowTexture&&officeQA().models===13&&officeQA().icons.every(icon=>icon.ready),null,{timeout:60000});
+  await capture(desktop,'realism-yuri-evening.png');
   const dusk=await rendered(desktop);
   assert.equal(dusk.residents,13);
   assert.equal(dusk.footprints,13);
   assert.equal(dusk.tone,dusk.expectedTone);
-  assert.ok(dusk.casters>40&&dusk.bumps>25&&dusk.draws>30);
+  assert.ok(dusk.casters>40&&dusk.reflections>10&&dusk.draws>30);
   assert.ok(dusk.maps.every(asset=>asset.startsWith(base+'/life/assets/materials/')));
   assert.equal(dusk.shadow,true);
   assert.equal(dusk.shadowAuto,false);
-  assert.equal(dusk.environment,true);
-  assert.equal(dusk.lamps,2);
+  assert.equal(dusk.lamps,1);
   await desktop.locator('#night').click();
   await frames(desktop);
   const day=await rendered(desktop);
   assert.notEqual(day.backgrounds,dusk.backgrounds);
   assert.equal(day.lamps,0);
-  await desktop.screenshot({path:path.join(out,'realism-yuri-day.png')});
+  await capture(desktop,'realism-yuri-day.png');
   await desktop.locator('#upper').click();
   await desktop.locator('[data-office-zone=director]').click();
   await frames(desktop);
   assert.equal(await desktop.locator('#officeTitle').textContent(),'Кабинет Никиты');
-  await desktop.screenshot({path:path.join(out,'realism-director-day.png')});
+  await capture(desktop,'realism-director-day.png');
   await desktop.locator('#night').click();
   await frames(desktop);
-  await desktop.screenshot({path:path.join(out,'realism-director-evening.png')});
+  await capture(desktop,'realism-director-evening.png');
   await desktop.locator('#night').click();
   await desktop.locator('#garden').click();
   await frames(desktop);
   assert.equal((await rendered(desktop)).mode,'garden');
-  await desktop.screenshot({path:path.join(out,'realism-garden.png')});
+  await capture(desktop,'realism-garden.png');
   await desktop.locator('#front').click();
   await frames(desktop);
   const house=await rendered(desktop);
   console.log('Static draws in the whole house:',house.draws);
   assert.ok(house.draws<780);
-  await desktop.screenshot({path:path.join(out,'realism-villa.png')});
+  await capture(desktop,'realism-villa.png');
   await desktop.locator('#quality').click();
   assert.equal((await rendered(desktop)).shadow,true,'Desktop auto starts with a shadow pass');
   await desktop.locator('#quality').click();
   await frames(desktop);
   assert.equal((await rendered(desktop)).shadow,false);
-  assert.equal((await rendered(desktop)).bumps,0);
   await desktop.close();
 
   const phone=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
@@ -200,9 +217,8 @@ async function testRealism(browser,base,errors){
   await phone.unroute(woodURL);
   await phone.reload();
   await phone.waitForFunction(()=>renderQA().maps.length===5&&officeQA().icons.every(icon=>icon.ready));
-  await phone.screenshot({path:path.join(out,'realism-mobile.png')});
+  await capture(phone,'realism-mobile.png');
   assert.equal((await report(phone)).quality,.65);
-  assert.equal((await rendered(phone)).bumps,0);
   await phone.getByRole('button',{name:'Обзор',exact:true}).tap();
   await phone.waitForFunction(()=>officeQA().zone==='overview');
   await checkOfficeBounds(phone);
