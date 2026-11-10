@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {createLizaFace} from './liza-face.js';
+import {createLizaFace} from './liza-face.js?v=crew';
 
 export const PATROL = {centerZ: 16.2, floor: .67, halfStraight: 1.65, radius: 1.12};
 // The cushion meets the lowest point of the seated trousers at the end of SitDown.

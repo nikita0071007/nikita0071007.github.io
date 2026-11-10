@@ -246,9 +246,10 @@ async function loadNextModel(){
   const controller=new AbortController();
   pendingModel={person,controller};
   try{
-    crewModule??=await import('./human-character.js?v=crew');
+    crewModule??=await import('./human-character.js?v=crew-1');
     const avatar=await crewModule.loadResident(person.userData.id,controller.signal);
     if(controller.signal.aborted)return;
+    parkPerson(person,avatar);
     // Keep the original figure until the complete model is ready.
     for(const child of [...person.children]){
       person.remove(child);
@@ -257,7 +258,6 @@ async function loadNextModel(){
     models.set(person,avatar);
     person.add(avatar.object);
     person.userData.detailedHuman=true;
-    parkPerson(person,avatar);
     if(activePerson===person){
       enterPatio(avatar);
       syncHumanPanel();
