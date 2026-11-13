@@ -274,6 +274,8 @@ fetch('reviews.json').then(r => r.ok ? r.json() : []).then(items => {
   const real = (Array.isArray(items) ? items : []).filter(x => x && x.consent === true && x.text && x.name);
   if (!list || !real.length) return;
   list.innerHTML = '';
+  const sec = document.querySelector('#reviews'); if (sec) sec.hidden = false;
+  const navR = document.querySelector('#nav-reviews'); if (navR) navR.hidden = false;
   real.forEach(x => {
     const el = document.createElement('article');
     el.className = 'review-card';

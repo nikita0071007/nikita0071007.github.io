@@ -506,3 +506,10 @@ a,button { -webkit-tap-highlight-color: #e7c78033; }
 .project-art.ariadna{min-height:320px}
 .ariadna-face{position:absolute;right:0;bottom:0;height:100%;width:auto;max-width:62%;object-fit:cover;object-position:center top;-webkit-mask-image:linear-gradient(to left,#000 55%,transparent);mask-image:linear-gradient(to left,#000 55%,transparent);opacity:.95}
 .project-art.ariadna strong{max-width:50%;position:relative}
+
+/* tariffs */
+.package-grid article{position:relative}
+.package-grid .for{color:var(--muted);font-size:14px;margin:6px 0 10px;min-height:2.6em}
+.package-grid .featured{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 18px 50px #0006}
+.package-grid .badge{position:absolute;top:-12px;right:20px;background:linear-gradient(#f7dc9c,#d9a94d);color:#2a1c05;font-size:12px;font-weight:700;padding:4px 12px;border-radius:99px}
+.note.examples a{color:var(--gold)}
